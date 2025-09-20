@@ -2,6 +2,7 @@
 
 import TabsWindow from "@/components/TabsWindow"
 import SetupForm from "@/components/SetupForm"
+import HabitCalendar from "@/components/HabitCalendar"
 import { useState } from 'react'
 
 export default function Page() {
@@ -25,7 +26,7 @@ export default function Page() {
                         </div>
                     </div>
                     <div>
-                        <h1>Tab 2</h1>
+                        <HabitCalendar />
                     </div>
                 </TabsWindow>
             </main>
