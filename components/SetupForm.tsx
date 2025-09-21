@@ -11,15 +11,11 @@ interface Props {
 }
 
 export default function SetupForm({ onSubmit }: Props) {
-    const [currentName, setCurrentName] = useState()
     const [name, setName] = useState('')
     const [canSubmit, setCanSubmit] = useState(false)
     const [loading, setLoading] = useState(false)
 
     useEffect(() => {
-        showOption('name').then(option => {
-            setCurrentName(option?.value ?? '')
-        })
         if(!name) {
             setCanSubmit(false)
             return

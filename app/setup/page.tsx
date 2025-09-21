@@ -1,17 +1,30 @@
 'use client'
 
+import { showOption } from '@/db/options'
 import TabsWindow from "@/components/TabsWindow"
 import SetupForm from "@/components/SetupForm"
-import HabitCalendar from "@/components/HabitCalendar"
-import { useState } from 'react'
+import HabitsSetup from "@/components/HabitsSetup"
+import { useState, useEffect } from 'react'
 
 export default function Page() {
+    const [name, setName] = useState('')
     const [tab, setTab] = useState(0)
-
-    const handleSetupFormSubmit = () => {
-        console.log('handleSetupFormSubmit')
-        setTab(1)
+    const getName = async () => {
+        const nameOption = await showOption('name')
+        setName(nameOption?.value ?? '')
     }
+    useEffect(() => {
+        if(name) {
+            setTab(1)
+        }
+    }, [name])
+    useEffect(() => {
+        getName()
+    }, [])
+    const handleSetupFormSubmit = () => {
+        getName()
+    }
+
 
     return (
         <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
@@ -26,7 +39,7 @@ export default function Page() {
                         </div>
                     </div>
                     <div>
-                        <HabitCalendar />
+                        <HabitsSetup />
                     </div>
                 </TabsWindow>
             </main>
