@@ -1,0 +1,32 @@
+import { cloneElement, ReactElement } from 'react';
+
+interface Input extends ReactElement {
+    props: {
+        className?: string
+    }
+}
+
+interface Props {
+    errorMessages?: string[]
+    label?: string,
+    input: Input
+}
+
+export default function InputWrapper({ errorMessages = [], label = '', input}: Props) {
+
+    return (
+        <>
+            {label && <label className="block mb-1 text-sm font-medium text-red-700 dark:text-red-500">{label}</label>}
+            {cloneElement(input, {
+                className: (input.props.className || '') + (errorMessages?.length ? ' bg-red-50 border-red-500 text-red-900 placeholder-red-700 focus:ring-red-500 focus:border-red-500 dark:text-red-500 dark:placeholder-red-500 dark:border-red-500' : '')
+            })}
+            {errorMessages.length > 0 && (
+                <div className="mt-1 text-sm text-red-600 dark:text-red-500">
+                {errorMessages.map((msg, index) => (
+                    <p key={index}>{msg}</p>
+                ))}
+                </div>
+            )}
+        </>
+    )
+}
