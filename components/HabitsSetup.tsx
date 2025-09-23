@@ -1,3 +1,6 @@
+import { useState } from 'react';
+import Modal from '@/components/Modal'
+
 // Card made of 2 sections -> Good and Bad habits
 // every section accepts any number of items
 // adding or editing an element opens a dedicated form modal
@@ -6,9 +9,33 @@
 // - When (every day, selected days, except weekends, n days per week/month, etc)
 // - Icon
 export default function HabitsSetup() {
+    const [goodHabitsModal, setGoodHabitsModal] = useState(false)
+
     return (
-        <div className="block w-lg p-6 bg-white border border-gray-200 rounded-lg shadow-ht hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
-            
-        </div>
+        <>
+            <div className="flex gap-3 w-lg p-6 bg-white border border-gray-200 rounded-lg shadow-ht dark:bg-gray-800 dark:border-gray-700">
+                <div className="grow">
+                    <p>
+                        Flex you good intentions.<br/>
+                        <button 
+                            type="button" 
+                            className="px-3 py-1 mr-1 text-xs font-medium text-center bg-primary outline-glass rounded-lg"
+                            onClick={() => setGoodHabitsModal(true)}
+                        >Add</button>
+                        some <b>Good habits</b>.
+                    </p>
+                </div>
+                <div className="inline-block self-stretch bg-neutral-100 dark:bg-white/10"></div>
+                <div className="grow">
+                    <p>
+                        We are not made of just sugar.<br />
+                        <button type="button" className="px-3 py-1 mr-1 text-xs font-medium text-center bg-primary outline-glass rounded-lg">Unveil</button>
+                        your <b>Bad habits</b>.
+                    </p>
+                </div>
+            </div>
+
+            <Modal value={goodHabitsModal} />
+        </>
     )
 }

@@ -39,6 +39,7 @@ export default function Page() {
                         </div>
                     </div>
                     <div>
+                        <h1 className="text-4xl font-monda mb-2">It's all about your Habits in here</h1>
                         <HabitsSetup />
                     </div>
                 </TabsWindow>
