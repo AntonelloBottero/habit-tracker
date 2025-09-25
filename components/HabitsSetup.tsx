@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef } from 'react';
 import Modal from '@/components/Modal'
 
 // Card made of 2 sections -> Good and Bad habits
@@ -9,7 +9,10 @@ import Modal from '@/components/Modal'
 // - When (every day, selected days, except weekends, n days per week/month, etc)
 // - Icon
 export default function HabitsSetup() {
-    const [goodHabitsModal, setGoodHabitsModal] = useState(false)
+    const formModalRef = useRef(null)
+    const addHabit = () => {
+        formModalRef.current?.show()
+    }
 
     return (
         <>
@@ -20,7 +23,7 @@ export default function HabitsSetup() {
                         <button 
                             type="button" 
                             className="px-3 py-1 mr-1 text-xs font-medium text-center bg-primary outline-glass rounded-lg"
-                            onClick={() => setGoodHabitsModal(true)}
+                            onClick={() => addHabit()}
                         >Add</button>
                         some <b>Good habits</b>.
                     </p>
@@ -35,7 +38,7 @@ export default function HabitsSetup() {
                 </div>
             </div>
 
-            <Modal value={goodHabitsModal} />
+            <Modal ref={formModalRef} />
         </>
     )
 }
