@@ -1,11 +1,13 @@
 import { useState, ReactElement, forwardRef, useImperativeHandle } from 'react';
+import { ModalRef } from '@/app/types'
+
 
 interface Props {
     title?: string,
     children?: ReactElement | ReactElement[],
 }
 
-const Modal = forwardRef(({title, children }: Props, ref) => {
+const Modal = forwardRef<ModalRef>(({title, children }: Props, ref) => {
 
     const [value, setValue] = useState(false)
 
@@ -13,6 +15,7 @@ const Modal = forwardRef(({title, children }: Props, ref) => {
         setValue(true)
     }
 
+    // customizes the ref object the parent can access
     useImperativeHandle(ref, () => ({
         show
     }))

@@ -1,5 +1,6 @@
 import { useRef } from 'react';
 import Modal from '@/components/Modal'
+import { ModalRef } from '@/app/types'
 
 // Card made of 2 sections -> Good and Bad habits
 // every section accepts any number of items
@@ -9,7 +10,7 @@ import Modal from '@/components/Modal'
 // - When (every day, selected days, except weekends, n days per week/month, etc)
 // - Icon
 export default function HabitsSetup() {
-    const formModalRef = useRef(null)
+    const formModalRef = useRef<ModalRef>(null)
     const addHabit = () => {
         formModalRef.current?.show()
     }
