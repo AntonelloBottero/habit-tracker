@@ -1,5 +1,6 @@
 import { useRef } from 'react';
 import Modal from '@/components/Modal'
+import FormHabits from '@/components/FormHabits'
 import { ModalRef } from '@/app/types'
 
 // Card made of 2 sections -> Good and Bad habits
@@ -39,7 +40,9 @@ export default function HabitsSetup() {
                 </div>
             </div>
 
-            <Modal ref={formModalRef} />
+            <Modal ref={formModalRef}>
+                <FormHabits />
+            </Modal>
         </>
     )
 }
