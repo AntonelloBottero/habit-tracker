@@ -1,6 +1,11 @@
 import { useState, ReactElement, forwardRef, useImperativeHandle } from 'react';
+import { createPortal } from 'react-dom'; // we want the modal to be appended at the end of the document, in order to avoid relative and overflow hidden containers
 import { ModalRef } from '@/app/types'
 
+// Portal -> Container at the end of the document into which we will append the modal
+const modalRoot = typeof document !== 'undefined'
+? document.querySelector('[data-ht-role="modals"]')
+: null;
 
 interface Props {
     title?: string,
@@ -8,20 +13,16 @@ interface Props {
 }
 
 const Modal = forwardRef<ModalRef>(({ title, children }: Props, ref) => {
-    console.log('children' , children)
-
     const [value, setValue] = useState(false)
-
     const show = () => {
         setValue(true)
     }
-
     // customizes the ref object the parent can access
     useImperativeHandle(ref, () => ({
         show
     }))
 
-    return (
+    const modal = (
         <div tabIndex={-1} aria-hidden="true" className={(!value ? 'hidden ' : '') + 'overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full bg-white/95'}>
             <div className="relative p-4 w-full max-w-2xl max-h-full">
                 <div className="relative bg-white rounded-lg shadow-sm dark:bg-gray-700">
@@ -43,6 +44,8 @@ const Modal = forwardRef<ModalRef>(({ title, children }: Props, ref) => {
             </div>
         </div>
     )
+
+    return modalRoot ? createPortal( modal, modalRoot) : modal
 })
 
 export default Modal

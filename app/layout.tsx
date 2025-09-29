@@ -23,6 +23,7 @@ export default function RootLayout({
         className={`${monda.variable} antialiased gradient-primary`}
       >
         {children}
+        <div data-ht-role="modals" />
       </body>
     </html>
   );
