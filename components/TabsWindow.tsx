@@ -1,9 +1,14 @@
-import { Children } from 'react'
+import { Children, ReactElement } from 'react'
 
-export default function TabsWindow({children, value = 0 }) {
+interface Props {
+    children: ReactElement[]
+    value: number | null | undefined
+}
+
+export default function TabsWindow({children, value = 0 }: Props) {
     return (
         <div className="w-full">
-            <div className="relative overflow-hidden">
+            <div className="relative">
                 {Children.map(children, (child, index) => (
                     <div
                         key={index}

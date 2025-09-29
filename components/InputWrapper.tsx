@@ -16,9 +16,9 @@ export default function InputWrapper({ errorMessages = [], label = '', input}: P
 
     return (
         <>
-            {label && <label className="block mb-1 text-sm font-medium text-red-700 dark:text-red-500">{label}</label>}
+            {label && <label className={'block mb-1 text-sm font-medium'+errorMessages?.length ? 'text-red-700 dark:text-red-500' : ''}>{label}</label>}
             {cloneElement(input, {
-                className: (input.props.className || '') + (errorMessages?.length ? ' bg-red-50 border-red-500 text-red-900 placeholder-red-700 focus:ring-red-500 focus:border-red-500 dark:text-red-500 dark:placeholder-red-500 dark:border-red-500' : '')
+                className: (input.props.className || '') + (errorMessages?.length ? ' bg-red-50 outline-red-500 text-red-900 placeholder:text-red-300 focus:ring-red-500 focus:border-red-500 dark:text-red-500 dark:placeholder:text-red-500 dark:border-red-500' : '')
             })}
             {errorMessages.length > 0 && (
                 <div className="mt-1 text-sm text-red-600 dark:text-red-500">
