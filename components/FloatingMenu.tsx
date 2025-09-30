@@ -5,7 +5,6 @@ import { useFloating, offset, flip, shift, autoUpdate } from '@floating-ui/react
 
 const FloatingMenu = ({ reference, children }) => {
   const [isOpen, setIsOpen] = useState(false);
-
   
   const { refs, floatingStyles, placement } = useFloating({
     open: isOpen,
@@ -25,7 +24,6 @@ const FloatingMenu = ({ reference, children }) => {
       <div 
         ref={refs.setReference} 
         onClick={() => setIsOpen(!isOpen)}
-        className="cursor-pointer inline-block" // Importante per l'allineamento
       >
         {reference}
       </div>
@@ -33,13 +31,13 @@ const FloatingMenu = ({ reference, children }) => {
       {/* Floating element */}
       {isOpen && (
         <div 
-          ref={refs.setFloating} 
-          style={floatingStyles} // Applica le coordinate calcolate
+          ref={refs.setFloating}
+          style={floatingStyles} // Calculated coordinates
           className="bg-white border border-gray-200 rounded-lg shadow-xl p-2 z-50 absolute" // Classi Tailwind per l'aspetto
         >
           {children}
           <div className="text-xs text-gray-500 mt-2">
-             Posizionato: {placement} 
+             Posizionato: {placement}
           </div>
         </div>
       )}
