@@ -11,18 +11,21 @@ interface Props {
     name: string
     value: string
     placeholder?: string
+    className?: string
     onChange: (e: ChangeEvent<HTMLInputElement>) => void
 }
 
+const defaultColors = [
+    '#E6AF2E',
+    '#137547',
+    '#29335C',
+    '#B4ADEA',
+    '#84A9C0'
+]
+
 export default function ColorPicker(props: Props) {
     const [custom, setCustom] = useState(false)
-    const defaultColors = [
-        '#E6AF2E',
-        '#137547',
-        '#29335C',
-        '#B4ADEA',
-        '#84A9C0'
-    ]
+
     return (
         <FloatingMenu reference={(<input {...props} />)}>
             Color picker

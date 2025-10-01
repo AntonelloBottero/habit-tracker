@@ -1,0 +1,92 @@
+import { createContext, useContext, useState, ReactNode } from 'react'
+import Dexie, { Table } from 'dexie';
+
+/**
+ * DB management
+ */
+export interface Option {
+    id?: number,
+    key: string,
+    value?: string | number
+}
+
+export class DB extends Dexie {
+    options!: Table<Option> // comunico a Typescript che options non sarà mai null anche se non la valorizzo nel constructor, quindi non dovrà produrre errori di questo tipo
+    constructor() {
+        super('HabiterDatabase')
+        this.version(1).stores({
+            options: '++id, key'
+        });
+    }
+}
+export const db = new DB()
+
+// get option
+export const showOption = async (key: string): Promise<Option | undefined> => {
+    if(!key) { return undefined }
+    const option: Option | undefined = await db.options.where('key').equalsIgnoreCase(key).first()
+    return option
+}
+
+// insert new option, or update it if the key exists already
+export const createOption = async (key: string, value?: string | number): Promise<true | string> => {
+    if(!key) { return 'No key specified for your option' }
+    const formattedKey = key.toLocaleLowerCase()
+    const option = await showOption(key)
+    if(!option) {
+        await db.options.add({ key: formattedKey, value })
+    } else {
+        db.options.put({
+            ...option,
+            value
+        })
+    }
+    return true
+}
+
+/**
+ * Options context
+ */
+interface AvailableOptionValues {
+    [key: string]: any
+}
+
+const OptionsContext = createContext(null);
+
+export function HabitProvider({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  const [availableOptionValues, setAvailableOptionValues] = useState<AvailableOptionValues>({}); // Options requested already in the current session
+
+  // retrieves an option
+  const getOption = async (key: string): Promise<any> => {
+    const availableOption: any = availableOptionValues[key]
+    if(availableOption) { return availableOption }
+
+    // if option doesn't exist, we try to fetch it
+    const fetchedOption = await showOption(key)
+    if(!fetchedOption) { return undefined }
+    // if option exists, we add its value to the available option values, and return its value
+    setAvailableOptionValues({
+        ...availableOptionValues,
+        [key]: fetchedOption.value
+    })
+  };
+
+  return (
+    <OptionsContext.Provider value={getOption}>
+      {children}
+    </OptionsContext.Provider>
+  );
+}
+
+// 3. L'Hook Custom (per il consumo)
+export function useOptions() {
+  const context = useContext(OptionsContext);
+  if (!context) {
+    throw new Error('useOptions must be used within a OptionsProvider');
+  }
+  return context;
+}

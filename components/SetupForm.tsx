@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Form from 'next/form'
-import { createOption, showOption } from '@/db/options'
+import { createOption } from '@/hooks/useOptions'
 import { ArrowRightIcon } from '@heroicons/react/24/outline'
 import Loader from '@/components/Loader'
 

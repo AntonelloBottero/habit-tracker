@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react'
 import InputWrapper from '@/components/InputWrapper'
 import ColorPicker from '@/components/ColorPicker'
-import useForm, {ErrorMessages, String, validators} from '@/hooks/form'
+import useForm, {ErrorMessages, String, validators} from '@/hooks/useForm'
 
 interface Values {
-    name?: String
-    color?: String
+    name?: string
+    color?: string
 }
 interface Props {
     values?: Values | null | undefined
@@ -13,8 +13,8 @@ interface Props {
 
 export default function FormHabits({ values }: Props) {
     // values
-    const [name, setName] = useState<String>('')
-    const [color, setColor] = useState<String>('')
+    const [name, setName] = useState<string>('')
+    const [color, setColor] = useState<string>('')
     const initFormModel = (values?: Values) => {
         setName(values?.name ?? '')
         setColor(values?.color ?? '')
