@@ -1,3 +1,5 @@
+'use client'
+
 import { createContext, useContext, useState, ReactNode } from 'react'
 import Dexie, { Table } from 'dexie';
 
@@ -47,16 +49,20 @@ export const createOption = async (key: string, value?: string | number): Promis
 /**
  * Options context
  */
+interface OptionsContextProviver {
+  getOption: (key: string) => Promise<any>
+}
+
 interface AvailableOptionValues {
     [key: string]: any
 }
 
-const OptionsContext = createContext(null);
+const OptionsContext = createContext<OptionsContextProviver | null>(null);
 
-export function HabitProvider({
+export function OptionsProvider({
   children,
 }: Readonly<{
-  children: React.ReactNode;
+  children: ReactNode;
 }>) {
   const [availableOptionValues, setAvailableOptionValues] = useState<AvailableOptionValues>({}); // Options requested already in the current session
 
@@ -73,16 +79,17 @@ export function HabitProvider({
         ...availableOptionValues,
         [key]: fetchedOption.value
     })
-  };
+    return fetchedOption.value
+  }
 
   return (
-    <OptionsContext.Provider value={getOption}>
+    <OptionsContext.Provider value={ { getOption } }>
       {children}
     </OptionsContext.Provider>
   );
 }
 
-// 3. L'Hook Custom (per il consumo)
+// Custom hook for consumers
 export function useOptions() {
   const context = useContext(OptionsContext);
   if (!context) {
