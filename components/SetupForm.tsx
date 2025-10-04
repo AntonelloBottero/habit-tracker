@@ -16,11 +16,6 @@ export default function SetupForm({ onSubmit }: Props) {
     const [canSubmit, setCanSubmit] = useState(false)
     const [loading, setLoading] = useState(false)
 
-    useEffect(async () => {
-        const nameOption = await getOption('name')
-        setName(nameOption || '')
-    }, [])
-
     useEffect(() => {
         if(!name) {
             setCanSubmit(false)
