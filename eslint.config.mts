@@ -8,8 +8,17 @@ const files = [
   'hooks/**/*.{js,jsx,ts,tsx}',
 ];
 
-
 export default defineConfig([
+  //style
+  {
+    files,
+    rules: {
+      'indent': ['error', 2],
+      'semi': ['error', 'never'],
+      'no-trailing-spaces': 'error'
+    }
+  },
+  // next
   {
     files,
     plugins: {
@@ -20,6 +29,7 @@ export default defineConfig([
       '@next/next/no-html-link-for-pages': 'error',
     }
   },
+  // typescript
   ...tseslint.configs.recommended.map((c) => ({
     ...c,
     files,
