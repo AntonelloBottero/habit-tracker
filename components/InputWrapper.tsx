@@ -20,7 +20,7 @@ export default function InputWrapper({ errorMessages = [], label = '', input}: P
         className: (input.props.className || '') + (errorMessages?.length ? ' bg-red-50 outline-red-500 text-red-900 placeholder:text-red-500 focus:ring-red-500 focus:border-red-500 dark:text-red-500 dark:placeholder:text-red-500 dark:border-red-500' : '')
       })}
       {errorMessages.length > 0 && (
-        <div className="mt-1 text-sm text-red-600 dark:text-red-500">
+        <div role="input-wrapper-errors" className="mt-1 text-sm text-red-600 dark:text-red-500">
           {errorMessages.map((msg, index) => (
             <p key={index}>{msg}</p>
           ))}
