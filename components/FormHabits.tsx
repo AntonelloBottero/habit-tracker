@@ -1,14 +1,14 @@
 import { useState, useEffect } from 'react'
 import InputWrapper from '@/components/InputWrapper'
 import ColorPicker from '@/components/ColorPicker'
-import useForm, {ErrorMessages, String, validators} from '@/hooks/useForm'
+import useForm, {ErrorMessages, Rules, validators} from '@/hooks/useForm'
 
 interface Values {
     name?: string
     color?: string
 }
 interface Props {
-    values?: Values | null | undefined
+    values?: Values
 }
 
 export default function FormHabits({ values }: Props) {
@@ -20,14 +20,19 @@ export default function FormHabits({ values }: Props) {
     setColor(values?.color ?? '')
   }
   // error messages
+  const rules: Rules = {
+    name: { value: name, validators: [validators.required] },
+    color: { value: color, validators: [validators.required] }
+  }
   const [errorMessages, setErrorMessages] = useState<ErrorMessages>({})
   const resetErrorMessages = () => {
     setErrorMessages({})
   }
   // useForm
-  const { init } = useForm({initFormModel, resetErrorMessages})
+  const { init } = useForm({ resetErrorMessages, rules })
   useEffect(() => {
-    init(values)
+    init()
+    initFormModel(values)
   }, [values])
 
   return (

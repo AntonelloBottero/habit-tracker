@@ -1,27 +1,34 @@
-type Values = object | null | undefined
+type Validator = (value: unknown) => true | string
+type Validators = {
+    [key: string]: Validator
+}
+export const validators: Validators = {
+  required: (value) => {
+    return !!value || 'This field is required'
+  }
+}
+
 export type String = string | null | undefined
 export interface ErrorMessages {
-    [key: string]: any
+    [key: string]: string[] | undefined
+}
+
+export interface Rules {
+    [key: string]: {
+        value: unknown
+        validators: Validator[]
+    }
 }
 
 interface Params {
-    initFormModel: (a: Values) => void
     resetErrorMessages?: () => void
+    rules?: Rules
 }
-export default function useForm({ initFormModel, resetErrorMessages } : Params) {
-    const init = (values: any): void => {
-        initFormModel(values)
-        if(resetErrorMessages) { resetErrorMessages() }
-    }
+export default function useForm({ resetErrorMessages, rules } : Params) {
+  const init = (): void => {
+    if(resetErrorMessages) { resetErrorMessages() }
+  }
 
-    return { init }
+  return { init }
 }
 
-type Validators = {
-    [key: string]: (value: any) => true | string
-}
-export const validators: Validators = {
-    required: (value) => {
-        return !!value || 'This field is required'
-    }
-}
