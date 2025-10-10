@@ -23,7 +23,7 @@ export default function FormHabits({ values }: Props) {
     setErrorMessages({})
   }
   // useForm
-  const { model, dispatchModel, init } = useForm({ resetErrorMessages, defaultValues })
+  const { model, changeField, init } = useForm({ resetErrorMessages, defaultValues })
   useEffect(() => {
     init()
   }, [values])
@@ -39,7 +39,7 @@ export default function FormHabits({ values }: Props) {
             className="grow w-full rounded-lg px-4 py-2 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 rounded-full"
             placeholder="Insert the name of the habit"
             value={model.name}
-            onChange={e => dispatchModel({name: 'name', value: e.target.value })}
+            onChange={e => changeField('name', e.target.value)}
           />
         )}/>
       </div>
@@ -50,7 +50,7 @@ export default function FormHabits({ values }: Props) {
             name="color"
             className="grow w-full rounded-lg px-4 py-2 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 rounded-full"
             value={model.color}
-            onChange={e => dispatchModel({name: 'name', value: e.target.value })}
+            onChange={e => changeField('color', e.target.value)}
           />
         )}
         />

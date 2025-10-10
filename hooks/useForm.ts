@@ -18,7 +18,7 @@ export interface Model {
 
 export interface ModelReducerAction {
   type?: 'batch' | 'update' // batch to edit multiple fields, update to edit a single field
-  name?: string
+  key?: string
   value: Model | unknown | null
 }
 
@@ -42,7 +42,7 @@ interface Params {
 // hook
 export default function useForm({ resetErrorMessages, defaultValues } : Params) {
   // model reducer
-  const modelReducer = (state: Model, { type = 'update', name, value}: ModelReducerAction): Model => {
+  const modelReducer = (state: Model, { type, key, value}: ModelReducerAction): Model => {
     let model = {...state}
     switch(type) {
     case 'batch':
@@ -54,20 +54,24 @@ export default function useForm({ resetErrorMessages, defaultValues } : Params) 
       }
       break
     case 'update':
-      if(typeof name === 'string' && defaultValues[name] !== undefined) {
-        model[name] = value
+      if(typeof key === 'string' && defaultValues[key] !== undefined) {
+        model[key] = value
       }
       break
     }
     return model
   }
   const [model, dispatchModel] = useReducer(modelReducer, defaultValues)
+  const changeField = (key: string, value: string): void => {
+    dispatchModel({ type: 'update', key, value})
+    // TODO: check errors
+  }
 
-  // inits model
+  // init
   const init = (): void => {
     if(resetErrorMessages) { resetErrorMessages() }
   }
 
-  return { model, dispatchModel, init }
+  return { model, changeField, init }
 }
 
