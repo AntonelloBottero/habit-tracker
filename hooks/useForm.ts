@@ -1,3 +1,6 @@
+import { useReducer } from 'react'
+
+// validators
 type Validator = (value: unknown) => true | string
 type Validators = {
     [key: string]: Validator
@@ -8,9 +11,15 @@ export const validators: Validators = {
   }
 }
 
-export type String = string | null | undefined
-export interface ErrorMessages {
-    [key: string]: string[] | undefined
+// hook interfaces
+export interface Model {
+  [key: string]: unknown
+}
+
+export interface ModelReducerAction {
+  type?: 'batch' | 'update' // batch to edit multiple fields, update to edit a single field
+  name?: string
+  value: Model | unknown | null
 }
 
 export interface Rules {
@@ -20,15 +29,45 @@ export interface Rules {
     }
 }
 
+export interface ErrorMessages {
+    [key: string]: string[] | undefined
+}
+
 interface Params {
+    defaultValues: Model
     resetErrorMessages?: () => void
     rules?: Rules
 }
-export default function useForm({ resetErrorMessages, rules } : Params) {
+
+// hook
+export default function useForm({ resetErrorMessages, defaultValues } : Params) {
+  // model reducer
+  const modelReducer = (state: Model, { type = 'update', name, value}: ModelReducerAction): Model => {
+    let model = {...state}
+    switch(type) {
+    case 'batch':
+      model = {
+        ...Object.entries(defaultValues).reduce((r: Model, [k, v]: [string, unknown]) => ({
+          ...r,
+          [k]:  !!value && typeof value === 'object' && value[k] !== undefined ? value[k] : v
+        }), {})
+      }
+      break
+    case 'update':
+      if(typeof name === 'string' && defaultValues[name] !== undefined) {
+        model[name] = value
+      }
+      break
+    }
+    return model
+  }
+  const [model, dispatchModel] = useReducer(modelReducer, defaultValues)
+
+  // inits model
   const init = (): void => {
     if(resetErrorMessages) { resetErrorMessages() }
   }
 
-  return { init }
+  return { model, dispatchModel, init }
 }
 

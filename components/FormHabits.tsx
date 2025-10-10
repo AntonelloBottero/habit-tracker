@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import InputWrapper from '@/components/InputWrapper'
 import ColorPicker from '@/components/ColorPicker'
-import useForm, {ErrorMessages, Rules, validators} from '@/hooks/useForm'
+import useForm, {Model, ErrorMessages, Rules, validators} from '@/hooks/useForm'
 
 interface Values {
     name?: string
@@ -11,28 +11,21 @@ interface Props {
     values?: Values
 }
 
+const defaultValues: Model = {
+  name: '',
+  color: ''
+}
+
 export default function FormHabits({ values }: Props) {
-  // values
-  const [name, setName] = useState<string>('')
-  const [color, setColor] = useState<string>('')
-  const initFormModel = (values?: Values) => {
-    setName(values?.name ?? '')
-    setColor(values?.color ?? '')
-  }
   // error messages
-  const rules: Rules = {
-    name: { value: name, validators: [validators.required] },
-    color: { value: color, validators: [validators.required] }
-  }
   const [errorMessages, setErrorMessages] = useState<ErrorMessages>({})
   const resetErrorMessages = () => {
     setErrorMessages({})
   }
   // useForm
-  const { init } = useForm({ resetErrorMessages, rules })
+  const { model, dispatchModel, init } = useForm({ resetErrorMessages, defaultValues })
   useEffect(() => {
     init()
-    initFormModel(values)
   }, [values])
 
   return (
@@ -45,8 +38,8 @@ export default function FormHabits({ values }: Props) {
             name="name"
             className="grow w-full rounded-lg px-4 py-2 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 rounded-full"
             placeholder="Insert the name of the habit"
-            value={name}
-            onChange={e => setName(e.target.value)}
+            value={model.name}
+            onChange={e => dispatchModel({name: 'name', value: e.target.value })}
           />
         )}/>
       </div>
@@ -56,8 +49,9 @@ export default function FormHabits({ values }: Props) {
             id="color"
             name="color"
             className="grow w-full rounded-lg px-4 py-2 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 rounded-full"
-            value={color}
-            onChange={e => setColor(e.target.value)} />
+            value={model.color}
+            onChange={e => dispatchModel({name: 'name', value: e.target.value })}
+          />
         )}
         />
       </div>
