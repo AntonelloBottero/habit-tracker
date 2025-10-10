@@ -62,9 +62,10 @@ export default function useForm({ resetErrorMessages, defaultValues } : Params) 
     return model
   }
   const [model, dispatchModel] = useReducer(modelReducer, defaultValues)
+  // update single field and check field rules
   const changeField = (key: string, value: string): void => {
     dispatchModel({ type: 'update', key, value})
-    // TODO: check errors
+    // TODO: check rules
   }
 
   // init
