@@ -15,24 +15,20 @@ export const validators: Validators = {
 export interface Model {
   [key: string]: unknown
 }
-
 export interface ModelReducerAction {
   type?: 'batch' | 'update' // batch to edit multiple fields, update to edit a single field
   key?: string
   value: Model | unknown | null
 }
-
 export interface Rules {
     [key: string]: {
         value: unknown
         validators: Validator[]
     }
 }
-
 export interface ErrorMessages {
     [key: string]: string[] | undefined
 }
-
 interface Params {
     defaultValues: Model
     resetErrorMessages?: () => void
