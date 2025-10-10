@@ -49,7 +49,7 @@ export default function useForm({ resetErrorMessages, defaultValues } : Params) 
       model = {
         ...Object.entries(defaultValues).reduce((r: Model, [k, v]: [string, unknown]) => ({
           ...r,
-          [k]:  !!value && typeof value === 'object' && value[k] !== undefined ? value[k] : v
+          [k]:  value !== null && typeof value === 'object' && (value as Model)[k] !== undefined ? (value as Model)[k] : v
         }), {})
       }
       break
