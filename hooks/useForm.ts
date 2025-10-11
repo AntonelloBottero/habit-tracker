@@ -61,13 +61,13 @@ export default function useForm({ resetErrorMessages, defaultValues, rules } : P
   // error messages
   const [errorMessages, setErrorMessages] = useState<ErrorMessages>({})
   const validate = (key?: string, value?: Model | unknown): void => {
-    const keys = !key ? Object.keys(rules || {}) : [key]
+    const keys = !key ? Object.keys(rules || {}) : [key] // which fields we should check
     setErrorMessages({
       ...errorMessages,
       ...keys.reduce((r, key) => ({
         ...r,
         [key]: ((rules || {})[key] || [])
-          .map(rule =>rule(typeof value !== 'undefined' ? value : model[key]))
+          .map(rule =>rule(typeof value !== 'undefined' ? value : model[key])) // we check the rule with model value or new local value that is still not in the state
           .filter(message => typeof message === 'string')
       }), {})
     })
