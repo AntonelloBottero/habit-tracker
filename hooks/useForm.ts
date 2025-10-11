@@ -1,4 +1,4 @@
-import { useReducer } from 'react'
+import { useState, useReducer } from 'react'
 
 // validators
 type Validator = (value: unknown) => true | string
@@ -7,6 +7,7 @@ type Validators = {
 }
 export const validators: Validators = {
   required: (value) => {
+    console.log('required', value)
     return !!value || 'This field is required'
   }
 }
@@ -21,10 +22,7 @@ export interface ModelReducerAction {
   value: Model | unknown | null
 }
 export interface Rules {
-    [key: string]: {
-        value: unknown
-        validators: Validator[]
-    }
+    [key: string]: Validator[]
 }
 export interface ErrorMessages {
     [key: string]: string[] | undefined
@@ -36,32 +34,49 @@ interface Params {
 }
 
 // hook
-export default function useForm({ resetErrorMessages, defaultValues } : Params) {
+export default function useForm({ resetErrorMessages, defaultValues, rules } : Params) {
   // model reducer
   const modelReducer = (state: Model, { type, key, value}: ModelReducerAction): Model => {
-    let model = {...state}
     switch(type) {
     case 'batch':
-      model = {
+      return {
         ...Object.entries(defaultValues).reduce((r: Model, [k, v]: [string, unknown]) => ({
           ...r,
           [k]:  value !== null && typeof value === 'object' && (value as Model)[k] !== undefined ? (value as Model)[k] : v
         }), {})
       }
-      break
     case 'update':
       if(typeof key === 'string' && defaultValues[key] !== undefined) {
-        model[key] = value
+        return {
+          ...state,
+          [key]: value
+        }
       }
-      break
+    default:
+      return {...state}
     }
-    return model
   }
   const [model, dispatchModel] = useReducer(modelReducer, defaultValues)
+
+  // error messages
+  const [errorMessages, setErrorMessages] = useState<ErrorMessages>({})
+  const validate = (key?: string, value?: Model | unknown): void => {
+    const keys = !key ? Object.keys(rules || {}) : [key]
+    setErrorMessages({
+      ...errorMessages,
+      ...keys.reduce((r, key) => ({
+        ...r,
+        [key]: ((rules || {})[key] || [])
+          .map(rule =>rule(typeof value !== 'undefined' ? value : model[key]))
+          .filter(message => typeof message === 'string')
+      }), {})
+    })
+  }
+
   // update single field and check field rules
   const changeField = (key: string, value: string): void => {
     dispatchModel({ type: 'update', key, value})
-    // TODO: check rules
+    validate(key, value)
   }
 
   // init
@@ -69,6 +84,6 @@ export default function useForm({ resetErrorMessages, defaultValues } : Params) 
     if(resetErrorMessages) { resetErrorMessages() }
   }
 
-  return { model, changeField, init }
+  return { model, changeField, init, errorMessages }
 }
 

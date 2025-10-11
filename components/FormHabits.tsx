@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react'
+import { useEffect } from 'react'
 import InputWrapper from '@/components/InputWrapper'
 import ColorPicker from '@/components/ColorPicker'
-import useForm, {Model, ErrorMessages, Rules, validators} from '@/hooks/useForm'
+import useForm, {Model, Rules, validators} from '@/hooks/useForm'
 
 interface Values {
     name?: string
@@ -16,14 +16,14 @@ const defaultValues: Model = {
   color: ''
 }
 
+const rules: Rules = {
+  name: [validators.required],
+  color: [validators.required]
+}
+
 export default function FormHabits({ values }: Props) {
-  // error messages
-  const [errorMessages, setErrorMessages] = useState<ErrorMessages>({})
-  const resetErrorMessages = () => {
-    setErrorMessages({})
-  }
   // useForm
-  const { model, changeField, init } = useForm({ resetErrorMessages, defaultValues })
+  const { model, changeField, init, errorMessages } = useForm({ defaultValues, rules })
   useEffect(() => {
     init()
   }, [values])
