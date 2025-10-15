@@ -6,6 +6,7 @@ const files = [
   'app/**/*.{js,jsx,ts,tsx}',
   'components/**/*.{js,jsx,ts,tsx}',
   'hooks/**/*.{js,jsx,ts,tsx}',
+  'tests/**/*.{js,jsx,ts,tsx}',
 ];
 
 export default defineConfig([
