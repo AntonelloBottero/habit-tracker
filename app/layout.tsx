@@ -1,13 +1,13 @@
 'use client'
 
 import { OptionsProvider } from '@/hooks/useOptions'
-import { Monda } from "next/font/google";
-import "./globals.css";
+import { Monda } from "next/font/google"
+import "./globals.css"
 
 const monda = Monda({
   variable: "--font-monda",
   subsets: ["latin"],
-});
+})
 
 export default function RootLayout({
   children,
@@ -25,5 +25,5 @@ export default function RootLayout({
         </body>
       </html>
     </OptionsProvider>
-  );
+  )
 }

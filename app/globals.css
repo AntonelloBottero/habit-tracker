@@ -46,3 +46,8 @@ body {
 .shadow-ht {
   box-shadow: rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(194, 234, 189, .5) -2px 4px 6px -1px, rgba(194, 234, 189, 0.5) -2px 2px 4px -2px;
 }
+
+/* Class presets (with @apply) */
+.ht-form-input {
+  @apply border border-gray-300 text-gray-900 text-sm rounded-lg block py-2 px-4 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white
+}
