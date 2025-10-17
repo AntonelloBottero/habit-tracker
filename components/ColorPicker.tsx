@@ -32,12 +32,13 @@ export default function ColorPicker(props: Props) {
 
   return (
     <div className="flex gap-2 flex-wrap center">
-      {availableColors.map(color => <button key={color} type="button" className="w-6 h-6 rounded-full" style={{backgroundColor: color}} />)}
       <input
+        placeholder="#ffffff"
         {...inputProps}
         value={value}
         onChange={onChange}
       />
+      {availableColors.map(color => <button key={color} type="button" className="w-7 h-7 rounded-full" style={{backgroundColor: color}} />)}
     </div>
   )
 }

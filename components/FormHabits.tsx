@@ -3,17 +3,14 @@ import InputWrapper from '@/components/InputWrapper'
 import ColorPicker from '@/components/ColorPicker'
 import useForm, {Model, Rules, validators} from '@/hooks/useForm'
 
-interface Values {
-    name?: string
-    color?: string
-}
-interface Props {
-    values?: Values
-}
-
 const defaultValues: Model = {
   name: '',
   color: ''
+}
+type Values = Partial<Model>
+
+interface Props {
+    values?: Values
 }
 
 const rules: Rules = {
@@ -36,7 +33,7 @@ export default function FormHabits({ values }: Props) {
             id="name"
             type="text"
             name="name"
-            className="ht-form-input grow w-full rounded-lg px-4 py-2 outline-1 -outline-offset-1 outline-gray-300 focus:outline-primary-500 placeholder:text-gray-400"
+            className="grow w-full ht-form-input"
             placeholder="Insert the name of the habit"
             value={model.name}
             onChange={e => changeField('name', e.target.value)}
@@ -48,7 +45,7 @@ export default function FormHabits({ values }: Props) {
           <ColorPicker
             id="color"
             name="color"
-            className="rounded-lg px-4 py-2 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 rounded-full"
+            className="ht-form-input !py-1 !px-3"
             value={model.color}
             onChange={e => changeField('color', e.target.value)}
           />
