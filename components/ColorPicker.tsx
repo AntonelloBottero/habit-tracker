@@ -1,3 +1,9 @@
+/**
+ * Color picker
+ * @component
+ * @props {HTMLInputElement} // handle the component like any other input element
+ * @returns {TSX.Element}
+ */
 import { defaultColors } from "@/utils/constants"
 
 import { useState, useEffect, ChangeEvent, useMemo } from "react"
@@ -13,8 +19,8 @@ interface Props {
 }
 
 export default function ColorPicker(props: Props) {
-  const { getOption } = useOptions()
-
+  // --- mixes default color with the ones chosen by the user in previous form entries ---
+  const { getOption } = useOptions() // user colors are managed through db options
   const [userColors, setUserColors] = useState([])
   const getUserColors = async () => {
     const userColors = await getOption("user_colors")
@@ -33,12 +39,21 @@ export default function ColorPicker(props: Props) {
   return (
     <div className="flex gap-2 flex-wrap center">
       <input
-        placeholder="#ffffff"
+        placeholder="#123456"
         {...inputProps}
         value={value}
         onChange={onChange}
       />
-      {availableColors.map(color => <button key={color} type="button" className="w-7 h-7 rounded-full" style={{backgroundColor: color}} />)}
+      {availableColors.map(color => (
+        <button
+          key={color}
+          type="button"
+          className="ht-btn ht-interaction h-7 rounded-full"
+          style={{backgroundColor: color}}
+        >
+          test
+        </button>
+      ))}
     </div>
   )
 }

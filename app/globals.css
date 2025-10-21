@@ -43,7 +43,34 @@ body {
   box-shadow: rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(194, 234, 189, .5) -2px 4px 6px -1px, rgba(194, 234, 189, 0.5) -2px 2px 4px -2px;
 }
 
-/* Class presets (with @apply) */
+.ht-interaction {
+  position:relative;
+}
+.ht-interaction::before {
+    content:"";
+    position:absolute;
+    top:0;
+    bottom:0;
+    left:0;
+    right:0;
+    border-radius:inherit;
+    background-color:currentColor;
+    opacity:0;
+    transition:opacity .2s ease-out;
+}
+.ht-interaction:hover::before {
+  opacity:.08;
+}
+.ht-interaction:active::before {
+  opacity:.16;
+}
+
+/* --- Class presets (with @apply) --- */
 .ht-form-input {
   @apply outline-gray-300 outline-1 outline-offset-1 focus:outline-3 focus:outline-primary text-gray-900 text-sm rounded-lg block py-2 px-4 dark:bg-gray-700 dark:outline-gray-600 dark:placeholder-gray-400 dark:text-white
 }
+
+.ht-btn {
+  cursor:pointer;
+}
+
