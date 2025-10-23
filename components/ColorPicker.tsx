@@ -8,6 +8,7 @@ import { defaultColors } from "@/utils/constants"
 
 import { useState, useEffect, ChangeEvent, useMemo } from "react"
 import { useOptions } from "@/hooks/useOptions"
+import { CheckIcon } from '@heroicons/react/24/solid'
 
 interface Props {
     id?: string
@@ -29,6 +30,13 @@ export default function ColorPicker(props: Props) {
   const availableColors = useMemo(() => {
     return [...userColors, ...defaultColors]
   }, [userColors])
+  const pickAvailableColor = (value: string) => {
+    onChange({
+      target: {
+        value
+      }
+    })
+  }
 
   const {value, onChange, ...inputProps } = props
 
@@ -48,10 +56,11 @@ export default function ColorPicker(props: Props) {
         <button
           key={color}
           type="button"
-          className="ht-btn ht-interaction h-7 rounded-full"
+          className="ht-btn ht-interaction w-7 h-7 rounded-full mix-blend-exclusion flex justify-center items-center"
           style={{backgroundColor: color}}
+          onClick={() => pickAvailableColor(color)}
         >
-          test
+          {value === color && <CheckIcon className="size-4" />}
         </button>
       ))}
     </div>
