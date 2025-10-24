@@ -8,7 +8,7 @@ import { defaultColors } from "@/utils/constants"
 
 import { useState, useEffect, ChangeEvent, useMemo } from "react"
 import { useOptions } from "@/hooks/useOptions"
-import { CheckIcon } from '@heroicons/react/24/solid'
+import { BookmarkIcon } from '@heroicons/react/24/solid'
 
 interface Props {
     id?: string
@@ -56,11 +56,11 @@ export default function ColorPicker(props: Props) {
         <button
           key={color}
           type="button"
-          className="ht-btn ht-interaction w-7 h-7 rounded-full mix-blend-exclusion flex justify-center items-center"
+          className="ht-btn ht-interaction w-7 h-7 rounded-full flex justify-center items-center text-white"
           style={{backgroundColor: color}}
           onClick={() => pickAvailableColor(color)}
         >
-          {value === color && <CheckIcon className="size-4" />}
+          {value === color && <BookmarkIcon className="size-4 mix-blend-difference" />}
         </button>
       ))}
     </div>
