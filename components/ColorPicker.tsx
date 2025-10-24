@@ -60,7 +60,7 @@ export default function ColorPicker(props: Props) {
           style={{backgroundColor: color}}
           onClick={() => pickAvailableColor(color)}
         >
-          {value === color && <BookmarkIcon className="size-3" />}
+          {value === color && <BookmarkIcon className="size-3" role="available-color-active" />}
         </button>
       ))}
     </div>

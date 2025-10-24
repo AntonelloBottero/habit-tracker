@@ -26,7 +26,8 @@ import ColorPicker from '@/components/ColorPicker'
 import {defaultColors} from '@/utils/constants'
 describe('ColorPicker component', () => {
   test('Renders color buttons inside component', () => {
-    render(<ColorPicker />)
+    const [value, setValue] = useState('')
+    render(<ColorPicker name="Color" value={value} onChange={(e) => setValue(e.target.value)} />)
     const PickerElement = screen.getByRole('color-picker')
     const PickerContext = within(PickerElement)
     const AvailableColorElements = PickerContext.getAllByRole('color-picker-available-color')
@@ -36,8 +37,8 @@ describe('ColorPicker component', () => {
 
   test('Clicking on a default color triggers correct value update', async () => {
     const defaultColor = defaultColors[1]
-    const [value, setValue] = useState(null)
-    render(<ColorPicker value={value} onChange={(e) => setValue(e.target.value)} />)
+    const [value, setValue] = useState('')
+    render(<ColorPicker name="Color" value={value} onChange={(e) => setValue(e.target.value)} />)
     const PickerElement = screen.getByRole('color-picker')
     const PickerContext = within(PickerElement)
     const AvailableColorElement = PickerContext.getByRole('color-picker-available-color', { value: { text: defaultColor }})
@@ -47,19 +48,20 @@ describe('ColorPicker component', () => {
 
   test('Clicking on a default color highlights it', async () => {
     const defaultColor = defaultColors[1]
-    const [value, setValue] = useState(null)
-    render(<ColorPicker value={value} onChange={(e) => setValue(e.target.value)} />)
+    const [value, setValue] = useState('')
+    render(<ColorPicker name="Color" value={value} onChange={(e) => setValue(e.target.value)} />)
     const PickerElement = screen.getByRole('color-picker')
     const PickerContext = within(PickerElement)
     const AvailableColorElement = PickerContext.getByRole('color-picker-available-color', { value: { text: defaultColor }})
+    const AvailableColorContext = within(AvailableColorElement)
     AvailableColorElement.click()
-    await waitFor(() => expect(AvailableColorElement).toHaveClass('shadow-md'))
+    await waitFor(() => expect(AvailableColorContext.findByRole('available-color-active')).toBeInTheDocument() )
   })
 
   test('Clicking on a default color updates input field value', async () => {
     const defaultColor = defaultColors[1]
-    const [value, setValue] = useState(null)
-    render(<ColorPicker value={value} onChange={(e) => setValue(e.target.value)} />)
+    const [value, setValue] = useState('')
+    render(<ColorPicker name="Color" value={value} onChange={(e) => setValue(e.target.value)} />)
     const PickerElement = screen.getByRole('color-picker')
     const PickerContext = within(PickerElement)
     const AvailableColorElement = PickerContext.getByRole('color-picker-available-color', { value: { text: defaultColor }})
