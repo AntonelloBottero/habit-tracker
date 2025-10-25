@@ -1,6 +1,15 @@
 import {render, screen, within, waitFor} from '@testing-library/react'
 import '@testing-library/jest-dom' // for toBeInTheDocument() assertion
+import { OptionsProvider } from '@/hooks/useOptions'
 
+// --- OptionsProvider mock ---
+const optionsProviderMock = ({ children }) => (
+  <OptionsProvider>
+    { children }
+  </OptionsProvider>
+)
+
+// --- InputWrapper ---
 import InputWrapper from '@/components/InputWrapper'
 describe('InputWrapper component', () => {
   test('Renders input prop inside input wrapper', () => {
@@ -21,6 +30,7 @@ describe('InputWrapper component', () => {
   })
 })
 
+// --- ColorPicker ---
 import ColorPicker from '@/components/ColorPicker'
 import {defaultColors} from '@/utils/constants'
 let colorValue: string = ''
@@ -30,7 +40,7 @@ describe('ColorPicker component', () => {
   })
 
   test('Renders color buttons inside component', () => {
-    render(<ColorPicker name="Color" value={colorValue} onChange={(e) => colorValue = e.target.value} />)
+    render(<ColorPicker name="Color" value={colorValue} onChange={() => {}} />, { wrapper: optionsProviderMock })
     const PickerElement = screen.getByRole('color-picker')
     const PickerContext = within(PickerElement)
     const AvailableColorElements = PickerContext.getAllByRole('color-picker-available-color')
@@ -39,7 +49,7 @@ describe('ColorPicker component', () => {
   })
 
   test('Clicking on a default color triggers correct value update', async () => {
-    render(<ColorPicker name="Color" value={colorValue} onChange={(e) => colorValue = e.target.value} />)
+    render(<ColorPicker name="Color" value={colorValue} onChange={(e) => colorValue = e.target.value} />, { wrapper: optionsProviderMock })
     const defaultColor = defaultColors[1]
     const PickerElement = screen.getByRole('color-picker')
     const PickerContext = within(PickerElement)
@@ -48,25 +58,22 @@ describe('ColorPicker component', () => {
     await waitFor(() => expect(colorValue).toHaveValue(defaultColor))
   })
 
-  test('Clicking on a default color highlights it', async () => {
-    const defaultColor = defaultColors[1]
-    render(<ColorPicker name="Color" value={colorValue} onChange={(e) => colorValue = e.target.value} />)
+  test('If value is an available color, it gets highlighted', () => {
+    colorValue = defaultColors[1]
+    render(<ColorPicker name="Color" value={colorValue} onChange={() => {}} />, { wrapper: optionsProviderMock })
     const PickerElement = screen.getByRole('color-picker')
     const PickerContext = within(PickerElement)
-    const AvailableColorElement = PickerContext.getByRole('color-picker-available-color', { value: { text: defaultColor }})
+    const AvailableColorElement = PickerContext.getByRole('color-picker-available-color', { value: { text: colorValue }})
     const AvailableColorContext = within(AvailableColorElement)
-    AvailableColorElement.click()
-    await waitFor(() => expect(AvailableColorContext.findByRole('available-color-active')).toBeInTheDocument() )
+    expect(AvailableColorContext.findByRole('available-color-active')).toBeInTheDocument()
   })
 
-  test('Clicking on a default color updates input field value', async () => {
+  test('Color value in input field', () => {
     const defaultColor = defaultColors[1]
-    render(<ColorPicker name="Color" value={colorValue} onChange={(e) => colorValue = e.target.value} />)
+    render(<ColorPicker name="Color" value={colorValue} onChange={() => {}} />, { wrapper: optionsProviderMock })
     const PickerElement = screen.getByRole('color-picker')
     const PickerContext = within(PickerElement)
-    const AvailableColorElement = PickerContext.getByRole('color-picker-available-color', { value: { text: defaultColor }})
-    AvailableColorElement.click()
     const inputElement = PickerContext.getByRole('textbox')
-    await waitFor(() => expect(inputElement).toHaveValue(defaultColor))
+    expect(inputElement).toHaveValue(defaultColor)
   })
 })
