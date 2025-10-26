@@ -45,7 +45,7 @@ export default function ColorPicker(props: Props) {
   }, [])
 
   return (
-    <div className="flex gap-2 flex-wrap center">
+    <div role="color-picker" className="flex gap-2 flex-wrap center">
       <input
         placeholder="#123456"
         {...inputProps}
@@ -54,13 +54,18 @@ export default function ColorPicker(props: Props) {
       />
       {availableColors.map(color => (
         <button
+          role="color-picker-available-color"
           key={color}
           type="button"
           className="ht-btn ht-interaction w-7 h-7 rounded-full flex justify-center items-center text-white"
           style={{backgroundColor: color}}
           onClick={() => pickAvailableColor(color)}
         >
-          {value === color && <BookmarkIcon className="size-3" role="available-color-active" />}
+          {value === color && (
+            <span role="available-color-active">
+              <BookmarkIcon className="size-3"  />
+            </span>
+          )}
         </button>
       ))}
     </div>

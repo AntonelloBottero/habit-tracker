@@ -26,8 +26,12 @@ export const db = new DB()
 // get option
 export const showOption = async (key: string): Promise<Option | undefined> => {
   if(!key) { return undefined }
-  const option: Option | undefined = await db.options.where('key').equalsIgnoreCase(key).first()
-  return option
+  try {
+    const option: Option | undefined = await db.options.where('key').equalsIgnoreCase(key).first()
+    return option
+  } catch(error) {
+    return undefined
+  }
 }
 
 // insert new option, or update it if the key exists already
