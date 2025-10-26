@@ -35,7 +35,7 @@ import ColorPicker from '@/components/ColorPicker'
 import {defaultColors} from '@/utils/constants'
 let colorValue: string = ''
 describe('ColorPicker component', () => {
-  beforeEach(() => {
+  beforeEach(() => { // before each test the value gets reset
     colorValue = ''
   })
 
