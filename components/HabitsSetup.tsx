@@ -40,7 +40,7 @@ export default function HabitsSetup() {
                 </div>
             </div>
 
-            <Modal ref={formModalRef}>
+            <Modal ref={formModalRef} title="Your New Good Habit">
                 <FormHabits />
             </Modal>
         </>

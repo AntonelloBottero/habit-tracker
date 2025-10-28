@@ -1,11 +1,13 @@
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 import InputWrapper from '@/components/InputWrapper'
 import ColorPicker from '@/components/ColorPicker'
 import useForm, {Model, Rules, validators} from '@/hooks/useForm'
 
 const defaultValues: Model = {
   name: '',
-  color: ''
+  color: '',
+  granularity: 'daily',
+  include_weekends: ''
 }
 type Values = Partial<Model>
 
@@ -15,8 +17,12 @@ interface Props {
 
 const rules: Rules = {
   name: [validators.required],
-  color: [validators.required]
+  color: [validators.required],
+  granularity: [validators.required],
+  include_weekends: []
 }
+
+const granularities: string[] = ['daily', 'weekly', 'monthly', 'yearly']
 
 export default function FormHabits({ values }: Props) {
   // useForm
@@ -24,6 +30,8 @@ export default function FormHabits({ values }: Props) {
   useEffect(() => {
     init()
   }, [values])
+
+
 
   return (
     <div className="grid grid-cols-2 gap-3">
@@ -45,13 +53,34 @@ export default function FormHabits({ values }: Props) {
           <ColorPicker
             id="color"
             name="color"
-            className="ht-form-input !py-1 !px-3"
+            className="ht-form-input !py-1"
             value={model.color}
             onChange={e => changeField('color', e.target.value)}
           />
         )}
         />
       </div>
+
+      <div>
+        <InputWrapper errorMessages={errorMessages.name} label="You should check" input={(
+          <select
+            id="granularity"
+            name="granularity"
+            className="ht-form-input w-full grow"
+            value={model.granularity}
+            onChange={e => changeField('granularity', e.target.value)}
+          >
+            {granularities.map(granularity => <option key={granularity} value={granularity}>{granularity}</option>)}
+          </select>
+        )} />
+      </div>
+      {model.granularity === 'daily' && (
+        <div>
+          <label htmlFor="include_weekends flex">
+            <span>Including weekends?</span>
+          </label>
+        </div>
+      )}
     </div>
   )
 }
