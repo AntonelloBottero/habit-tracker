@@ -7,7 +7,7 @@ const defaultValues: Model = {
   name: '',
   color: '',
   granularity: 'daily',
-  include_weekends: ''
+  include_weekends: false
 }
 type Values = Partial<Model>
 
@@ -76,9 +76,15 @@ export default function FormHabits({ values }: Props) {
       </div>
       {model.granularity === 'daily' && (
         <div>
-          <label htmlFor="include_weekends flex">
-            <span>Including weekends?</span>
-          </label>
+          <InputWrapper errorMessages={errorMessages.include_weekends} label="Including weekends?" input={(
+            <input
+              id="include_weekends"
+              type="checkbox"
+              name="include_weekends"
+              defaultChecked={model.include_weekends}
+              onChange={e => changeField('include_weekends', e.target.checked)}
+            />
+          )} />
         </div>
       )}
     </div>

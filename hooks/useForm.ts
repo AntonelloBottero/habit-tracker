@@ -74,7 +74,7 @@ export default function useForm({ resetErrorMessages, defaultValues, rules } : P
   }
 
   // update single field and check field rules
-  const changeField = (key: string, value: string): void => {
+  const changeField = (key: string, value: string | boolean): void => {
     dispatchModel({ type: 'update', key, value})
     validate(key, value)
   }
