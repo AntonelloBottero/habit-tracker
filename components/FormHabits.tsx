@@ -1,6 +1,7 @@
 import { useEffect, useMemo } from 'react'
 import InputWrapper from '@/components/InputWrapper'
 import ColorPicker from '@/components/ColorPicker'
+import CheckboxBtn from '@/components/CheckboxBtn'
 import useForm, {Model, Rules, validators} from '@/hooks/useForm'
 
 const defaultValues: Model = {
@@ -77,9 +78,8 @@ export default function FormHabits({ values }: Props) {
       {model.granularity === 'daily' && (
         <div>
           <InputWrapper errorMessages={errorMessages.include_weekends} label="Including weekends?" input={(
-            <input
+            <CheckboxBtn
               id="include_weekends"
-              type="checkbox"
               name="include_weekends"
               defaultChecked={model.include_weekends}
               onChange={e => changeField('include_weekends', e.target.checked)}

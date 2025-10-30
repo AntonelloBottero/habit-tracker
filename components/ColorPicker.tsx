@@ -6,20 +6,14 @@
  */
 import { defaultColors } from "@/utils/constants"
 
-import { useState, useEffect, ChangeEvent, useMemo } from "react"
+import { useState, useEffect, useMemo } from "react"
 import { useOptions } from "@/hooks/useOptions"
 import { BookmarkIcon } from '@heroicons/react/24/solid'
+import { FormFieldProps } from "@/app/types"
 
-interface Props {
-    id?: string
-    name: string
-    value: string
-    placeholder?: string
-    className?: string
-    onChange: (e: ChangeEvent<HTMLInputElement>) => void
-}
 
-export default function ColorPicker(props: Props) {
+
+export default function ColorPicker(props: FormFieldProps) {
   // --- mixes default color with the ones chosen by the user in previous form entries ---
   const { getOption } = useOptions() // user colors are managed through db options
   const [userColors, setUserColors] = useState([])
