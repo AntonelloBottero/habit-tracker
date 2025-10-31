@@ -10,9 +10,10 @@ const modalRoot = typeof document !== 'undefined'
 interface Props {
     title?: string,
     children?: ReactElement | ReactElement[],
+    size?: string
 }
 
-const Modal = forwardRef<ModalRef>(({ title, children }: Props, ref) => {
+const Modal = forwardRef<ModalRef>(({ title, children, size = '2xl' }: Props, ref) => {
   const [value, setValue] = useState(false)
   const show = () => {
     setValue(true)
@@ -24,7 +25,7 @@ const Modal = forwardRef<ModalRef>(({ title, children }: Props, ref) => {
 
   const modal = (
     <div tabIndex={-1} aria-hidden="true" className={(!value ? 'hidden ' : 'flex') + ' overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-full max-h-full bg-black/25'}>
-      <div className="relative p-4 w-full max-w-2xl max-h-full">
+      <div className={`relative p-4 w-full max-w-${size} max-h-full`}>
         <div className="relative bg-white rounded-lg shadow-sm dark:bg-gray-700">
           <div className="flex items-center justify-between p-4 md:p-5 rounded-t ">
             {title && (<h3 className="text-xl font-semibold text-gray-900 dark:text-white">
