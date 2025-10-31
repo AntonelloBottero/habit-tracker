@@ -9,9 +9,9 @@ export default function CheckboxBtn(props: Props) {
   return (
     <button
       type="button"
-      className="ht-btn ht-interaction w-9 h-9"
+      className={`${props.className || ''} ht-btn ht-interaction rounded-lg outline-1 outline-gray-300 w-8 h-8`}
     >
-      <CheckCircleIcon />
+      <CheckCircleIcon className="size-6 text-gray-300" />
     </button>
   )
 }
