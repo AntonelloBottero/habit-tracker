@@ -26,12 +26,13 @@ const rules: Rules = {
 const granularities: string[] = ['daily', 'weekly', 'monthly', 'yearly']
 
 export default function FormHabits({ values }: Props) {
-  // useForm
+  // --- useForm ---
   const { model, changeField, init, errorMessages } = useForm({ defaultValues, rules })
   useEffect(() => {
     init()
   }, [values])
 
+  // --- granularity times ---
 
 
   return (
@@ -75,18 +76,23 @@ export default function FormHabits({ values }: Props) {
           </select>
         )} />
       </div>
-      {model.granularity === 'daily' && (
-        <div>
-          <InputWrapper errorMessages={errorMessages.include_weekends} label="Including weekends?" input={(
-            <CheckboxBtn
-              id="include_weekends"
-              name="include_weekends"
-              defaultChecked={model.include_weekends}
-              onChange={e => changeField('include_weekends', e.target.checked)}
-            />
-          )} />
-        </div>
-      )}
+      {model.granularity === 'daily'
+        ? (
+          <div>
+            <InputWrapper errorMessages={errorMessages.include_weekends} label="Including weekends?" input={(
+              <CheckboxBtn
+                id="include_weekends"
+                name="include_weekends"
+                defaultChecked={model.include_weekends}
+                onChange={e => changeField('include_weekends', e.target.checked)}
+              />
+            )} />
+          </div>
+        )
+        : (
+          <div>
+          </div>
+        )}
     </div>
   )
 }
