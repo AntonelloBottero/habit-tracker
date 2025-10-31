@@ -14,7 +14,8 @@ export interface FakeInputChangeEvent { // simulates a regular form input change
 export interface FormFieldProps {
     id?: string
     name: string
-    value: string
+    value?: string
+    defaultChecked? : boolean
     placeholder?: string
     className?: string
     onChange: (e: ChangeEvent<HTMLInputElement>) => void

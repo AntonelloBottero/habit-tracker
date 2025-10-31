@@ -1,3 +1,10 @@
+/**
+ * CheckboxBtn
+ * @component
+ * @props {HTMLInputElement} // handle the component like any other input element
+ * @returns {TSX.Element}
+ */
+import { useMemo } from 'react'
 import { CheckCircleIcon } from '@heroicons/react/24/solid'
 import { FormFieldProps } from "@/app/types"
 
@@ -6,12 +13,34 @@ interface Props extends FormFieldProps {
 }
 
 export default function CheckboxBtn(props: Props) {
+  // --- button className ---
+  const { className, defaultChecked, onChange } = props
+  const btnClassName = useMemo(() => {
+    const checkedStateClassName = defaultChecked ? 'bg-primary' : 'outline-1 outline-gray-300'
+    return `ht-btn ht-interaction rounded-lg  w-8 h-8 ${className} ${checkedStateClassName}`
+  }, [className, defaultChecked])
+
+  // --- Icon className ---
+  const iconClassName = useMemo(() => {
+    return `size-6 ${defaultChecked ? 'text-black-400' : 'text-gray-300'}`
+  }, [defaultChecked])
+
+  // --- onClick - toggle defaultChecked ---
+  function handleOnClick() {
+    onChange({
+      target: {
+        checked: !defaultChecked
+      }
+    })
+  }
+
   return (
     <button
       type="button"
-      className={`${props.className || ''} ht-btn ht-interaction rounded-lg outline-1 outline-gray-300 w-8 h-8`}
+      className={btnClassName}
+      onClick={handleOnClick}
     >
-      <CheckCircleIcon className="size-6 text-gray-300" />
+      <CheckCircleIcon className={iconClassName} />
     </button>
   )
 }
