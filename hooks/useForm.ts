@@ -7,8 +7,11 @@ type Validators = {
 }
 export const validators: Validators = {
   required: (value) => {
-    console.log('required', value)
     return !!value || 'This field is required'
+  },
+  numeric: (value) => {
+    const n = Number(value)
+    return !value || !isNaN(n) || 'Insert a numeric value'
   }
 }
 
@@ -75,7 +78,7 @@ export default function useForm({ resetErrorMessages, defaultValues, rules } : P
   }
 
   // update single field and check field rules
-  const changeField = (key: string, value: string | boolean): void => {
+  const changeField = (key: string, value: string | number | boolean): void => {
     dispatchModel({ type: 'update', key, value})
     validate(key, value)
   }

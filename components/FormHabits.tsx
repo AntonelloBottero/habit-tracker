@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react'
+import { useEffect, useMemo, type ChangeEvent } from 'react'
 import InputWrapper from '@/components/InputWrapper'
 import ColorPicker from '@/components/ColorPicker'
 import CheckboxBtn from '@/components/CheckboxBtn'
@@ -9,6 +9,7 @@ interface HabitsData {
   color: string
   granularity: string
   include_weekends: boolean
+  granularity_items: number
 }
 type HabitsModel = Model<HabitsData>
 
@@ -16,7 +17,8 @@ const defaultValues: HabitsModel = {
   name: '',
   color: '',
   granularity: 'daily',
-  include_weekends: false
+  include_weekends: false,
+  granularity_times: 0
 }
 type Values = Partial<HabitsModel>
 
@@ -28,7 +30,8 @@ const rules: Rules = {
   name: [validators.required],
   color: [validators.required],
   granularity: [validators.required],
-  include_weekends: []
+  include_weekends: [],
+  granularity_times: [validators.required]
 }
 
 const granularities: string[] = ['daily', 'weekly', 'monthly', 'yearly']
@@ -41,7 +44,32 @@ export default function FormHabits({ values }: Props) {
   }, [values])
 
   // --- granularity times ---
-
+  const granularityTimes = useMemo(() => {
+    let count = 1
+    switch(model.granularity) {
+    case 'weekly':
+      count = 3
+      break
+    case 'monthly':
+      count = 5
+      break
+    case 'early':
+      count = 8
+      break
+    }
+    return Array.from(Array(count).keys()).map(i => {
+      const time = i + 1
+      return {
+        value: time,
+        text: time === 1 ? '1 time' : `${time} times`
+      }
+    })
+  }, [model.granularity])
+  // changing granularity resets granularity_times
+  const handleChangeGranularity = (e: ChangeEvent<HTMLInputElement>): void => {
+    changeField('granularity', e.target.value)
+    changeField('granularity_times', 1)
+  }
 
   return (
     <div className="grid grid-cols-2 gap-3">
@@ -78,7 +106,7 @@ export default function FormHabits({ values }: Props) {
             name="granularity"
             className="ht-form-input w-full grow"
             value={model.granularity}
-            onChange={e => changeField('granularity', e.target.value)}
+            onChange={handleChangeGranularity}
           >
             {granularities.map(granularity => <option key={granularity} value={granularity}>{granularity}</option>)}
           </select>
@@ -99,6 +127,17 @@ export default function FormHabits({ values }: Props) {
         )
         : (
           <div>
+            <InputWrapper errorMessages={errorMessages.granularity_times} label="Check it" input={(
+              <select
+                id="granularity_times"
+                name="granularity_times"
+                className="ht-form-input w-full grow"
+                value={model.granularity_times}
+                onChange={e => changeField('granularity_times', e.target.value)}
+              >
+                {granularityTimes.map(granularityTime => <option key={granularityTime.value} value={granularityTime.value}>{granularityTime.text}</option>)}
+              </select>
+            )} />
           </div>
         )}
     </div>
