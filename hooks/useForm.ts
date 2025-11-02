@@ -16,14 +16,11 @@ export const validators: Validators = {
 }
 
 // hook interfaces
-export interface Model<T> {
-  [key: string]: unknown
-}
 
-export interface ModelReducerAction {
+export interface ModelReducerAction<T extends object> {
   type?: 'batch' | 'update' // batch to edit multiple fields, update to edit a single field
   key?: string
-  value: Model<never> | unknown | null
+  value: T | unknown | null
 }
 export interface Rules {
     [key: string]: Validator[]
@@ -31,47 +28,48 @@ export interface Rules {
 export interface ErrorMessages {
     [key: string]: string[] | undefined
 }
-interface Params {
-    defaultValues: Model<never>
+interface Params<T extends object> {
+    defaultValues: T
     resetErrorMessages?: () => void
     rules?: Rules
 }
 
 // hook
-export default function useForm({ resetErrorMessages, defaultValues, rules } : Params) {
+export default function useForm<T extends object>({ resetErrorMessages, defaultValues, rules } : Params<T>) {
   // model reducer
-  const modelReducer = (state: Model<typeof defaultValues>, { type, key, value}: ModelReducerAction): Model<typeof defaultValues> => {
+  const modelReducer = (state: T, { type, key, value }: ModelReducerAction<T>): T => {
     switch(type) {
     case 'batch':
+      const batchValue = value as T
       return {
-        ...Object.entries(defaultValues).reduce((r: Model<typeof defaultValues>, [k, v]: [string, unknown]) => ({
+        ...Object.entries(defaultValues).reduce((r, [k, v]) => ({
           ...r,
-          [k]:  value !== null && typeof value === 'object' && (value as Model<typeof defaultValues>)[k] !== undefined ? (value as Model<typeof defaultValues>)[k] : v
-        }), {})
+          [k]:  batchValue !== null && typeof batchValue === 'object' && (batchValue as never)[k] !== undefined ? (batchValue as never)[k] : v
+        }), {} as T)
       }
     case 'update':
-      if(typeof key === 'string' && defaultValues[key] !== undefined) {
+      if(typeof key === 'string' && (defaultValues as never)[key] !== undefined) {
         return {
           ...state,
           [key]: value
         }
       }
     default:
-      return {...state}
+      return state
     }
   }
   const [model, dispatchModel] = useReducer(modelReducer, defaultValues)
 
   // error messages
   const [errorMessages, setErrorMessages] = useState<ErrorMessages>({})
-  const validate = (key?: string, value?: Model<typeof defaultValues> | unknown): void => {
+  const validate = (key?: string, value?: typeof defaultValues | unknown): void => {
     const keys = !key ? Object.keys(rules || {}) : [key] // which fields we should check
     setErrorMessages({
       ...errorMessages,
       ...keys.reduce((r, key) => ({
         ...r,
         [key]: ((rules || {})[key] || [])
-          .map(rule =>rule(typeof value !== 'undefined' ? value : model[key])) // we check the rule with model value or new local value that is still not in the state
+          .map(rule =>rule(typeof value !== 'undefined' ? value : (model as never)[key])) // we check the rule with model value or new local value that is still not in the state
           .filter(message => typeof message === 'string')
       }), {})
     })

@@ -2,16 +2,15 @@ import { useEffect, useMemo, type ChangeEvent } from 'react'
 import InputWrapper from '@/components/InputWrapper'
 import ColorPicker from '@/components/ColorPicker'
 import CheckboxBtn from '@/components/CheckboxBtn'
-import useForm, {Model, Rules, validators} from '@/hooks/useForm'
+import useForm, {Rules, validators} from '@/hooks/useForm'
 
-interface HabitsData {
+interface HabitsModel {
   name: string
   color: string
   granularity: string
   include_weekends: boolean
-  granularity_items: number
+  granularity_times: number
 }
-type HabitsModel = Model<HabitsData>
 
 const defaultValues: HabitsModel = {
   name: '',
@@ -66,7 +65,7 @@ export default function FormHabits({ values }: Props) {
     })
   }, [model.granularity])
   // changing granularity resets granularity_times
-  const handleChangeGranularity = (e: ChangeEvent<HTMLInputElement>): void => {
+  const handleChangeGranularity = (e: ChangeEvent<HTMLSelectElement>): void => {
     changeField('granularity', e.target.value)
     changeField('granularity_times', 1)
   }
