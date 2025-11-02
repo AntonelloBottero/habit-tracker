@@ -4,13 +4,21 @@ import ColorPicker from '@/components/ColorPicker'
 import CheckboxBtn from '@/components/CheckboxBtn'
 import useForm, {Model, Rules, validators} from '@/hooks/useForm'
 
-const defaultValues: Model = {
+interface HabitsData {
+  name: string
+  color: string
+  granularity: string
+  include_weekends: boolean
+}
+type HabitsModel = Model<HabitsData>
+
+const defaultValues: HabitsModel = {
   name: '',
   color: '',
   granularity: 'daily',
   include_weekends: false
 }
-type Values = Partial<Model>
+type Values = Partial<HabitsModel>
 
 interface Props {
     values?: Values
