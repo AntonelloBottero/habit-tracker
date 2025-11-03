@@ -2,6 +2,7 @@ import { useEffect, useMemo, type ChangeEvent } from 'react'
 import InputWrapper from '@/components/InputWrapper'
 import ColorPicker from '@/components/ColorPicker'
 import CheckboxBtn from '@/components/CheckboxBtn'
+import { CheckCircleIcon } from '@heroicons/react/24/solid'
 import useForm, {Rules, validators} from '@/hooks/useForm'
 
 interface HabitsModel {
@@ -9,7 +10,8 @@ interface HabitsModel {
   color: string
   granularity: string
   include_weekends: boolean
-  granularity_times: number
+  granularity_times: number,
+  enough_amount: string
 }
 
 const defaultValues: HabitsModel = {
@@ -17,7 +19,8 @@ const defaultValues: HabitsModel = {
   color: '',
   granularity: 'daily',
   include_weekends: false,
-  granularity_times: 0
+  granularity_times: 0,
+  enough_amount: ''
 }
 type Values = Partial<HabitsModel>
 
@@ -30,7 +33,8 @@ const rules: Rules = {
   color: [validators.required],
   granularity: [validators.required],
   include_weekends: [],
-  granularity_times: [validators.required]
+  granularity_times: [validators.required, validators.numeric],
+  enough_amount: []
 }
 
 const granularities: string[] = ['daily', 'weekly', 'monthly', 'yearly']
@@ -52,7 +56,7 @@ export default function FormHabits({ values }: Props) {
     case 'monthly':
       count = 5
       break
-    case 'early':
+    case 'yearly':
       count = 8
       break
     }
@@ -71,7 +75,7 @@ export default function FormHabits({ values }: Props) {
   }
 
   return (
-    <div className="grid grid-cols-2 gap-3">
+    <form className="grid grid-cols-2 gap-3">
       <div className="col-span-2">
         <InputWrapper errorMessages={errorMessages.name} label="Name" input={(
           <input
@@ -99,7 +103,7 @@ export default function FormHabits({ values }: Props) {
       </div>
 
       <div>
-        <InputWrapper errorMessages={errorMessages.name} label="You should check" input={(
+        <InputWrapper errorMessages={errorMessages.granularity} label="You should check" input={(
           <select
             id="granularity"
             name="granularity"
@@ -139,6 +143,35 @@ export default function FormHabits({ values }: Props) {
             )} />
           </div>
         )}
-    </div>
+
+      <div className="col-span-2">
+        <div className="outline-gray-200 outline-1 outline-offset-1 rounded-lg px-5 py-5 my-4">
+          <div className="font-bold">
+            What would it be enough?
+          </div>
+          <div className="text-xs text-gray-500 mb-2">
+            Optional. If you don't have enough of simply checking your habit, declare here the right amount that would make you happy you reached.
+          </div>
+          <InputWrapper errorMessages={errorMessages.enough_amount} input={(
+            <input
+              id="enough_amount"
+              type="text"
+              name="enough_amount"
+              className="grow w-full ht-form-input"
+              placeholder="2lt of water, 10€ saved..."
+              value={model.enough_amount}
+              onChange={e => changeField('enough_amount', e.target.value)}
+            />
+          )}/>
+        </div>
+
+        <div className="col-span-2 text-right">
+          <button type="submit" className="ht-btn ht-interaction rounded-lg bg-primary py-2 px-5 outline-glass">
+            <CheckCircleIcon className="size-6" />
+            Confirm
+          </button>
+        </div>
+      </div>
+    </form>
   )
 }
