@@ -1,4 +1,4 @@
-import { useEffect, useMemo, type ChangeEvent } from 'react'
+import { useEffect, useMemo, useRef, type ChangeEvent } from 'react'
 import InputWrapper from '@/components/InputWrapper'
 import ColorPicker from '@/components/ColorPicker'
 import CheckboxBtn from '@/components/CheckboxBtn'
@@ -41,7 +41,8 @@ const granularities: string[] = ['daily', 'weekly', 'monthly', 'yearly']
 
 export default function FormHabits({ values }: Props) {
   // --- useForm ---
-  const { model, changeField, init, errorMessages } = useForm({ defaultValues, rules })
+  const formRef = useRef(undefined)
+  const { model, changeField, init, errorMessages } = useForm({ formRef, defaultValues, rules })
   useEffect(() => {
     init()
   }, [values])
@@ -75,7 +76,7 @@ export default function FormHabits({ values }: Props) {
   }
 
   return (
-    <form className="grid grid-cols-2 gap-3">
+    <form ref={formRef} className="grid grid-cols-2 gap-3">
       <div className="col-span-2">
         <InputWrapper errorMessages={errorMessages.name} label="Name" input={(
           <input

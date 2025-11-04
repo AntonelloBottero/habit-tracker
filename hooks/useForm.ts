@@ -29,13 +29,15 @@ export interface ErrorMessages {
     [key: string]: string[] | undefined
 }
 interface Params<T extends object> {
+    formRef?: HTMLFormElement | undefined
     defaultValues: T
     resetErrorMessages?: () => void
     rules?: Rules
 }
 
 // hook
-export default function useForm<T extends object>({ resetErrorMessages, defaultValues, rules } : Params<T>) {
+export default function useForm<T extends object>({ formRef, resetErrorMessages, defaultValues, rules } : Params<T>) {
+  console.log('formRef', formRef)
   // model reducer
   const modelReducer = (state: T, { type, key, value }: ModelReducerAction<T>): T => {
     switch(type) {
