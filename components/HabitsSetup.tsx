@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useState, useRef } from 'react';
 import Modal from '@/components/Modal'
 import FormHabits from '@/components/FormHabits'
 import { ModalRef } from '@/app/types'
@@ -12,8 +12,13 @@ import { ModalRef } from '@/app/types'
 // - Icon
 export default function HabitsSetup() {
     const formModalRef = useRef<ModalRef>(null)
-    const addHabit = () => {
+    const [formHabitsValues, setFormHabitsValues] = useState(undefined)
+
+    const addHabit = (type: 'good' | 'bad') => {
         formModalRef.current?.show()
+        setFormHabitsValues({
+            type
+        })
     }
 
     return (
@@ -22,10 +27,10 @@ export default function HabitsSetup() {
                 <div className="grow">
                     <p>
                         Flex you good intentions.<br/>
-                        <button 
-                            type="button" 
+                        <button
+                            type="button"
                             className="px-3 py-1 mr-1 text-xs font-medium text-center bg-primary outline-glass rounded-lg"
-                            onClick={() => addHabit()}
+                            onClick={() => addHabit('good')}
                         >Add</button>
                         some <b>Good habits</b>.
                     </p>
@@ -34,14 +39,20 @@ export default function HabitsSetup() {
                 <div className="grow">
                     <p>
                         We are not made of just sugar.<br />
-                        <button type="button" className="px-3 py-1 mr-1 text-xs font-medium text-center bg-primary outline-glass rounded-lg">Unveil</button>
+                        <button
+                            type="button"
+                            className="px-3 py-1 mr-1 text-xs font-medium text-center bg-primary outline-glass rounded-lg"
+                            onClick={() => addHabit('bad')}
+                        >
+                            Unveil
+                        </button>
                         your <b>Bad habits</b>.
                     </p>
                 </div>
             </div>
 
-            <Modal ref={formModalRef} title="Your New Good Habit">
-                <FormHabits />
+            <Modal ref={formModalRef}  title="Your New Good Habit">
+                <FormHabits values={formHabitsValues} />
             </Modal>
         </>
     )

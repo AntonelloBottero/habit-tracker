@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, type ChangeEvent } from 'react'
+import { useEffect, useMemo, type ChangeEvent } from 'react'
 import InputWrapper from '@/components/InputWrapper'
 import ColorPicker from '@/components/ColorPicker'
 import CheckboxBtn from '@/components/CheckboxBtn'
@@ -6,6 +6,7 @@ import { CheckCircleIcon } from '@heroicons/react/24/solid'
 import useForm, {Rules, validators} from '@/hooks/useForm'
 
 interface HabitsModel {
+  type: 'good' | 'bad' | ''
   name: string
   color: string
   granularity: string
@@ -15,6 +16,7 @@ interface HabitsModel {
 }
 
 const defaultValues: HabitsModel = {
+  type: '',
   name: '',
   color: '',
   granularity: 'daily',
@@ -41,9 +43,9 @@ const granularities: string[] = ['daily', 'weekly', 'monthly', 'yearly']
 
 export default function FormHabits({ values }: Props) {
   // --- useForm ---
-  const formRef = useRef(undefined)
-  const { model, changeField, init, errorMessages } = useForm({ formRef, defaultValues, rules })
+  const { model, changeField, init, errorMessages, handleFormSubmit } = useForm({ defaultValues, rules })
   useEffect(() => {
+    console.log('needs form init')
     init()
   }, [values])
 
@@ -76,7 +78,7 @@ export default function FormHabits({ values }: Props) {
   }
 
   return (
-    <form ref={formRef} className="grid grid-cols-2 gap-3">
+    <form onSubmit={handleFormSubmit} className="grid grid-cols-2 gap-3">
       <div className="col-span-2">
         <InputWrapper errorMessages={errorMessages.name} label="Name" input={(
           <input

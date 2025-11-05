@@ -1,4 +1,4 @@
-import { useState, useReducer } from 'react'
+import { useState, useReducer, type FormEvent } from 'react'
 
 // validators
 type Validator = (value: unknown) => true | string
@@ -29,16 +29,13 @@ export interface ErrorMessages {
     [key: string]: string[] | undefined
 }
 interface Params<T extends object> {
-    formRef?: HTMLFormElement | undefined
     defaultValues: T
-    resetErrorMessages?: () => void
     rules?: Rules
 }
 
-// hook
-export default function useForm<T extends object>({ formRef, resetErrorMessages, defaultValues, rules } : Params<T>) {
-  console.log('formRef', formRef)
-  // model reducer
+// --- Hook ---
+export default function useForm<T extends object>({ defaultValues, rules } : Params<T>) {
+  // --- Model reducer ---
   const modelReducer = (state: T, { type, key, value }: ModelReducerAction<T>): T => {
     switch(type) {
     case 'batch':
@@ -62,9 +59,9 @@ export default function useForm<T extends object>({ formRef, resetErrorMessages,
   }
   const [model, dispatchModel] = useReducer(modelReducer, defaultValues)
 
-  // error messages
+  // --- Error messages ---
   const [errorMessages, setErrorMessages] = useState<ErrorMessages>({})
-  const validate = (key?: string, value?: typeof defaultValues | unknown): void => {
+  const validate = (key?: string, value?: T | unknown): void => {
     const keys = !key ? Object.keys(rules || {}) : [key] // which fields we should check
     setErrorMessages({
       ...errorMessages,
@@ -77,17 +74,23 @@ export default function useForm<T extends object>({ formRef, resetErrorMessages,
     })
   }
 
-  // update single field and check field rules
+  // --- Update single field and check field rules ---
   const changeField = (key: string, value: string | number | boolean): void => {
     dispatchModel({ type: 'update', key, value})
     validate(key, value)
   }
 
-  // init
-  const init = (): void => {
-    if(resetErrorMessages) { resetErrorMessages() }
+  // --- Handle Form submit ---
+  const handleFormSubmit = (e: FormEvent<HTMLFormElement>): void => {
+    e.preventDefault()
+    validate()
   }
 
-  return { model, changeField, init, errorMessages }
+  // --- Init ---
+  const init = (): void => {
+    setErrorMessages({})
+  }
+
+  return { model, changeField, init, errorMessages, handleFormSubmit }
 }
 
