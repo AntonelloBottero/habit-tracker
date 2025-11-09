@@ -1,11 +1,16 @@
 import { act, renderHook, waitFor } from "@testing-library/react"
 
 // --- useForm ---
-import useForm from '@/hooks/useForm'
+import useForm, { validators } from '@/hooks/useForm'
 const defaultValues = {
   name: '',
   last_name: 'Rossi',
   count: 2
+}
+const rules = {
+  name: [validators.required],
+  last_name: [validators.required],
+  count: [validators.numeric]
 }
 describe("useForm", () => {
   test('model init equals defaultValues', () => {
@@ -35,6 +40,33 @@ describe("useForm", () => {
     })
     await waitFor(() => {
       expect(useFormRendered.result.current.model.count).toBe(3)
+    })
+  })
+
+  test('Validation of whole model', async () => {
+    const useFormRendered = renderHook(() => useForm({ defaultValues, rules }))
+    act(() => {
+      useFormRendered.result.current.validate()
+    })
+    await waitFor(() => {
+      expect(useFormRendered.result.current.errorMessages.name?.length).toBe(1)
+      expect(useFormRendered.result.current.errorMessages.last_name?.length).toBe(0)
+    })
+  })
+
+  test('Validation of specific fields', async () => {
+    const useFormRendered = renderHook(() => useForm({ defaultValues, rules }))
+    act(() => {
+      useFormRendered.result.current.validate()
+    })
+    await waitFor(() => {
+      act(() => {
+        useFormRendered.result.current.changeField('last_name', '')
+      })
+    })
+    await waitFor(() => {
+      expect(useFormRendered.result.current.errorMessages.name?.length).toBe(1) // checks if name kept errorMessages even after validation of specific field
+      expect(useFormRendered.result.current.errorMessages.last_name?.length).toBe(1)
     })
   })
 })

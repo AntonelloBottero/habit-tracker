@@ -92,6 +92,6 @@ export default function useForm<T extends object>({ defaultValues, rules } : Par
     dispatchModel({ type: 'batch', key: undefined, value: values })
   }
 
-  return { model, changeField, init, errorMessages, handleFormSubmit }
+  return { model, changeField, init, errorMessages, validate, handleFormSubmit }
 }
 
