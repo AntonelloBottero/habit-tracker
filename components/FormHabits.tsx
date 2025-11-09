@@ -45,8 +45,7 @@ export default function FormHabits({ values }: Props) {
   // --- useForm ---
   const { model, changeField, init, errorMessages, handleFormSubmit } = useForm({ defaultValues, rules })
   useEffect(() => {
-    console.log('needs form init')
-    init()
+    init(values)
   }, [values])
 
   // --- granularity times ---

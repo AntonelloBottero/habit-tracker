@@ -87,8 +87,9 @@ export default function useForm<T extends object>({ defaultValues, rules } : Par
   }
 
   // --- Init ---
-  const init = (): void => {
+  const init = (values: Partial<T> | null = null): void => {
     setErrorMessages({})
+    dispatchModel({ type: 'batch', key: undefined, value: values })
   }
 
   return { model, changeField, init, errorMessages, handleFormSubmit }
