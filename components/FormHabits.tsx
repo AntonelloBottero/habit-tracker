@@ -43,7 +43,7 @@ const granularities: string[] = ['daily', 'weekly', 'monthly', 'yearly']
 
 export default function FormHabits({ values }: Props) {
   // --- useForm ---
-  const { model, changeField, init, errorMessages, handleFormSubmit } = useForm({ defaultValues, rules })
+  const { model, changeField, init, errorMessages, handleFormSubmit } = useForm({ defaultValues, rules, onSubmit })
   useEffect(() => {
     init(values)
   }, [values])
@@ -74,6 +74,11 @@ export default function FormHabits({ values }: Props) {
   const handleChangeGranularity = (e: ChangeEvent<HTMLSelectElement>): void => {
     changeField('granularity', e.target.value)
     changeField('granularity_times', 1)
+  }
+
+  // --- Save data ---
+  function onSubmit() {
+    console.log('submitted')
   }
 
   return (

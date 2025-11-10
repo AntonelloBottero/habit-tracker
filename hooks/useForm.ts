@@ -30,11 +30,12 @@ export interface ErrorMessages {
 }
 interface Params<T extends object> {
     defaultValues: T
-    rules?: Rules
+    rules?: Rules,
+    onSubmit?: () => never | void
 }
 
 // --- Hook ---
-export default function useForm<T extends object>({ defaultValues, rules } : Params<T>) {
+export default function useForm<T extends object>({ defaultValues, rules, onSubmit } : Params<T>) {
   // --- Model reducer ---
   const modelReducer = (state: T, { type, key, value }: ModelReducerAction<T>): T => {
     switch(type) {
@@ -61,7 +62,7 @@ export default function useForm<T extends object>({ defaultValues, rules } : Par
 
   // --- Error messages ---
   const [errorMessages, setErrorMessages] = useState<ErrorMessages>({})
-  const validate = (key?: string, value?: T | unknown): void => {
+  const validate = (key?: string, value?: T | unknown): boolean => {
     const keys = !key ? Object.keys(rules || {}) : [key] // which fields we should check
     setErrorMessages({
       ...errorMessages,
@@ -72,6 +73,7 @@ export default function useForm<T extends object>({ defaultValues, rules } : Par
           .filter(message => typeof message === 'string')
       }), {})
     })
+    return Object.values(errorMessages).reduce((r, messages) => !r || messages?.length ? false : true, true)
   }
 
   // --- Update single field and check field rules ---
@@ -83,7 +85,9 @@ export default function useForm<T extends object>({ defaultValues, rules } : Par
   // --- Handle Form submit ---
   const handleFormSubmit = (e: FormEvent<HTMLFormElement>): void => {
     e.preventDefault()
-    validate()
+    if(validate() && typeof onSubmit === 'function') {
+      onSubmit()
+    }
   }
 
   // --- Init ---
