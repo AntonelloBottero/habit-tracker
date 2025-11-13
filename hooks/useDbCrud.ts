@@ -1,4 +1,6 @@
 import Dexie, { Table } from 'dexie'
+import { DateTime } from 'luxon'
+import { objectIsCompliant } from "@/utils/index"
 
 interface Params<T> {
   table: string
@@ -27,9 +29,34 @@ export default function useDbCrud<T extends object>({ table, model }: Params<T>)
     const item = await db[table].where('id').equalsIgnoreCase(id).first()
     return item
   }
+  const create = async (values: Partial<T>): Promise<void> => {
+    if(!objectIsCompliant(model, values)) {
+      throw new TypeError('Values are not fully compliant with model')
+    }
+    await db[table].add({
+      ...values,
+      created_at: DateTime.now().toISO()
+    })
+  }
+  const update = async (id: string, values: Partial<T>): Promise<void> => {
+    if(!objectIsCompliant(model, values)) {
+      throw new TypeError('Values are not fully compliant with model')
+    }
+    const item = await show(id)
+    if(!item) {
+      throw new ReferenceError('Resource could not be found')
+    }
+    await db[table].put({
+      ...item,
+      ...values,
+      updated_at: DateTime.now().toISO()
+    })
+  }
 
   return {
     index,
-    show
+    show,
+    create,
+    update
   }
 }
