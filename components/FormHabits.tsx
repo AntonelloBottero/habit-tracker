@@ -4,6 +4,7 @@ import ColorPicker from '@/components/ColorPicker'
 import CheckboxBtn from '@/components/CheckboxBtn'
 import { CheckCircleIcon } from '@heroicons/react/24/solid'
 import useForm, {Rules, validators} from '@/hooks/useForm'
+import useDbCrud from '@/hooks/useDbCrud'
 
 interface HabitsModel {
   type: 'good' | 'bad' | ''
@@ -77,6 +78,7 @@ export default function FormHabits({ values }: Props) {
   }
 
   // --- Save data ---
+  const { store } = useDbCrud({ table: 'habits', model: defaultValues })
   function onSubmit() {
     console.log('submitted')
   }
