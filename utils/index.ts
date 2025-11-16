@@ -18,5 +18,5 @@ export const objectIsCompliant = (obj1: object, obj2: object): boolean => {
       return objectIsCompliant(v, (obj1 as never)[key])
     }
     return !obj1.hasOwnProperty(key)
-  }
+  })
 }

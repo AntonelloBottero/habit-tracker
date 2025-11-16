@@ -2,6 +2,7 @@ import { ChangeEvent } from "react"
 
 export interface ModalRef {
     show: () => void
+    hide: () => void
 }
 
 export interface FakeInputChangeEvent { // simulates a regular form input change event

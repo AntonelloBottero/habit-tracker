@@ -1,7 +1,12 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect, useMemo } from 'react';
 import Modal from '@/components/Modal'
-import FormHabits from '@/components/FormHabits'
+import FormHabits, { defaultValues as habitsModel } from '@/components/FormHabits'
 import { ModalRef } from '@/app/types'
+import useDbCrud from '@/hooks/useDbCrud'
+
+type Habit = Partial<typeof habitsModel> & {
+    id?: string
+}
 
 // Card made of 2 sections -> Good and Bad habits
 // every section accepts any number of items
@@ -11,14 +16,42 @@ import { ModalRef } from '@/app/types'
 // - When (every day, selected days, except weekends, n days per week/month, etc)
 // - Icon
 export default function HabitsSetup() {
-    const formModalRef = useRef<ModalRef>(null)
-    const [formHabitsValues, setFormHabitsValues] = useState(undefined)
+    const { index } = useDbCrud({ table: 'habits', model: habitsModel })
 
+    // --- Existing Habits ---
+    const [habits, setHabits] = useState<Habit[]>([])
+    const goodHabits = useMemo(() => {
+        return habits.filter(habit => habit.type === 'good')
+    }, [habits])
+    const badHabits = useMemo(() => {
+        return habits.filter(habit => habit.type === 'bad')
+    }, [habits])
+
+    const fetchHabits = async () => {
+        try {
+        const habits = await index()
+        setHabits(habits)
+        } catch(error) {
+            setHabits([])
+        }
+    }
+    useEffect(() => {
+        fetchHabits()
+    }, [])
+
+    // --- Manage form ad habits store/update
+    const formModalRef = useRef<ModalRef>(null)
+    const [formHabitsValues, setFormHabitsValues] = useState<Habit | undefined>(undefined)
     const addHabit = (type: 'good' | 'bad') => {
         formModalRef.current?.show()
         setFormHabitsValues({
             type
         })
+    }
+
+    const handleFormSave = () => {
+        formModalRef.current?.hide()
+        fetchHabits()
     }
 
     return (
@@ -34,6 +67,11 @@ export default function HabitsSetup() {
                         >Add</button>
                         some <b>Good habits</b>.
                     </p>
+                    {goodHabits.map(habit => (
+                        <p>
+                            {habit.name}
+                        </p>
+                    ))}
                 </div>
                 <div className="inline-block self-stretch bg-neutral-100 dark:bg-white/10"></div>
                 <div className="grow">
@@ -52,7 +90,7 @@ export default function HabitsSetup() {
             </div>
 
             <Modal ref={formModalRef}  title="Your New Good Habit">
-                <FormHabits values={formHabitsValues} />
+                <FormHabits values={formHabitsValues} onSave={handleFormSave} />
             </Modal>
         </>
     )

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, type ChangeEvent } from 'react'
+import { useState, useEffect, useMemo, type ChangeEvent } from 'react'
 import InputWrapper from '@/components/InputWrapper'
 import ColorPicker from '@/components/ColorPicker'
 import CheckboxBtn from '@/components/CheckboxBtn'
@@ -16,7 +16,7 @@ interface HabitsModel {
   enough_amount: string
 }
 
-const defaultValues: HabitsModel = {
+export const defaultValues: HabitsModel = {
   type: '',
   name: '',
   color: '',
@@ -25,10 +25,13 @@ const defaultValues: HabitsModel = {
   granularity_times: 0,
   enough_amount: ''
 }
-type Values = Partial<HabitsModel>
+type Values = Partial<HabitsModel> & {
+  id?: string
+}
 
 interface Props {
     values?: Values
+    onSave?: () => never | void
 }
 
 const rules: Rules = {
@@ -42,7 +45,7 @@ const rules: Rules = {
 
 const granularities: string[] = ['daily', 'weekly', 'monthly', 'yearly']
 
-export default function FormHabits({ values }: Props) {
+export default function FormHabits({ values, onSave }: Props) {
   // --- useForm ---
   const { model, changeField, init, errorMessages, handleFormSubmit } = useForm({ defaultValues, rules, onSubmit })
   useEffect(() => {
@@ -78,9 +81,28 @@ export default function FormHabits({ values }: Props) {
   }
 
   // --- Save data ---
-  const { store } = useDbCrud({ table: 'habits', model: defaultValues })
-  function onSubmit() {
-    console.log('submitted')
+  const { store, update } = useDbCrud({ table: 'habits', model: defaultValues })
+  const id = useMemo(()=> {
+    return values?.id
+  }, [values])
+  const [loading, setLoading] = useState(false)
+  async function onSubmit() {
+    if(loading) { return undefined }
+    setLoading(true)
+    try {
+      if(!id) {
+        await store(model)
+      } else {
+        await update(id, model)
+      }
+      if(onSave) {
+        onSave()
+      }
+    } catch(error) {
+      console.log('error', error)
+      // TODO: notify error to user
+    }
+    setLoading(false)
   }
 
   return (
