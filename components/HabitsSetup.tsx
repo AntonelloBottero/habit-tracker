@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect, useMemo } from 'react';
 import Modal from '@/components/Modal'
-import FormHabits, { defaultValues as habitsModel } from '@/components/FormHabits'
+import FormHabits from '@/components/FormHabits'
+import { habitsModel } from '@/db/db'
 import { ModalRef } from '@/app/types'
 import useDbCrud from '@/hooks/useDbCrud'
 

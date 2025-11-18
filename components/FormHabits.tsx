@@ -3,29 +3,11 @@ import InputWrapper from '@/components/InputWrapper'
 import ColorPicker from '@/components/ColorPicker'
 import CheckboxBtn from '@/components/CheckboxBtn'
 import { CheckCircleIcon } from '@heroicons/react/24/solid'
+import { habitsModel, type HabitsSchema } from '@/db/db'
 import useForm, {Rules, validators} from '@/hooks/useForm'
 import useDbCrud from '@/hooks/useDbCrud'
 
-interface HabitsModel {
-  type: 'good' | 'bad' | ''
-  name: string
-  color: string
-  granularity: string
-  include_weekends: boolean
-  granularity_times: number,
-  enough_amount: string
-}
-
-export const defaultValues: HabitsModel = {
-  type: '',
-  name: '',
-  color: '',
-  granularity: 'daily',
-  include_weekends: false,
-  granularity_times: 0,
-  enough_amount: ''
-}
-type Values = Partial<HabitsModel> & {
+type Values = Partial<HabitsSchema> & {
   id?: string
 }
 
@@ -47,7 +29,7 @@ const granularities: string[] = ['daily', 'weekly', 'monthly', 'yearly']
 
 export default function FormHabits({ values, onSave }: Props) {
   // --- useForm ---
-  const { model, changeField, init, errorMessages, handleFormSubmit } = useForm({ defaultValues, rules, onSubmit })
+  const { model, changeField, init, errorMessages, handleFormSubmit } = useForm({ defaultValues: habitsModel, rules, onSubmit })
   useEffect(() => {
     init(values)
   }, [values])
@@ -81,7 +63,7 @@ export default function FormHabits({ values, onSave }: Props) {
   }
 
   // --- Save data ---
-  const { store, update } = useDbCrud({ table: 'habits', model: defaultValues })
+  const { store, update } = useDbCrud({ table: 'habits', model: habitsModel })
   const id = useMemo(()=> {
     return values?.id
   }, [values])

@@ -1,33 +1,13 @@
 'use client'
 
 import { createContext, useContext, useState, ReactNode } from 'react'
-import Dexie, { Table } from 'dexie'
-
-/**
- * DB management
- */
-export interface Option {
-    id?: number,
-    key: string,
-    value?: string | number
-}
-
-export class DB extends Dexie {
-  options!: Table<Option> // comunico a Typescript che options non sarà mai null anche se non la valorizzo nel constructor, quindi non dovrà produrre errori di questo tipo
-  constructor() {
-    super('HabiterDatabase')
-    this.version(1).stores({
-      options: '++id, key'
-    })
-  }
-}
-export const db = new DB()
+import { db, type OptionsSchema } from '@/db/db'
 
 // get option
-export const showOption = async (key: string): Promise<Option | undefined> => {
+export const showOption = async (key: string): Promise<OptionsSchema | undefined> => {
   if(!key) { return undefined }
   try {
-    const option: Option | undefined = await db.options.where('key').equalsIgnoreCase(key).first()
+    const option: OptionsSchema | undefined = await db.options.where('key').equalsIgnoreCase(key).first()
     return option
   } catch(error) {
     return undefined
