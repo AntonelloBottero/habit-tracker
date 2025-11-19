@@ -1,6 +1,7 @@
-import { db } from '@/db/db'
+import useDb from '@/db/useDb'
 import { DateTime } from 'luxon'
 import { objectIsCompliant } from "@/utils/index"
+import { useEffect } from 'react'
 
 interface Params<T> {
   table: string
@@ -8,16 +9,31 @@ interface Params<T> {
 }
 
 export default function useDbCrud<T extends object>({ table, model }: Params<T>) {
+  const { db } = useDb()
+
+  function isCompliant() {
+    if(!db.isOpen()) { return false }
+    if(!db.table(table)) { return false }
+    return true
+  }
+
+  useEffect(() => {
+    console.log('dexie table', db.table(table))
+  }, [table])
+
   // --- DB Operations ---
   const index = async (): Promise<T[]> => {
+    if(!isCompliant()) { return [] }
     const items = await db[table].where('deleted_at').equals(null).all()
     return items
   }
   const show = async (id: string): Promise<T | undefined> => {
+    if(!isCompliant()) { return undefined }
     const item = await db[table].where('id').equalsIgnoreCase(id).and('deleted_at').equals(null).first()
     return item
   }
   const store = async (values: Partial<T>): Promise<void> => {
+    if(!isCompliant()) { return undefined }
     if(!objectIsCompliant(model, values)) {
       throw new TypeError('Values are not fully compliant with model')
     }
