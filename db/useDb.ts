@@ -37,10 +37,6 @@ export default function useDb(startup = false) {
     habits!: Table<HabitsSchema, 'id'>
     constructor() {
       super(process.env.dbName as string)
-      this.version(Number(process.env.dbVersion)).stores({
-        options: '++id, key, value',
-        habits: `++id, ${Object.keys(habitsModel).join(', ')}, created_at, updated_at, deleted_at`
-      })
     }
   }
   const db = new DB()
@@ -48,6 +44,11 @@ export default function useDb(startup = false) {
   // --- Open/Close db ---
   async function open() {
     if(db.isOpen()) { return undefined }
+    db.version(Number(process.env.dbVersion)).stores({
+      options: '++id, key, value',
+      habits: `++id, ${Object.keys(habitsModel).join(', ')}, created_at, updated_at, deleted_at`
+    })
+    await db.open()
   }
   useEffect(() => {
     if(startup) {
