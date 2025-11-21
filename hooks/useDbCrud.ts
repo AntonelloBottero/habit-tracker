@@ -1,24 +1,30 @@
 import useDb from '@/db/useDb'
 import { DateTime } from 'luxon'
 import { objectIsCompliant } from "@/utils/index"
-import { useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 
-interface Params<T> {
+interface Params {
   table: string
-  model: T
 }
 
-export default function useDbCrud<T extends object>({ table, model }: Params<T>) {
+export default function useDbCrud<T extends object>({ table }: Params) {
   const { db } = useDb()
 
   function isCompliant() {
     if(!db.isOpen()) { return false }
     if(!db.table(table)) { return false }
+    if(!model) { return false}
     return true
   }
 
-  useEffect(() => {
-    console.log('dexie table', db.table(table))
+  const model = useMemo<T | null>(() => {
+    if(!db.isOpen()) { return null }
+    const tableSpecs = db.table(table)
+    if(!tableSpecs?.schema?.indexes) { return null }
+    return Object.values(tableSpecs.schema.indexes).reduce((r, index) => ({
+      ...r,
+      [index.name]: true
+    }),{}) as T
   }, [table])
 
   // --- DB Operations ---

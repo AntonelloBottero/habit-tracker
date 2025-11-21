@@ -1,39 +1,14 @@
 'use client'
 
 import { createContext, useContext, useState, ReactNode } from 'react'
-import { db, type OptionsSchema } from '@/db/db'
+import useDb, { type OptionsSchema } from '@/db/useDb'
 
-// get option
-export const showOption = async (key: string): Promise<OptionsSchema | undefined> => {
-  if(!key) { return undefined }
-  try {
-    const option: OptionsSchema | undefined = await db.options.where('key').equalsIgnoreCase(key).first()
-    return option
-  } catch(error) {
-    return undefined
-  }
-}
-
-// insert new option, or update it if the key exists already
-export const createOption = async (key: string, value?: string | number): Promise<true | string> => {
-  if(!key) { return 'No key specified for your option' }
-  const formattedKey = key.toLocaleLowerCase()
-  const option = await showOption(key)
-  if(!option) {
-    await db.options.add({ key: formattedKey, value })
-  } else {
-    db.options.put({
-      ...option,
-      value
-    })
-  }
-  return true
-}
 
 /**
  * Options context
  */
 interface OptionsContextProviver {
+  createOption: (key: string, value?: string | number) => Promise<true | string>
   getOption: (key: string) => Promise<unknown>
 }
 
@@ -48,7 +23,35 @@ export function OptionsProvider({
 }: Readonly<{
   children: ReactNode;
 }>) {
+  const { db } = useDb()
   const [availableOptionValues, setAvailableOptionValues] = useState<AvailableOptionValues>({}) // Options requested already in the current session
+
+  // get option
+  const showOption = async (key: string): Promise<OptionsSchema | undefined> => {
+    if(!key) { return undefined }
+    try {
+      const option: OptionsSchema | undefined = await db.options.where('key').equalsIgnoreCase(key).first()
+      return option
+    } catch(error) {
+      return undefined
+    }
+  }
+
+  // insert new option, or update it if the key exists already
+  const createOption = async (key: string, value?: string | number): Promise<true | string> => {
+    if(!key) { return 'No key specified for your option' }
+    const formattedKey = key.toLocaleLowerCase()
+    const option = await showOption(key)
+    if(!option) {
+      await db.options.add({ key: formattedKey, value })
+    } else {
+      db.options.put({
+        ...option,
+        value
+      })
+    }
+    return true
+  }
 
   // retrieves an option
   const getOption = async (key: string): Promise<unknown> => {
@@ -67,14 +70,14 @@ export function OptionsProvider({
   }
 
   return (
-    <OptionsContext.Provider value={ { getOption } }>
+    <OptionsContext.Provider value={ { createOption, getOption } }>
       {children}
     </OptionsContext.Provider>
   )
 }
 
 // Custom hook for consumers
-export function useOptions() {
+export default function useOptions() {
   const context = useContext(OptionsContext)
   if (!context) {
     throw new Error('useOptions must be used within a OptionsProvider')

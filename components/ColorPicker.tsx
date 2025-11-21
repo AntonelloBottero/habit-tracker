@@ -7,7 +7,7 @@
 import { defaultColors } from "@/utils/constants"
 
 import { useState, useEffect, useMemo } from "react"
-import { useOptions } from "@/hooks/useOptions"
+import useOptions from "@/hooks/useOptions"
 import { BookmarkIcon } from '@heroicons/react/24/solid'
 import { FormFieldProps } from "@/app/types"
 

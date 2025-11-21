@@ -3,7 +3,7 @@
 import { OptionsProvider } from '@/hooks/useOptions'
 import { Monda } from "next/font/google"
 import "./globals.css"
-import { setup } from '@/db/db'
+import useDb from '@/db/useDb'
 
 const monda = Monda({
   variable: "--font-monda",
@@ -15,7 +15,7 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  setup()
+  useDb(true) // db startup
 
   return (
     <OptionsProvider>

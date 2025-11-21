@@ -1,6 +1,6 @@
 'use client'
 
-import { useOptions } from '@/hooks/useOptions'
+import useOptions from '@/hooks/useOptions'
 import TabsWindow from "@/components/TabsWindow"
 import SetupForm from "@/components/SetupForm"
 import HabitsSetup from "@/components/HabitsSetup"

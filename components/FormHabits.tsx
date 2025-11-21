@@ -3,7 +3,7 @@ import InputWrapper from '@/components/InputWrapper'
 import ColorPicker from '@/components/ColorPicker'
 import CheckboxBtn from '@/components/CheckboxBtn'
 import { CheckCircleIcon } from '@heroicons/react/24/solid'
-import { habitsModel, type HabitsSchema } from '@/db/db'
+import { habitsModel, type HabitsSchema } from '@/db/useDb'
 import useForm, {Rules, validators} from '@/hooks/useForm'
 import useDbCrud from '@/hooks/useDbCrud'
 

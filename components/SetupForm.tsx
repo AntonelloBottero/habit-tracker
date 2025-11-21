@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Form from 'next/form'
-import { createOption, useOptions } from '@/hooks/useOptions'
+import useOptions from '@/hooks/useOptions'
 import { ArrowRightIcon } from '@heroicons/react/24/outline'
 import Loader from '@/components/Loader'
 
@@ -11,7 +11,7 @@ interface Props {
 }
 
 export default function SetupForm({ onSubmit }: Props) {
-  const { getOption } = useOptions()
+  const { createOption } = useOptions()
   const [name, setName] = useState('')
   const [canSubmit, setCanSubmit] = useState(false)
   const [loading, setLoading] = useState(false)
