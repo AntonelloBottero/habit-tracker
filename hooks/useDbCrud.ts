@@ -18,7 +18,6 @@ export default function useDbCrud<T extends object>({ table }: Params) {
   }
 
   const model = useMemo<T | null>(() => {
-    if(!db.isOpen()) { return null }
     const tableSpecs = db.table(table)
     if(!tableSpecs?.schema?.indexes) { return null }
     return Object.values(tableSpecs.schema.indexes).reduce((r, index) => ({
