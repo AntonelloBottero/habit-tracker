@@ -7,7 +7,7 @@
 import { defaultColors } from "@/utils/constants"
 
 import { useState, useEffect, useMemo } from "react"
-import useOptions from "@/hooks/useOptions"
+import useDb from "@/db/useDb"
 import { BookmarkIcon } from '@heroicons/react/24/solid'
 import { FormFieldProps } from "@/app/types"
 
@@ -15,10 +15,10 @@ import { FormFieldProps } from "@/app/types"
 
 export default function ColorPicker(props: FormFieldProps) {
   // --- mixes default color with the ones chosen by the user in previous form entries ---
-  const { getOption } = useOptions() // user colors are managed through db options
-  const [userColors, setUserColors] = useState([])
+  const { getOption } = useDb() // user colors are managed through db options
+  const [userColors, setUserColors] = useState<string[]>([])
   const getUserColors = async () => {
-    const userColors = await getOption("user_colors")
+    const userColors = await getOption("user_colors") as string[] | undefined
     setUserColors(userColors || [])
   }
   const availableColors = useMemo(() => {

@@ -125,7 +125,16 @@ export function DbProvider({ children }: Readonly<{ children: ReactNode }>) {
 
   return (
     <DbContext.Provider value={ { db, dbIsOpen, createOption, getOption } }>
-      {children}
+      {dbIsOpen && children}
     </DbContext.Provider>
   )
+}
+
+// Hook for consumers
+export default function useDb() {
+  const context = useContext(DbContext)
+  if (!context) {
+    throw new Error('useDb must be used within a OptionsProvider')
+  }
+  return context
 }

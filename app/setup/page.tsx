@@ -1,17 +1,17 @@
 'use client'
 
-import useOptions from '@/hooks/useOptions'
+import useDb from '@/db/useDb'
 import TabsWindow from "@/components/TabsWindow"
 import SetupForm from "@/components/SetupForm"
 import HabitsSetup from "@/components/HabitsSetup"
 import { useState, useEffect } from 'react'
 
 export default function Page() {
-  const { getOption } = useOptions()
-  const [name, setName] = useState('')
+  const { getOption } = useDb()
+  const [name, setName] = useState<string>('')
   const [tab, setTab] = useState(0)
   const getName = async () => {
-    const nameOption = await getOption('name')
+    const nameOption = await getOption('name') as string | undefined
     setName(nameOption || '')
   }
   useEffect(() => {

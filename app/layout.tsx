@@ -1,9 +1,8 @@
 'use client'
 
-import { OptionsProvider } from '@/hooks/useOptions'
+import { DbProvider } from '@/db/useDb'
 import { Monda } from "next/font/google"
 import "./globals.css"
-import useDb from '@/db/useDb'
 
 const monda = Monda({
   variable: "--font-monda",
@@ -15,18 +14,17 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  useDb(true) // db startup
 
   return (
-    <OptionsProvider>
-      <html lang="en">
-        <body
-          className={`${monda.variable} antialiased gradient-primary`}
-        >
+    <html lang="en">
+      <body
+        className={`${monda.variable} antialiased gradient-primary`}
+      >
+        <DbProvider>
           {children}
           <div data-ht-role="modals" />
-        </body>
-      </html>
-    </OptionsProvider>
+        </DbProvider>
+      </body>
+    </html>
   )
 }
