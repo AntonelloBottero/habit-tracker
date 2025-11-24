@@ -22,8 +22,8 @@ export default function RootLayout({
       >
         <DbProvider>
           {children}
-          <div data-ht-role="modals" />
         </DbProvider>
+        <div data-ht-role="modals" />
       </body>
     </html>
   )

@@ -29,7 +29,7 @@ export default function useDbCrud<T extends object>({ table }: Params) {
   // --- DB Operations ---
   const index = async (): Promise<T[]> => {
     if(!isCompliant()) { return [] }
-    const items = await db[table].where('deleted_at').equals(null).all()
+    const items = await db[table].orderBy('created_at').toArray()
     return items
   }
   const show = async (id: string): Promise<T | undefined> => {
@@ -39,7 +39,7 @@ export default function useDbCrud<T extends object>({ table }: Params) {
   }
   const store = async (values: Partial<T>): Promise<void> => {
     if(!isCompliant()) { return undefined }
-    if(!objectIsCompliant(model, values)) {
+    if(!objectIsCompliant(model as T, values)) {
       throw new TypeError('Values are not fully compliant with model')
     }
     await db[table].add({

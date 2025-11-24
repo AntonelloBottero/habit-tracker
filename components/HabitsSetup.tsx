@@ -17,7 +17,8 @@ type Habit = Partial<typeof habitsModel> & {
 // - When (every day, selected days, except weekends, n days per week/month, etc)
 // - Icon
 export default function HabitsSetup() {
-    const { index } = useDbCrud({ table: 'habits', model: habitsModel })
+    console.log('HabitsSetup')
+    const { index } = useDbCrud({ table: 'habits' })
 
     // --- Existing Habits ---
     const [habits, setHabits] = useState<Habit[]>([])
@@ -31,8 +32,10 @@ export default function HabitsSetup() {
     const fetchHabits = async () => {
         try {
         const habits = await index()
+        console.log('habits', habits)
         setHabits(habits)
         } catch(error) {
+            console.log('error', error)
             setHabits([])
         }
     }
