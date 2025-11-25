@@ -72,7 +72,7 @@ export default function HabitsSetup() {
                         some <b>Good habits</b>.
                     </p>
                     {goodHabits.map(habit => (
-                        <p>
+                        <p key={habit.id}>
                             {habit.name}
                         </p>
                     ))}
