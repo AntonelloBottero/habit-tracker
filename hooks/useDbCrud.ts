@@ -1,26 +1,30 @@
 import useDb from '@/db/useDb'
 import { DateTime } from 'luxon'
 import { objectIsCompliant } from "@/utils/index"
-import { useState, useEffect, useMemo } from 'react'
+import { useMemo } from 'react'
+import { type Table } from 'dexie'
 
 interface Params {
   table: string
 }
 
-export default function useDbCrud<T extends object>({ table }: Params) {
+export default function useDbCrud<T extends object>({ table: storeName }: Params) {
   const { db } = useDb()
+
+  const table = useMemo<Table | null>(() => {
+    return db.table(storeName) || null
+  }, [name])
 
   function isCompliant() {
     if(!db.isOpen()) { return false }
-    if(!db.table(table)) { return false }
+    if(!db.table(storeName)) { return false }
     if(!model) { return false}
     return true
   }
 
   const model = useMemo<T | null>(() => {
-    const tableSpecs = db.table(table)
-    if(!tableSpecs?.schema?.indexes) { return null }
-    return Object.values(tableSpecs.schema.indexes).reduce((r, index) => ({
+    if(!table?.schema?.indexes) { return null }
+    return Object.values(table.schema.indexes).reduce((r, index) => ({
       ...r,
       [index.name]: true
     }),{}) as T
@@ -29,12 +33,12 @@ export default function useDbCrud<T extends object>({ table }: Params) {
   // --- DB Operations ---
   const index = async (): Promise<T[]> => {
     if(!isCompliant()) { return [] }
-    const items = await db[table].where('deleted_at').equals('').toArray() // TODO sort by created_at
+    const items = await (table as Table).where('deleted_at').equals('').toArray() // TODO sort by created_at
     return items
   }
   const show = async (id: string): Promise<T | undefined> => {
     if(!isCompliant()) { return undefined }
-    const item = await db[table].where('id').equalsIgnoreCase(id).and('deleted_at').equals(null).first()
+    const item = await (table as Table).where('id').equalsIgnoreCase(id).and(item => item.deleted_at === '').first()
     return item
   }
   const store = async (values: Partial<T>): Promise<void> => {
@@ -42,7 +46,7 @@ export default function useDbCrud<T extends object>({ table }: Params) {
     if(!objectIsCompliant(model as T, values)) {
       throw new TypeError('Values are not fully compliant with model')
     }
-    await db[table].add({
+    await (table as Table).add({
       ...values,
       created_at: DateTime.now().toISO(),
       deleted_at: ''
@@ -56,7 +60,7 @@ export default function useDbCrud<T extends object>({ table }: Params) {
     if(!item) {
       throw new ReferenceError('Resource could not be found')
     }
-    await db[table].put({
+    await (table as Table).put({
       ...item,
       ...values,
       updated_at: DateTime.now().toISO()
@@ -67,7 +71,7 @@ export default function useDbCrud<T extends object>({ table }: Params) {
     if(!item) {
       throw new ReferenceError('Resource could not be found')
     }
-    await db[table].delete(id)
+    await (table as Table).delete(id)
   }
 
   return {

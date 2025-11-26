@@ -41,8 +41,8 @@ class DB extends Dexie {
   options!: Table<OptionsSchema, 'id'>
   habits!: Table<HabitsSchema, 'id'>
   constructor() {
-    super(process.env.dbName as string)
-    this.version(Number(process.env.dbVersion)).stores({
+    super('HabiterDatabase')
+    this.version(1).stores({
       options: '++id, key, value',
       habits: `++id, ${Object.keys(habitsModel).join(', ')}, created_at, updated_at, deleted_at`
     })
