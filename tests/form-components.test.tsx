@@ -1,5 +1,5 @@
 import { ReactNode } from 'react'
-import {render, screen, within, act} from '@testing-library/react'
+import {render, screen, within, act, waitFor} from '@testing-library/react'
 import '@testing-library/jest-dom' // for toBeInTheDocument() assertion
 import { DbProvider } from '@/db/useDb'
 
@@ -43,11 +43,14 @@ describe('ColorPicker component', () => {
   })
 
   test('Renders color buttons inside component', () => {
-    render(<ColorPicker name="Color" value={colorValue} onChange={() => {}} />, { wrapper: dbProvideMock })
+    let AvailableColorElements: HTMLElement[] = []
     act(() => {
+      render(<ColorPicker name="Color" value={colorValue} onChange={() => {}} />, { wrapper: dbProvideMock })
+    })
+    waitFor(() => {
       const PickerElement = screen.getByRole('color-picker')
       const PickerContext = within(PickerElement)
-      const AvailableColorElements = PickerContext.getAllByRole('color-picker-available-color')
+      AvailableColorElements = PickerContext.getAllByRole('color-picker-available-color')
       expect(AvailableColorElements.length).toBeGreaterThan(1)
       expect(AvailableColorElements[0]).toBeInTheDocument()
     })
@@ -55,41 +58,45 @@ describe('ColorPicker component', () => {
 
   test('Clicking on a default color triggers correct value update', async () => {
     const defaultColor = defaultColors[1]
-    render(<ColorPicker name="Color" value={colorValue} onChange={(e) => setColorValue(e.target.value)} />, { wrapper: dbProvideMock })
-    act(() => { // to manage internal component state change
+    function setColorValue(value: string) {
+      expect(value).toBe(defaultColor)
+    }
+    act(() => {
+      render(<ColorPicker name="Color" value={colorValue} onChange={(e) => setColorValue(e.target.value)} />, { wrapper: dbProvideMock })
+    })
+    waitFor(() => {
       const PickerElement = screen.getByRole('color-picker')
       const PickerContext = within(PickerElement)
       const AvailableColorElements = PickerContext.getAllByRole('color-picker-available-color')
       const AvailableColorElement = AvailableColorElements[AvailableColorElements.length - defaultColors.length + 1]
       AvailableColorElement.click()
     })
-    function setColorValue(value: string) {
-      expect(value).toBe(defaultColor)
-    }
   })
 
   test('If value is an available color, it gets highlighted', async () => {
     colorValue = defaultColors[1]
-    render(<ColorPicker name="Color" value={colorValue} onChange={() => {}} />, { wrapper: dbProvideMock })
-    await act(async () => {
-      const PickerElement = screen.getByRole('color-picker')
-      const PickerContext = within(PickerElement)
-      const AvailableColorElements = PickerContext.getAllByRole('color-picker-available-color')
-      const AvailableColorElement = AvailableColorElements[AvailableColorElements.length - defaultColors.length + 1]
-      const AvailableColorContext = within(AvailableColorElement)
-      const AvailableColorActiveElement = await AvailableColorContext.findByRole('available-color-active')
+    act(() => {
+      render(<ColorPicker name="Color" value={colorValue} onChange={() => {}} />, { wrapper: dbProvideMock })
+    })
+    const PickerElement = screen.getByRole('color-picker')
+    const PickerContext = within(PickerElement)
+    const AvailableColorElements = PickerContext.getAllByRole('color-picker-available-color')
+    const AvailableColorElement = AvailableColorElements[AvailableColorElements.length - defaultColors.length + 1]
+    const AvailableColorContext = within(AvailableColorElement)
+    const AvailableColorActiveElement = await AvailableColorContext.findByRole('available-color-active')
+    waitFor(() => {
       expect(AvailableColorActiveElement).toBeInTheDocument()
     })
   })
 
   test('Color value in input field', () => {
     colorValue = defaultColors[1]
-    render(<ColorPicker name="Color" value={colorValue} onChange={() => {}} />, { wrapper: dbProvideMock })
     act(() => {
-      const PickerElement = screen.getByRole('color-picker')
-      const PickerContext = within(PickerElement)
-      const InputElement = PickerContext.getByDisplayValue(defaultColors[1])
-      expect(InputElement).toBeInTheDocument()
+      render(<ColorPicker name="Color" value={colorValue} onChange={() => {}} />, { wrapper: dbProvideMock })
     })
+    const PickerElement = screen.getByRole('color-picker')
+    const PickerContext = within(PickerElement)
+    const InputElement = PickerContext.getByDisplayValue(defaultColors[1])
+    expect(InputElement).toBeInTheDocument()
   })
 })
