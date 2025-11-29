@@ -3,8 +3,8 @@ import {render, screen, within, act, waitFor} from '@testing-library/react'
 import '@testing-library/jest-dom' // for toBeInTheDocument() assertion
 import { DbProvider } from '@/db/useDb'
 
-// --- OptionsProvider mock ---
-const dbProvideMock = ({ children }: Readonly<{ children: ReactNode }>) => (
+// --- DbProvider mock ---
+const dbProviderMock = ({ children }: Readonly<{ children: ReactNode }>) => (
   <DbProvider>
     { children }
   </DbProvider>
@@ -45,7 +45,7 @@ describe('ColorPicker component', () => {
   test('Renders color buttons inside component', () => {
     let AvailableColorElements: HTMLElement[] = []
     act(() => {
-      render(<ColorPicker name="Color" value={colorValue} onChange={() => {}} />, { wrapper: dbProvideMock })
+      render(<ColorPicker name="Color" value={colorValue} onChange={() => {}} />, { wrapper: dbProviderMock })
     })
     waitFor(() => {
       const PickerElement = screen.getByRole('color-picker')
@@ -62,7 +62,7 @@ describe('ColorPicker component', () => {
       expect(value).toBe(defaultColor)
     }
     act(() => {
-      render(<ColorPicker name="Color" value={colorValue} onChange={(e) => setColorValue(e.target.value)} />, { wrapper: dbProvideMock })
+      render(<ColorPicker name="Color" value={colorValue} onChange={(e) => setColorValue(e.target.value)} />, { wrapper: dbProviderMock })
     })
     waitFor(() => {
       const PickerElement = screen.getByRole('color-picker')
@@ -76,7 +76,7 @@ describe('ColorPicker component', () => {
   test('If value is an available color, it gets highlighted', async () => {
     colorValue = defaultColors[1]
     act(() => {
-      render(<ColorPicker name="Color" value={colorValue} onChange={() => {}} />, { wrapper: dbProvideMock })
+      render(<ColorPicker name="Color" value={colorValue} onChange={() => {}} />, { wrapper: dbProviderMock })
     })
     const PickerElement = screen.getByRole('color-picker')
     const PickerContext = within(PickerElement)
@@ -92,7 +92,7 @@ describe('ColorPicker component', () => {
   test('Color value in input field', () => {
     colorValue = defaultColors[1]
     act(() => {
-      render(<ColorPicker name="Color" value={colorValue} onChange={() => {}} />, { wrapper: dbProvideMock })
+      render(<ColorPicker name="Color" value={colorValue} onChange={() => {}} />, { wrapper: dbProviderMock })
     })
     const PickerElement = screen.getByRole('color-picker')
     const PickerContext = within(PickerElement)
