@@ -1,7 +1,8 @@
 'use client'
 
 import { createContext, useContext, useState, ReactNode } from 'react'
-import useDb, { type OptionsSchema } from '@/db/useDb'
+import { type OptionsSchema } from '@/db/DbClass'
+import useDb from '@/db/useDb'
 
 
 /**

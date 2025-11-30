@@ -1,8 +1,8 @@
 'use client'
 
-import { createContext, useContext, useState, useEffect, type ReactNode } from 'react'
-import { type Dexie } from 'dexie'
-import DbClass from '@/db/DbClass'
+import { createContext, useContext, useState, useEffect, useMemo, type ReactNode } from 'react'
+import { type Dexie, type Table } from 'dexie'
+import DbClass, { type OptionsSchema } from '@/db/DbClass'
 
 interface AvailableOptionValues {
   [key: string]: unknown
@@ -45,13 +45,16 @@ export function DbProvider({ children, externalDb }: ProviderProps) {
   }, [])
 
   // --- Manage options ---
+  const optionsTable = useMemo<Table | null>(() => {
+    return db.table('options') || null
+  }, [])
   const [availableOptionValues, setAvailableOptionValues] = useState<AvailableOptionValues>({}) // Options requested already in the current session
 
   // get option
   const showOption = async (key: string): Promise<OptionsSchema | undefined> => {
     if(!key) { return undefined }
     try {
-      const option: OptionsSchema | undefined = await db.options.where('key').equalsIgnoreCase(key).first()
+      const option: OptionsSchema | undefined = await optionsTable?.where('key').equalsIgnoreCase(key).first()
       return option
     } catch(error) {
       return undefined
@@ -64,9 +67,9 @@ export function DbProvider({ children, externalDb }: ProviderProps) {
     const formattedKey = key.toLocaleLowerCase()
     const option = await showOption(key)
     if(!option) {
-      await db.options.add({ key: formattedKey, value })
+      await optionsTable?.add({ key: formattedKey, value })
     } else {
-      db.options.put({
+      optionsTable?.put({
         ...option,
         value
       })
