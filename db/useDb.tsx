@@ -1,66 +1,33 @@
 'use client'
 
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react'
-import Dexie, { type Table } from 'dexie'
-
-// --- Schemas and Models ---
-
-// options schema
-export interface OptionsSchema {
-    key: string,
-    value?: string | number
-}
-
-// habits schema and model
-export interface HabitsSchema {
-  type: 'good' | 'bad' | ''
-  name: string
-  color: string
-  granularity: string
-  include_weekends: boolean
-  granularity_times: number,
-  enough_amount: string
-}
-export const habitsModel: HabitsSchema = {
-  type: '',
-  name: '',
-  color: '',
-  granularity: 'daily',
-  include_weekends: false,
-  granularity_times: 0,
-  enough_amount: ''
-}
+import { createContext, useContext, useState, useEffect, type ReactNode } from 'react'
+import { type Dexie } from 'dexie'
+import DbClass from '@/db/DbClass'
 
 interface AvailableOptionValues {
   [key: string]: unknown
 }
 
-
-// --- DB setup ---
-class DB extends Dexie {
-  options!: Table<OptionsSchema, 'id'>
-  habits!: Table<HabitsSchema, 'id'>
-  constructor() {
-    super('HabiterDatabase')
-    this.version(1).stores({
-      options: '++id, key, value',
-      habits: `++id, ${Object.keys(habitsModel).join(', ')}, created_at, updated_at, deleted_at`
-    })
-  }
-}
-const db = new DB()
-
 // --- Context Provider ---
 interface DbContextProvider {
-  db: DB
+  db: DbClass
   dbIsOpen: boolean | 'pending'
   createOption: (key: string, value?: string | number) => Promise<true | string>
   getOption: (key: string) => Promise<unknown>
 }
 
+type ProviderProps = Readonly<{
+  children: ReactNode
+  externalDb?: Dexie
+}>
+
 const DbContext = createContext<DbContextProvider | null>(null)
 
-export function DbProvider({ children }: Readonly<{ children: ReactNode }>) {
+
+export function DbProvider({ children, externalDb }: ProviderProps) {
+  // --- Db setup ---
+  const db = externalDb || new DbClass('HabiterDatabase', 1) // we treat externalDb as non stateful -> if not provided after Provider setup won't be further considered
+
   // --- Open db ---
   const [dbIsOpen, setDbIsOpen] = useState<boolean | 'pending'>(false)
   async function open() {
