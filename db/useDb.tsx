@@ -1,35 +1,6 @@
 'use client'
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react'
-import Dexie, { type Table } from 'dexie'
-
-// --- Schemas and Models ---
-
-// options schema
-export interface OptionsSchema {
-    key: string,
-    value?: string | number
-}
-
-// habits schema and model
-export interface HabitsSchema {
-  type: 'good' | 'bad' | ''
-  name: string
-  color: string
-  granularity: string
-  include_weekends: boolean
-  granularity_times: number,
-  enough_amount: string
-}
-export const habitsModel: HabitsSchema = {
-  type: '',
-  name: '',
-  color: '',
-  granularity: 'daily',
-  include_weekends: false,
-  granularity_times: 0,
-  enough_amount: ''
-}
 
 interface AvailableOptionValues {
   [key: string]: unknown
