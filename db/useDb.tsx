@@ -26,7 +26,7 @@ const DbContext = createContext<DbContextProvider | null>(null)
 
 export function DbProvider({ children, externalDb }: ProviderProps) {
   // --- Db setup ---
-  const db = externalDb || new DbClass('HabiterDatabase', 1) // we treat externalDb as non stateful -> if not provided after Provider setup won't be further considered
+  const db = externalDb || new DbClass(process.env.dbName as string, Number(process.env.dbVersion) as number) // we treat externalDb as non stateful -> if not provided after Provider setup won't be further considered
 
   // --- Open db ---
   const [dbIsOpen, setDbIsOpen] = useState<boolean | 'pending'>(false)
