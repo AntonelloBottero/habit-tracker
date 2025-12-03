@@ -10,6 +10,7 @@ const createJestConfig = nextJest({
 const config: Config = {
   coverageProvider: 'v8',
   testEnvironment: 'jsdom',
+  setupFilesAfterEnv: ['<rootDir>/setupTests.ts'],
   // Add more setup options before each test is run
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/$1', // to allow Jest to find React components whose import path starts with "@/"
