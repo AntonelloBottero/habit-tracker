@@ -27,15 +27,9 @@ export const TestDbConsumer = ({ onHookReady }: { onHookReady: (values: DbTestVa
 }
 
 describe('Db Provider', () => {
-  beforeEach(async () => {
-    await testDb.delete()
-    await testDb.open()
-  })
-  afterAll(() => {
-    testDb.close()
-  })
 
-  test('opened db shows children', async () => {
+
+  test('pending db open state', async () => {
     let hookValues: DbTestValues
 
     render(
