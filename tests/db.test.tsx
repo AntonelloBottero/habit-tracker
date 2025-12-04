@@ -1,4 +1,4 @@
-import { render, waitFor } from '@testing-library/react'
+import { render, waitFor, screen } from '@testing-library/react'
 import useDb, { DbProvider } from '@/db/useDb'
 import DbClass from '@/db/DbClass'
 
@@ -21,27 +21,21 @@ export const TestDbConsumer = ({ onHookReady }: { onHookReady: (values: DbTestVa
   // No rendering needed
   return (
     <h1>
-      Db is open
+      Consumer is rendered
     </h1>
   )
 }
 
 describe('Db Provider', () => {
-
-
-  test('opened db shows children', () => {
-    let hookValues: DbTestValues
-
-    render(
-      <DbProvider externalDb={testDb}>
-        <TestDbConsumer onHookReady={(values) => { hookValues = values }} />
-      </DbProvider>
-    )
-
-    waitFor(() => expect(hookValues.dbIsOpen).toBe('pending'))
+  beforeEach(async () => {
+    await testDb.delete()
+    await testDb.open()
+  })
+  afterAll(() => {
+    testDb.close()
   })
 
-  test('true db open state', () => {
+  test('opened db shows children', async () => {
     let hookValues: DbTestValues
 
     render(
@@ -50,6 +44,34 @@ describe('Db Provider', () => {
       </DbProvider>
     )
 
-    waitFor(() => expect(hookValues.dbIsOpen).toBe(true))
+    await waitFor(() => {
+      expect(hookValues.dbIsOpen).toBe('pending')
+    })
+
+    const ConsumerTitle = screen.getByRole('heading', {level: 1})
+    waitFor(() => {
+      expect(ConsumerTitle).toBeNull()
+    })
+
+  })
+
+  test('true db open state', async () => {
+    let hookValues: DbTestValues
+
+    render(
+      <DbProvider externalDb={testDb}>
+        <TestDbConsumer onHookReady={(values) => { hookValues = values }} />
+      </DbProvider>
+    )
+
+    await waitFor(() => {
+      expect(hookValues.dbIsOpen).toBe(true)
+    })
+
+
+    const ConsumerTitle = screen.getByRole('heading', {level: 1})
+    waitFor(() => {
+      expect(ConsumerTitle).toBeInTheDocument()
+    })
   })
 })
