@@ -1,7 +1,7 @@
 'use client'
 
 import { createContext, useContext, useState, useEffect, useMemo, type ReactNode } from 'react'
-import { type Dexie, type Table } from 'dexie'
+import { type Table } from 'dexie'
 import DbClass, { type OptionsSchema } from '@/db/DbClass'
 
 interface AvailableOptionValues {
@@ -12,13 +12,13 @@ interface AvailableOptionValues {
 interface DbContextProvider {
   db: DbClass
   dbIsOpen: boolean | 'pending'
-  createOption: (key: string, value?: string | number) => Promise<true | string>
+  createOption: (key: string, value?: string | number) => Promise<boolean>
   getOption: (key: string) => Promise<unknown>
 }
 
 type ProviderProps = Readonly<{
   children: ReactNode
-  externalDb?: Dexie
+  externalDb?: DbClass
 }>
 
 const DbContext = createContext<DbContextProvider | null>(null)
@@ -45,16 +45,13 @@ export function DbProvider({ children, externalDb }: ProviderProps) {
   }, [])
 
   // --- Manage options ---
-  const optionsTable = useMemo<Table | null>(() => {
-    return db.table('options') || null
-  }, [])
   const [availableOptionValues, setAvailableOptionValues] = useState<AvailableOptionValues>({}) // Options requested already in the current session
 
   // get option
   const showOption = async (key: string): Promise<OptionsSchema | undefined> => {
     if(!key) { return undefined }
     try {
-      const option: OptionsSchema | undefined = await optionsTable?.where('key').equalsIgnoreCase(key).first()
+      const option: OptionsSchema | undefined = await db.options.where('key').equalsIgnoreCase(key).first()
       return option
     } catch(error) {
       return undefined
@@ -62,14 +59,14 @@ export function DbProvider({ children, externalDb }: ProviderProps) {
   }
 
   // insert new option, or update it if the key exists already
-  const createOption = async (key: string, value?: string | number): Promise<true | string> => {
-    if(!key) { return 'No key specified for your option' }
+  const createOption = async (key: string, value?: string | number): Promise<boolean> => {
+    if(!key) { return false }
     const formattedKey = key.toLocaleLowerCase()
     const option = await showOption(key)
     if(!option) {
-      await optionsTable?.add({ key: formattedKey, value })
+      await db.options.add({ key: formattedKey, value })
     } else {
-      optionsTable?.put({
+      db.options.put({
         ...option,
         value
       })
