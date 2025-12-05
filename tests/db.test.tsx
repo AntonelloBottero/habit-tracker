@@ -70,7 +70,7 @@ describe('Db Provider', () => {
     })
   })
 
-  test('Create option', async () => {
+  test('Create and get option', async () => {
     let hookValues: DbTestValues
     render(
       <DbProvider externalDb={testDb}>
@@ -81,6 +81,8 @@ describe('Db Provider', () => {
       expect(hookValues.dbIsOpen).toBe(true)
       const created = await hookValues.createOption('test', 1)
       expect(created).toBe(true)
+      const option = await hookValues.getOption('test')
+      expect(option).toBe(1)
     })
   })
 })
