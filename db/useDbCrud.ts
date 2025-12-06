@@ -41,8 +41,8 @@ export default function useDbCrud<T extends object>({ table: storeName }: Params
     const item = await (table as Table).where('id').equalsIgnoreCase(id).and(item => item.deleted_at === '').first()
     return item
   }
-  const store = async (values: Partial<T>): Promise<void> => {
-    if(!isCompliant()) { return undefined }
+  const store = async (values: Partial<T>): Promise<boolean> => {
+    if(!isCompliant()) { return false }
     if(!objectIsCompliant(model as T, values)) {
       throw new TypeError('Values are not fully compliant with model')
     }
@@ -51,6 +51,7 @@ export default function useDbCrud<T extends object>({ table: storeName }: Params
       created_at: DateTime.now().toISO(),
       deleted_at: ''
     })
+    return true
   }
   const update = async (id: string, values: Partial<T>): Promise<void> => {
     if(!objectIsCompliant(model as T, values)) {

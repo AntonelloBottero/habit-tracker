@@ -3,7 +3,7 @@ import Modal from '@/components/Modal'
 import FormHabits from '@/components/FormHabits'
 import { habitsModel } from '@/db/useDb'
 import { ModalRef } from '@/app/types'
-import useDbCrud from '@/hooks/useDbCrud'
+import useDbCrud from '@/db/useDbCrud'
 
 type Habit = Partial<typeof habitsModel> & {
     id?: string

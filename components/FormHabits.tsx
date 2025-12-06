@@ -5,7 +5,7 @@ import CheckboxBtn from '@/components/CheckboxBtn'
 import { CheckCircleIcon } from '@heroicons/react/24/solid'
 import { habitsModel, type HabitsSchema } from '@/db/DbClass'
 import useForm, {Rules, validators} from '@/hooks/useForm'
-import useDbCrud from '@/hooks/useDbCrud'
+import useDbCrud from '@/db/useDbCrud'
 
 type Values = Partial<HabitsSchema> & {
   id?: string
@@ -63,7 +63,7 @@ export default function FormHabits({ values, onSave }: Props) {
   }
 
   // --- Save data ---
-  const { store, update } = useDbCrud({ table: 'habits', model: habitsModel })
+  const { store, update } = useDbCrud({ table: 'habits' })
   const id = useMemo(()=> {
     return values?.id
   }, [values])
