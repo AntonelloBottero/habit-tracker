@@ -36,9 +36,9 @@ export default function useDbCrud<T extends object>({ table: storeName }: Params
     const items = await (table as Table).where('deleted_at').equals('').toArray() // TODO sort by created_at
     return items
   }
-  const show = async (id: string): Promise<T | undefined> => {
+  const show = async (id: number): Promise<T | undefined> => {
     if(!isCompliant()) { return undefined }
-    const item = await (table as Table).where('id').equalsIgnoreCase(id).and(item => item.deleted_at === '').first()
+    const item = await (table as Table).where('id').equals(id).and(item => item.deleted_at === '').first()
     return item
   }
   const store = async (values: Partial<T>): Promise<boolean> => {
@@ -53,7 +53,7 @@ export default function useDbCrud<T extends object>({ table: storeName }: Params
     })
     return true
   }
-  const update = async (id: string, values: Partial<T>): Promise<void> => {
+  const update = async (id: number, values: Partial<T>): Promise<void> => {
     if(!objectIsCompliant(model as T, values)) {
       throw new TypeError('Values are not fully compliant with model')
     }
@@ -67,7 +67,7 @@ export default function useDbCrud<T extends object>({ table: storeName }: Params
       updated_at: DateTime.now().toISO()
     })
   }
-  const deleteItem = async(id: string): Promise<void> => {
+  const deleteItem = async(id: number): Promise<void> => {
     const item = await show(id)
     if(!item) {
       throw new ReferenceError('Resource could not be found')

@@ -102,10 +102,10 @@ const testHabit: HabitsSchema = {
 // DB CRUD consumer
 interface DbTestCrudValues<T> {
   index: () => Promise<T[]>
-  show: (id: string) => Promise<T | undefined>
+  show: (id: number) => Promise<T | undefined>
   store: (values: Partial<T>) => Promise<boolean>
-  update: (id: string, values: Partial<T>) => Promise<void>
-  deleteItem: (id: string) => Promise<void>
+  update: (id: number, values: Partial<T>) => Promise<void>
+  deleteItem: (id: number) => Promise<void>
 }
 
 export const TestDbCrudConsumer = ({ onHookReady }: { onHookReady: (values: DbTestCrudValues<HabitsSchema>) => void }) => {
@@ -119,6 +119,14 @@ export const TestDbCrudConsumer = ({ onHookReady }: { onHookReady: (values: DbTe
 }
 
 describe('DB CRUD', () => {
+  beforeEach(async () => {
+    await testDb.delete()
+  })
+
+  afterAll(() => {
+    testDb.close()
+  })
+
   test('create', async () => {
     let hookValues: DbTestCrudValues<HabitsSchema>
     render(
@@ -142,13 +150,60 @@ describe('DB CRUD', () => {
     )
 
     await waitFor(async () => {
+      await hookValues.store(testHabit)
       const testHabits = await hookValues.index()
-      console.log('testHabits', testHabits)
       expect(testHabits.length).toBe(1)
       expect(testHabits[0].name).toBe('Test habit 1')
     })
+  })
 
-    testDb.close()
-    await testDb.delete()
+  test('show', async () => {
+    let hookValues: DbTestCrudValues<HabitsSchema>
+    render(
+      <DbProvider externalDb={testDb}>
+        <TestDbCrudConsumer onHookReady={(values) => { hookValues = values }} />
+      </DbProvider>
+    )
+
+    await waitFor(async () => {
+      await hookValues.store(testHabit)
+      const shownTestHabit = await hookValues.show(1)
+      expect(shownTestHabit?.name).toBe('Test habit 1')
+    })
+  })
+
+  test('update', async () => {
+    let hookValues: DbTestCrudValues<HabitsSchema>
+    render(
+      <DbProvider externalDb={testDb}>
+        <TestDbCrudConsumer onHookReady={(values) => { hookValues = values }} />
+      </DbProvider>
+    )
+
+    await waitFor(async () => {
+      await hookValues.store(testHabit)
+      const name = 'Test habit edit'
+      await hookValues.update(1, { name })
+      const shownTestHabit = await hookValues.show(1)
+      expect(shownTestHabit?.name).toBe(name)
+    })
+  })
+
+  test('deleteItem', async () => {
+    let hookValues: DbTestCrudValues<HabitsSchema>
+    render(
+      <DbProvider externalDb={testDb}>
+        <TestDbCrudConsumer onHookReady={(values) => { hookValues = values }} />
+      </DbProvider>
+    )
+
+    await waitFor(async () => {
+      await hookValues.store(testHabit)
+      const testHabits = await hookValues.index()
+      expect(testHabits.length).toBe(1)
+      await hookValues.deleteItem(1)
+      const newTestHabits = await hookValues.index()
+      expect(newTestHabits.length).toBe(0)
+    })
   })
 })
