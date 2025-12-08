@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo, type ChangeEvent } from 'react'
+import { DateTime } from 'luxon'
 import InputWrapper from '@/components/InputWrapper'
 import ColorPicker from '@/components/ColorPicker'
 import CheckboxBtn from '@/components/CheckboxBtn'
@@ -8,7 +9,7 @@ import useForm, {Rules, validators} from '@/hooks/useForm'
 import useDbCrud from '@/db/useDbCrud'
 
 type Values = Partial<HabitsSchema> & {
-  id?: string
+  id?: number
 }
 
 interface Props {
@@ -71,11 +72,15 @@ export default function FormHabits({ values, onSave }: Props) {
   async function onSubmit() {
     if(loading) { return undefined }
     setLoading(true)
+    const fullModel = {
+      ...model,
+      manage_from: DateTime.now().toISO()
+    }
     try {
       if(!id) {
-        await store(model)
+        await store(fullModel)
       } else {
-        await update(id, model)
+        await update(id, fullModel)
       }
       if(onSave) {
         onSave()

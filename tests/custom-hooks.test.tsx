@@ -1,4 +1,6 @@
 import { act, renderHook, waitFor } from "@testing-library/react"
+import { DbProvider } from '@/db/useDb'
+import DbClass, { type HabitsSchema } from '@/db/DbClass'
 
 // --- useForm ---
 import useForm, { validators } from '@/hooks/useForm'
@@ -69,4 +71,14 @@ describe("useForm", () => {
       expect(useFormRendered.result.current.errorMessages.last_name?.length).toBe(1)
     })
   })
+})
+
+// --- useHabits ---
+import useHabits from '@/hooks/useHabits'
+
+const testDb = new DbClass('TestDatabase', 1)
+
+
+describe('useHabits', () => {
+
 })

@@ -96,7 +96,8 @@ const testHabit: HabitsSchema = {
   granularity: 'daily',
   include_weekends: true,
   granularity_times: 1,
-  enough_amount: ''
+  enough_amount: '',
+  manage_from: ''
 }
 
 // DB CRUD consumer

@@ -17,6 +17,7 @@ export interface HabitsSchema {
   include_weekends: boolean
   granularity_times: number,
   enough_amount: string
+  manage_from: string
 }
 export const habitsModel: HabitsSchema = {
   type: '',
@@ -25,7 +26,8 @@ export const habitsModel: HabitsSchema = {
   granularity: 'daily',
   include_weekends: false,
   granularity_times: 0,
-  enough_amount: ''
+  enough_amount: '',
+  manage_from: ''
 }
 
 export default class DbClass extends Dexie {
