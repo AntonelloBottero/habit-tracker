@@ -10,7 +10,6 @@ const nextConfig: NextConfig = {
   /* config options here */
   env: {
     dbName: 'HabiterDatabase',
-    dbVersion: '2'
   }
 };
 

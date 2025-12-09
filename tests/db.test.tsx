@@ -4,7 +4,7 @@ import DbClass, { type HabitsSchema } from '@/db/DbClass'
 import useDbCrud from '@/db/useDbCrud'
 
 // --- Test db init (powered by fake-indexeddb) ---
-const testDb = new DbClass('TestDatabase', 1)
+const testDb = new DbClass('TestDatabase')
 
 // --- Test consumer ---
 interface DbTestValues {
@@ -30,7 +30,6 @@ describe('Db Provider', () => {
   beforeEach(async () => {
     await testDb.delete()
   })
-
   afterAll(() => {
     testDb.close()
   })

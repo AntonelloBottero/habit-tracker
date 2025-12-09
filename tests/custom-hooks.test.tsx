@@ -1,6 +1,7 @@
-import { act, renderHook, waitFor } from "@testing-library/react"
+import { render, act, renderHook, waitFor } from "@testing-library/react"
+import { DateTime } from 'luxon'
 import { DbProvider } from '@/db/useDb'
-import DbClass, { type HabitsSchema } from '@/db/DbClass'
+import DbClass, { SlotsSchema, type HabitsSchema } from '@/db/DbClass'
 
 // --- useForm ---
 import useForm, { validators } from '@/hooks/useForm'
@@ -76,9 +77,75 @@ describe("useForm", () => {
 // --- useHabits ---
 import useHabits from '@/hooks/useHabits'
 
-const testDb = new DbClass('TestDatabase', 1)
+interface HabitTestValues {
+  calculateSlots: (habit: HabitsSchema) => SlotsSchema[]
+}
 
+const testDb = new DbClass('TestDatabase')
+export const TestHabitConsumer = ({ onHookReady }: { onHookReady: (values: HabitTestValues) => void }) => {
+  const { calculateSlots } = useHabits(DateTime.now().startOf('week').toISO(), DateTime.now().endOf('week').toISO())
+
+  // callback that exposes methods to test
+  onHookReady({ calculateSlots })
+
+  return null
+}
 
 describe('useHabits', () => {
+  beforeEach(async () => {
+    await testDb.delete()
+  })
+  afterAll(() => {
+    testDb.close()
+  })
 
+  test('calculateSlots', () => {
+    const testHabit1: HabitsSchema = {
+      type: 'good',
+      name: 'Test habit 1',
+      color: '#E6AF2E',
+      granularity: 'daily',
+      include_weekends: true,
+      granularity_times: 3,
+      enough_amount: '',
+      manage_from: ''
+    }
+
+    let hookValues: HabitTestValues
+    render(
+      <DbProvider externalDb={testDb}>
+        <TestHabitConsumer onHookReady={(values) => { hookValues = values }} />
+      </DbProvider>
+    )
+
+    waitFor(async () => {
+      const testHabit1: HabitsSchema = {
+        type: 'good',
+        name: 'Test habit 1',
+        color: '#E6AF2E',
+        granularity: 'daily',
+        include_weekends: true,
+        granularity_times: 3,
+        enough_amount: '',
+        manage_from: ''
+      }
+      const slots1 = hookValues.calculateSlots(testHabit1)
+      expect(slots1.length).toBe(7)
+      expect(slots1[0].count).toBe(3)
+
+      const testHabit2: HabitsSchema = {
+        type: 'good',
+        name: 'Test habit 2',
+        color: '#E6AF2E',
+        granularity: 'daily',
+        include_weekends: false,
+        granularity_times: 2,
+        enough_amount: '',
+        manage_from: ''
+      }
+      const slots2 = hookValues.calculateSlots(testHabit2)
+      expect(slots2.length).toBe(5)
+      expect(slots2[0].count).toBe(2)
+    })
+  })
 })
