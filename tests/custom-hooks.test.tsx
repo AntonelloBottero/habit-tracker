@@ -79,6 +79,7 @@ import useHabits from '@/hooks/useHabits'
 
 interface HabitTestValues {
   calculateSlots: (habit: HabitsSchema) => SlotsSchema[]
+  fetchManageableHabits: () => HabitsSchema[]
 }
 
 const testDb = new DbClass('TestDatabase')
@@ -86,7 +87,7 @@ export const TestHabitConsumer = ({ onHookReady }: { onHookReady: (values: Habit
   const { calculateSlots } = useHabits(DateTime.now().startOf('week').toISO(), DateTime.now().endOf('week').toISO())
 
   // callback that exposes methods to test
-  onHookReady({ calculateSlots })
+  onHookReady({ calculateSlots, fetchManageableHabits })
 
   return null
 }
@@ -100,17 +101,6 @@ describe('useHabits', () => {
   })
 
   test('calculateSlots', () => {
-    const testHabit1: HabitsSchema = {
-      type: 'good',
-      name: 'Test habit 1',
-      color: '#E6AF2E',
-      granularity: 'daily',
-      include_weekends: true,
-      granularity_times: 3,
-      enough_amount: '',
-      manage_from: ''
-    }
-
     let hookValues: HabitTestValues
     render(
       <DbProvider externalDb={testDb}>
@@ -146,6 +136,34 @@ describe('useHabits', () => {
       const slots2 = hookValues.calculateSlots(testHabit2)
       expect(slots2.length).toBe(5)
       expect(slots2[0].count).toBe(2)
+    })
+  })
+
+  test('fetchManageableHabits', async () => {
+    const habits = Array.from(Array(6).keys()).map(index => ({
+      type: 'good',
+      name: `Test habit ${index + 1}`,
+      color: '#E6AF2E',
+      granularity: 'daily',
+      include_weekends: false,
+      granularity_times: 1,
+      enough_amount: '',
+      manage_from: DateTime.now().plus({ days: 1}).minus({ weeks: index}).toISO()
+    })) as HabitsSchema[]
+
+    await testDb.habits.bulkAdd(habits)
+
+    let hookValues: HabitTestValues
+    render(
+      <DbProvider externalDb={testDb}>
+        <TestHabitConsumer onHookReady={(values) => { hookValues = values }} />
+      </DbProvider>
+    )
+
+    await waitFor(async () => {
+      const manageableHabits = await hookValues.fetchManageableHabits()
+      expect(manageableHabits.length).toBe(5)
+      expect(manageableHabits[0].name).toBe('Test habit 2')
     })
   })
 })
