@@ -14,6 +14,7 @@ interface DbContextProvider {
   dbIsOpen: boolean | 'pending'
   createOption: (key: string, value?: string | number) => Promise<boolean>
   getOption: (key: string) => Promise<unknown>
+  registerExternalOption: (key: string, value: never) => void
 }
 
 type ProviderProps = Readonly<{
@@ -26,7 +27,7 @@ const DbContext = createContext<DbContextProvider | null>(null)
 
 export function DbProvider({ children, externalDb }: ProviderProps) {
   // --- Db setup ---
-  const db = externalDb || new DbClass(process.env.dbName as string, Number(process.env.dbVersion) as number) // we treat externalDb as non stateful -> if not provided after Provider setup won't be further considered
+  const db = externalDb || new DbClass(process.env.dbName as string) // we treat externalDb as non stateful -> if not provided after Provider setup won't be further considered
 
   // --- Open db ---
   const [dbIsOpen, setDbIsOpen] = useState<boolean | 'pending'>(false)
@@ -90,8 +91,16 @@ export function DbProvider({ children, externalDb }: ProviderProps) {
     return fetchedOption.value
   }
 
+  // register data that is not intended to fit in options table, but we want it provided inside context
+  const registerExternalOption = (key: string, value: never): void => {
+    setAvailableOptionValues({
+      ...availableOptionValues,
+      [key]: value
+    })
+  }
+
   return (
-    <DbContext.Provider value={ { db, dbIsOpen, createOption, getOption } }>
+    <DbContext.Provider value={ { db, dbIsOpen, createOption, getOption, registerExternalOption } }>
       {dbIsOpen && children}
     </DbContext.Provider>
   )

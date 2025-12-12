@@ -48,21 +48,23 @@ export interface SlotsSchema {
   habit_id: number | null
   event_ids: number[]
   count: number
-  completion: number
+  completion: number,
+  active_to: string | null
 }
 
 export const slotsModel: SlotsSchema = {
   habit_id: null,
   event_ids: [],
   count: 0,
-  completion: 0
+  completion: 0,
+  active_to: null
 }
 
 export default class DbClass extends Dexie {
   options!: Table<OptionsSchema, 'id'>
   habits!: Table<HabitsSchema, 'id'>
-  events!: Table<HabitsSchema, 'id'>
-  slots!: Table<HabitsSchema, 'id'>
+  events!: Table<EventsSchema, 'id'>
+  slots!: Table<SlotsSchema, 'id'>
   constructor(name: string) {
     super(name)
     this.version(1).stores({
@@ -72,7 +74,7 @@ export default class DbClass extends Dexie {
     this.version(2).stores({
       habits: `++id, type, name, color, granularity, include_weekends, granularity_times, enough_amount, manage_from, created_at, updated_at, deleted_at`,
       events: `++id, habit_id, datetime, completed, created_at, updated_at, deleted_at`,
-      slots: `++id, habit_id, event_ids, count, completion, created_at, updated_at, deleted_at`
+      slots: `++id, habit_id, event_ids, count, completion, active_to, created_at, updated_at, deleted_at`
     })
   }
 }

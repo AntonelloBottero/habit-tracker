@@ -79,15 +79,16 @@ import useHabits from '@/hooks/useHabits'
 
 interface HabitTestValues {
   calculateSlots: (habit: HabitsSchema) => SlotsSchema[]
-  fetchManageableHabits: () => HabitsSchema[]
+  fetchManageableHabits: () => HabitsSchema[],
+  fetchActiveSlots: () => SlotsSchema[]
 }
 
 const testDb = new DbClass('TestDatabase')
 export const TestHabitConsumer = ({ onHookReady }: { onHookReady: (values: HabitTestValues) => void }) => {
-  const { calculateSlots } = useHabits(DateTime.now().startOf('week').toISO(), DateTime.now().endOf('week').toISO())
+  const { calculateSlots, fetchManageableHabits, fetchActiveSlots } = useHabits(DateTime.now().startOf('week').toISO(), DateTime.now().endOf('week').toISO())
 
   // callback that exposes methods to test
-  onHookReady({ calculateSlots, fetchManageableHabits })
+  onHookReady({ calculateSlots, fetchManageableHabits, fetchActiveSlots })
 
   return null
 }
@@ -150,7 +151,6 @@ describe('useHabits', () => {
       enough_amount: '',
       manage_from: DateTime.now().plus({ days: 1}).minus({ weeks: index}).toISO()
     })) as HabitsSchema[]
-
     await testDb.habits.bulkAdd(habits)
 
     let hookValues: HabitTestValues
@@ -160,10 +160,34 @@ describe('useHabits', () => {
       </DbProvider>
     )
 
-    await waitFor(async () => {
+    waitFor(async () => {
       const manageableHabits = await hookValues.fetchManageableHabits()
       expect(manageableHabits.length).toBe(5)
       expect(manageableHabits[0].name).toBe('Test habit 2')
+    })
+  })
+
+  test('fetchActiveSlots', async () => {
+    const slots = Array.from(Array(6).keys()).map(index => ({
+      habit_id: null,
+      event_ids: [],
+      count: index + 1,
+      completion: 0,
+      active_to: DateTime.now().minus({ days: 1 }).minus({ days: index * 2 }).toISO() // excludes first
+    })) as SlotsSchema[]
+    await testDb.slots.bulkAdd(slots)
+
+    let hookValues: HabitTestValues
+    render(
+      <DbProvider externalDb={testDb}>
+        <TestHabitConsumer onHookReady={(values) => { hookValues = values }} />
+      </DbProvider>
+    )
+
+    waitFor(async () => {
+      const activeSlots = await hookValues.fetchActiveSlots()
+      expect(activeSlots.length).toBe(5)
+      expect(activeSlots[0].completion).toBe(2)
     })
   })
 })
