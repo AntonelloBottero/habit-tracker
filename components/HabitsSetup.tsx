@@ -1,11 +1,11 @@
 import { useState, useRef, useEffect, useMemo } from 'react';
 import Modal from '@/components/Modal'
 import FormHabits from '@/components/FormHabits'
-import { habitsModel } from '@/db/useDb'
+import { type HabitsSchema } from '@/db/DbClass'
 import { ModalRef } from '@/app/types'
 import useDbCrud from '@/db/useDbCrud'
 
-type Habit = Partial<typeof habitsModel> & {
+type Habit = Partial<HabitsSchema> & {
     id?: string
 }
 
