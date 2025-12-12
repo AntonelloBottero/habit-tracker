@@ -31,10 +31,12 @@ export default function useDbCrud<T extends object>({ table: storeName }: Params
   }, [table])
 
   // --- DB Operations ---
-  const index = async (): Promise<T[]> => {
+  const index = async (filter?: (item: T) => boolean): Promise<T[]> => {
     if(!isCompliant()) { return [] }
-    const items = await (table as Table).where('deleted_at').equals('').toArray() // TODO sort by created_at
-    return items
+    let query = (table as Table).where('deleted_at').equals('') // TODO sort by created_at
+    return filter
+      ? query.filter(filter).toArray()
+      : query.toArray()
   }
   const show = async (id: number): Promise<T | undefined> => {
     if(!isCompliant()) { return undefined }
