@@ -1,7 +1,7 @@
 import { render, act, renderHook, waitFor } from "@testing-library/react"
 import { DateTime } from 'luxon'
 import { DbProvider } from '@/db/useDb'
-import DbClass, { SlotsSchema, type HabitsSchema } from '@/db/DbClass'
+import DbClass, { SlotsSchema, type HabitsSchema, EventsSchema } from '@/db/DbClass'
 
 // --- useForm ---
 import useForm, { validators } from '@/hooks/useForm'
@@ -79,16 +79,17 @@ import useHabits from '@/hooks/useHabits'
 
 interface HabitTestValues {
   calculateSlots: (habit: HabitsSchema) => SlotsSchema[]
-  fetchManageableHabits: () => HabitsSchema[],
-  fetchActiveSlots: () => SlotsSchema[]
+  fetchManageableHabits: () => Promise<HabitsSchema[]>,
+  fetchActiveSlots: () => Promise<SlotsSchema[]>,
+  fetchEvents: () => Promise<EventsSchema[]>
 }
 
 const testDb = new DbClass('TestDatabase')
 export const TestHabitConsumer = ({ onHookReady }: { onHookReady: (values: HabitTestValues) => void }) => {
-  const { calculateSlots, fetchManageableHabits, fetchActiveSlots } = useHabits(DateTime.now().startOf('week').toISO(), DateTime.now().endOf('week').toISO())
+  const { calculateSlots, fetchManageableHabits, fetchActiveSlots, fetchEvents } = useHabits(DateTime.now().startOf('week').toISO(), DateTime.now().endOf('week').toISO())
 
   // callback that exposes methods to test
-  onHookReady({ calculateSlots, fetchManageableHabits, fetchActiveSlots })
+  onHookReady({ calculateSlots, fetchManageableHabits, fetchActiveSlots, fetchEvents })
 
   return null
 }
@@ -149,7 +150,7 @@ describe('useHabits', () => {
       include_weekends: false,
       granularity_times: 1,
       enough_amount: '',
-      manage_from: DateTime.now().plus({ days: 1}).minus({ weeks: index}).toISO()
+      manage_from: DateTime.now().plus({ days: 1 }).minus({ weeks: index }).toISO()
     })) as HabitsSchema[]
     await testDb.habits.bulkAdd(habits)
 
@@ -184,10 +185,60 @@ describe('useHabits', () => {
       </DbProvider>
     )
 
-    waitFor(async () => {
+    await waitFor(async () => {
       const activeSlots = await hookValues.fetchActiveSlots()
       expect(activeSlots.length).toBe(5)
       expect(activeSlots[0].completion).toBe(2)
+    })
+  })
+
+  test('fetchEvents', async () => {
+    // Current week range (from set in Wrapper): Start of week to End of week
+    const startOfWeek = DateTime.now().startOf('week')
+
+    // 1. Event inside range
+    const eventInside = {
+      habit_id: 1,
+      datetime: startOfWeek.plus({ days: 1 }).toISO(),
+      completed: 1
+    } as EventsSchema
+
+    // 2. Event outside range (before)
+    const eventBefore = {
+      habit_id: 1,
+      datetime: startOfWeek.minus({ days: 1 }).toISO(),
+      completed: 1
+    } as EventsSchema
+
+    // 3. Event outside range (after)
+    const eventAfter = {
+      habit_id: 1,
+      datetime: startOfWeek.plus({ weeks: 1, days: 1 }).toISO(),
+      completed: 1
+    } as EventsSchema
+
+    // 4. Soft deleted event inside range
+    const eventDeleted = {
+      habit_id: 1,
+      datetime: startOfWeek.plus({ days: 2 }).toISO(),
+      completed: 1,
+      deleted_at: DateTime.now().toISO() // Should be ignored
+    } as EventsSchema // Type assertion to bypass TS if Schema definition in test file is strict but DB allows extra props
+
+    await testDb.events.bulkAdd([eventInside, eventBefore, eventAfter, eventDeleted])
+
+    let hookValues: HabitTestValues
+    render(
+      <DbProvider externalDb={testDb}>
+        <TestHabitConsumer onHookReady={(values) => { hookValues = values }} />
+      </DbProvider>
+    )
+
+    await waitFor(async () => {
+      const fetchedEvents = await hookValues.fetchEvents()
+      expect(fetchedEvents.length).toBe(1)
+      expect(fetchedEvents[0].datetime).toBe(eventInside.datetime)
+      // Additional check to ensure soft delete works (if implementation supports it) or at least date filtering works.
     })
   })
 })
