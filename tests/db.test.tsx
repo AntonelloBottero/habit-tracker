@@ -1,4 +1,5 @@
 import { render, waitFor, screen } from '@testing-library/react'
+import { DateTime } from 'luxon'
 import useDb, { DbProvider } from '@/db/useDb'
 import DbClass, { type HabitsSchema } from '@/db/DbClass'
 import useDbCrud from '@/db/useDbCrud'
@@ -142,6 +143,29 @@ describe('DB CRUD', () => {
   })
 
   test('index', async () => {
+    const testHabit2 = {
+      type: 'good',
+      name: 'Test habit 2',
+      color: '#E6AF2E',
+      granularity: 'daily',
+      include_weekends: true,
+      granularity_times: 1,
+      enough_amount: '',
+      manage_from: ''
+    } as HabitsSchema
+
+    const testHabit3 = {
+      type: 'good',
+      name: 'Test habit 3',
+      color: '#E6AF2E',
+      granularity: 'daily',
+      include_weekends: true,
+      granularity_times: 1,
+      enough_amount: '',
+      manage_from: '',
+      deleted_at: DateTime.now().toISO()
+    } as HabitsSchema
+
     let hookValues: DbTestCrudValues<HabitsSchema>
     render(
       <DbProvider externalDb={testDb}>
@@ -151,9 +175,11 @@ describe('DB CRUD', () => {
 
     await waitFor(async () => {
       await hookValues.store(testHabit)
+      await hookValues.store(testHabit2)
+      await hookValues.store(testHabit3)
       const testHabits = await hookValues.index()
-      expect(testHabits.length).toBe(1)
-      expect(testHabits[0].name).toBe('Test habit 1')
+      expect(testHabits.length).toBe(2)
+      expect(testHabits[0].name).toBe(testHabit.name)
     })
   })
 
