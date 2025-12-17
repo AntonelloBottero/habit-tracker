@@ -17,7 +17,6 @@ export default function useDbCrud<T extends object>({ table: storeName }: Params
 
   function isCompliant() {
     if(!db.isOpen()) { return false }
-    if(!db.table(storeName)) { return false }
     if(!model) { return false}
     return true
   }
@@ -33,7 +32,7 @@ export default function useDbCrud<T extends object>({ table: storeName }: Params
   // --- DB Operations ---
   const index = async (filter?: (item: T) => boolean): Promise<T[]> => {
     if(!isCompliant()) { return [] }
-    let query = (table as Table).where('deleted_at').equals('') // TODO sort by created_at
+    const query = (table as Table).where('deleted_at').equals('') // TODO sort by created_at
     return filter
       ? query.filter(filter).toArray()
       : query.toArray()
@@ -49,9 +48,9 @@ export default function useDbCrud<T extends object>({ table: storeName }: Params
       throw new TypeError('Values are not fully compliant with model')
     }
     await (table as Table).add({
+      deleted_at: '',
       ...values,
       created_at: DateTime.now().toISO(),
-      deleted_at: ''
     })
     return true
   }
@@ -82,6 +81,8 @@ export default function useDbCrud<T extends object>({ table: storeName }: Params
     show,
     store,
     update,
-    deleteItem
+    deleteItem,
+    // for testing purposes
+    isCompliant
   }
 }
