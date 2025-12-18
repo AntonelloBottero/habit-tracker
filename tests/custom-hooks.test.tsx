@@ -102,13 +102,17 @@ describe('useHabits', () => {
     testDb.close()
   })
 
-  test('calculateSlots', () => {
+  test('calculateSlots', async () => {
     let hookValues: HabitTestValues
     render(
       <DbProvider externalDb={testDb}>
         <TestHabitConsumer onHookReady={(values) => { hookValues = values }} />
       </DbProvider>
     )
+
+    await waitFor(() => {
+      expect(hookValues).toBeDefined()
+    })
 
     waitFor(async () => {
       const testHabit1: HabitsSchema = {
@@ -142,6 +146,20 @@ describe('useHabits', () => {
   })
 
   test('fetchManageableHabits', async () => {
+    let hookValues: HabitTestValues
+    render(
+      <DbProvider externalDb={testDb}>
+        <TestHabitConsumer onHookReady={(values) => { hookValues = values }} />
+      </DbProvider>
+    )
+
+    await waitFor(() => {
+      expect(hookValues).toBeDefined()
+    })
+    await waitFor(() => {
+      expect(testDb.isOpen()).toBe(true)
+    })
+
     const habits = Array.from(Array(6).keys()).map(index => ({
       type: 'good',
       name: `Test habit ${index + 1}`,
@@ -154,6 +172,15 @@ describe('useHabits', () => {
     })) as HabitsSchema[]
     await testDb.habits.bulkAdd(habits)
 
+    const manageableHabits = await hookValues.fetchManageableHabits()
+
+    waitFor(async () => {
+      expect(manageableHabits.length).toBe(5)
+      expect(manageableHabits[0].name).toBe('Test habit 2')
+    })
+  })
+
+  test('fetchActiveSlots', async () => {
     let hookValues: HabitTestValues
     render(
       <DbProvider externalDb={testDb}>
@@ -161,14 +188,13 @@ describe('useHabits', () => {
       </DbProvider>
     )
 
-    waitFor(async () => {
-      const manageableHabits = await hookValues.fetchManageableHabits()
-      expect(manageableHabits.length).toBe(5)
-      expect(manageableHabits[0].name).toBe('Test habit 2')
+    await waitFor(() => {
+      expect(hookValues).toBeDefined()
     })
-  })
+    await waitFor(() => {
+      expect(testDb.isOpen()).toBe(true)
+    })
 
-  test('fetchActiveSlots', async () => {
     const slots = Array.from(Array(6).keys()).map(index => ({
       habit_id: null,
       event_ids: [],
@@ -178,6 +204,14 @@ describe('useHabits', () => {
     })) as SlotsSchema[]
     await testDb.slots.bulkAdd(slots)
 
+    const activeSlots = await hookValues.fetchActiveSlots()
+    await waitFor(async () => {
+      expect(activeSlots.length).toBe(5)
+      expect(activeSlots[0].completion).toBe(2)
+    })
+  })
+
+  test('fetchEvents', async () => {
     let hookValues: HabitTestValues
     render(
       <DbProvider externalDb={testDb}>
@@ -185,14 +219,13 @@ describe('useHabits', () => {
       </DbProvider>
     )
 
-    await waitFor(async () => {
-      const activeSlots = await hookValues.fetchActiveSlots()
-      expect(activeSlots.length).toBe(5)
-      expect(activeSlots[0].completion).toBe(2)
+    await waitFor(() => {
+      expect(hookValues).toBeDefined()
     })
-  })
+    await waitFor(() => {
+      expect(testDb.isOpen()).toBe(true)
+    })
 
-  test('fetchEvents', async () => {
     // Current week range (from set in Wrapper): Start of week to End of week
     const startOfWeek = DateTime.now().startOf('week')
 
@@ -224,18 +257,10 @@ describe('useHabits', () => {
       completed: 1,
       deleted_at: DateTime.now().toISO() // Should be ignored
     } as EventsSchema // Type assertion to bypass TS if Schema definition in test file is strict but DB allows extra props
-
     await testDb.events.bulkAdd([eventInside, eventBefore, eventAfter, eventDeleted])
 
-    let hookValues: HabitTestValues
-    render(
-      <DbProvider externalDb={testDb}>
-        <TestHabitConsumer onHookReady={(values) => { hookValues = values }} />
-      </DbProvider>
-    )
-
+    const fetchedEvents = await hookValues.fetchEvents()
     await waitFor(async () => {
-      const fetchedEvents = await hookValues.fetchEvents()
       expect(fetchedEvents.length).toBe(1)
       expect(fetchedEvents[0].datetime).toBe(eventInside.datetime)
       // Additional check to ensure soft delete works (if implementation supports it) or at least date filtering works.
