@@ -17,7 +17,6 @@ type Habit = Partial<HabitsSchema> & {
 // - When (every day, selected days, except weekends, n days per week/month, etc)
 // - Icon
 export default function HabitsSetup() {
-    console.log('HabitsSetup')
     const { index } = useDbCrud({ table: 'habits' })
 
     // --- Existing Habits ---

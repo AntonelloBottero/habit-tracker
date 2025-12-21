@@ -8,7 +8,7 @@ interface Params {
   table: string
 }
 
-export default function useDbCrud<T extends Record<string, unknown>>({ table: storeName }: Params) {
+export default function useDbCrud<T extends unknown>({ table: storeName }: Params) {
   const { db } = useDb()
 
   const table = useMemo<Table | null>(() => {
@@ -44,7 +44,7 @@ export default function useDbCrud<T extends Record<string, unknown>>({ table: st
   }
   const store = async (values: Partial<T>): Promise<boolean> => {
     if(!isCompliant()) { return false }
-    if(!objectIsCompliant(model as T, values)) {
+    if(!objectIsCompliant(model as object, values)) {
       throw new TypeError('Values are not fully compliant with model')
     }
     await (table as Table).add({
@@ -55,7 +55,7 @@ export default function useDbCrud<T extends Record<string, unknown>>({ table: st
     return true
   }
   const update = async (id: number, values: Partial<T>): Promise<void> => {
-    if(!objectIsCompliant(model as T, values)) {
+    if(!objectIsCompliant(model as object, values)) {
       throw new TypeError('Values are not fully compliant with model')
     }
     const item = await show(id)

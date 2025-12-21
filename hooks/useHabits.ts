@@ -38,7 +38,7 @@ export default function useHabits() {
   // --- Fetch habits to calculate slots ---
   async function fetchManageableHabits(manage_from: string): Promise<HabitsSchema[]> {
     if(!manage_from) { return [] }
-    return await index(item => item.manage_from <= manage_from)
+    return await index(item => (item as HabitsSchema).manage_from <= manage_from) as HabitsSchema[]
   }
 
   return { calculateMonthlySlots, fetchManageableHabits }
