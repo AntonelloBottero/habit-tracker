@@ -1,52 +1,45 @@
-import { useMemo } from "react"
 import { DateTime } from "luxon"
-import { HabitsSchema } from "@/db/DbClass"
+import { HabitsSchema, SlotsSchema } from "@/db/DbClass"
+import useDbCrud from '@/db/useDbCrud'
 
-export default function useHabits(date: string) {
-  // TODO: from and to should be passed as parameters
-  const from = useMemo(() => { // start of month
-    return DateTime.fromISO(date).startOf('month')
-  }, [date])
-  const to = useMemo(() => { // end of month
-    return DateTime.fromISO(date).endOf('month')
-  }, [date])
+export default function useHabits() {
+  const { index } = useDbCrud({ table: 'habits' })
 
-  const daysCount = useMemo(() => {
-    if(!from || !to) { return 0 }
-    const { days } = to.diff(from, ['days'])
-    return days
-  }, [from, to])
+  // --- Calculate monthly slots based on habit and date ---
+  function calculateMonthlySlots(habit: HabitsSchema & { id: number }, date: string): SlotsSchema[] {
+    if(!habit || !date) { return []}
 
-  const granularityDaysCount = useMemo<Record<string,  number>>(() => {
-    return {
+    const from = DateTime.fromISO(date).startOf('month')
+    const to = DateTime.fromISO(date).endOf('month')
+    const granularityDaysCount = {
       daily: 1,
       weekly: 7,
-      monthly: daysCount + 1,
-      yearly: 367
-    }
-  }, [daysCount])
+      monthly: to.diff(from, ['days']).days,
+      yearly: 366
+    } as Record<string, number>
+    const daysCount = granularityDaysCount[habit.granularity] || 1
+    const granularityTimes = habit.granularity === 'daily' ? 1 : (habit.granularity_times || 1)
 
-  function calculateSlots(habit: HabitsSchema & { id: number }) {
-    if(!habit) { return []}
-
-    const dasyCount = granularityDaysCount[habit.granularity] || 1
-    const granularityTimes = (habit.granularity === 'daily' ? 1 : habit.granularity_times) || 1
-    // TODO: from and activeTo should be global, with from starting at the begin of the month
     const activeTo = habit.granularity !== 'yearly' ? to : DateTime.fromISO(date).endOf('year')
     const slots = []
     do {
       slots.push({
         habit_id: habit.id,
-        event_ids: []
+        event_ids: [],
+        count: granularityTimes,
+        completion: 0,
+        active_to: activeTo.toISO()
       })
       activeTo.minus({ days: daysCount })
     } while(activeTo.toFormat('yyyy-MM-dd') >= from.toFormat('yyyy-MM-dd'))
-    /* return Array.from(Array(granularityCount).keys()).map(() => ({
-      habit_id: habit.id,
-      event_ids: [],
-      count: granularityTimes
-    })) */
+    return slots
   }
 
-  return { calculateSlots }
+  // --- Fetch habits to calculate slots ---
+  async function fetchManageableHabits(manage_from: string): Promise<HabitsSchema[]> {
+    if(!manage_from) { return [] }
+    return await index(item => item.manage_from <= manage_from)
+  }
+
+  return { calculateMonthlySlots, fetchManageableHabits }
 }

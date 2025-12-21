@@ -78,18 +78,18 @@ describe("useForm", () => {
 import useHabits from '@/hooks/useHabits'
 
 interface HabitTestValues {
-  calculateSlots: (habit: HabitsSchema) => SlotsSchema[]
-  fetchManageableHabits: () => Promise<HabitsSchema[]>,
+  calculateMonthlySlots: (habit: HabitsSchema, date: string) => SlotsSchema[]
+  fetchManageableHabits: (mamange_from: string) => Promise<HabitsSchema[]>,
   fetchActiveSlots: () => Promise<SlotsSchema[]>,
   fetchEvents: () => Promise<EventsSchema[]>
 }
 
 const testDb = new DbClass('TestDatabase')
 export const TestHabitConsumer = ({ onHookReady }: { onHookReady: (values: HabitTestValues) => void }) => {
-  const { calculateSlots, fetchManageableHabits, fetchActiveSlots, fetchEvents } = useHabits(DateTime.now().startOf('week').toISO(), DateTime.now().endOf('week').toISO())
+  const { calculateMonthlySlots, fetchManageableHabits, fetchActiveSlots, fetchEvents } = useHabits()
 
   // callback that exposes methods to test
-  onHookReady({ calculateSlots, fetchManageableHabits, fetchActiveSlots, fetchEvents })
+  onHookReady({ calculateMonthlySlots, fetchManageableHabits, fetchActiveSlots, fetchEvents })
 
   return null
 }
@@ -102,7 +102,7 @@ describe('useHabits', () => {
     testDb.close()
   })
 
-  test('calculateSlots', async () => {
+  test('calculateMonthlySlots', async () => {
     let hookValues: HabitTestValues
     render(
       <DbProvider externalDb={testDb}>
@@ -119,28 +119,28 @@ describe('useHabits', () => {
         type: 'good',
         name: 'Test habit 1',
         color: '#E6AF2E',
-        granularity: 'daily',
+        granularity: 'weekly',
         include_weekends: true,
         granularity_times: 3,
         enough_amount: '',
         manage_from: ''
       }
-      const slots1 = hookValues.calculateSlots(testHabit1)
-      expect(slots1.length).toBe(7)
+      const slots1 = hookValues.calculateMonthlySlots(testHabit1, DateTime.now().toISO())
+      expect(slots1.length).toBe(4)
       expect(slots1[0].count).toBe(3)
 
       const testHabit2: HabitsSchema = {
         type: 'good',
         name: 'Test habit 2',
         color: '#E6AF2E',
-        granularity: 'daily',
+        granularity: 'monthly',
         include_weekends: false,
         granularity_times: 2,
         enough_amount: '',
         manage_from: ''
       }
-      const slots2 = hookValues.calculateSlots(testHabit2)
-      expect(slots2.length).toBe(5)
+      const slots2 = hookValues.calculateMonthlySlots(testHabit2, DateTime.now().toISO())
+      expect(slots2.length).toBe(1)
       expect(slots2[0].count).toBe(2)
     })
   })
@@ -172,7 +172,7 @@ describe('useHabits', () => {
     })) as HabitsSchema[]
     await testDb.habits.bulkAdd(habits)
 
-    const manageableHabits = await hookValues.fetchManageableHabits()
+    const manageableHabits = await hookValues.fetchManageableHabits(DateTime.now().startOf('month').toISO())
 
     waitFor(async () => {
       expect(manageableHabits.length).toBe(5)

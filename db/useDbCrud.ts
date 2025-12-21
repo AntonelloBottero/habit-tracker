@@ -8,7 +8,7 @@ interface Params {
   table: string
 }
 
-export default function useDbCrud<T extends object>({ table: storeName }: Params) {
+export default function useDbCrud<T extends Record<string, unknown>>({ table: storeName }: Params) {
   const { db } = useDb()
 
   const table = useMemo<Table | null>(() => {
