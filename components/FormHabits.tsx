@@ -64,7 +64,7 @@ export default function FormHabits({ values, onSave }: Props) {
   }
 
   // --- Save data ---
-  const { store, update } = useDbCrud({ table: 'habits' })
+  const { store, update } = useDbCrud({ table: 'habits', model: habitsModel })
   const id = useMemo(()=> {
     return values?.id
   }, [values])

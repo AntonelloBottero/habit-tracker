@@ -4,11 +4,12 @@ import { objectIsCompliant } from "@/utils/index"
 import { useMemo } from 'react'
 import { type Table } from 'dexie'
 
-interface Params {
+interface Params<T> {
   table: string
+  model: T
 }
 
-export default function useDbCrud<T extends unknown>({ table: storeName }: Params) {
+export default function useDbCrud<T extends object>({ table: storeName, model }: Params<T>) {
   const { db } = useDb()
 
   const table = useMemo<Table | null>(() => {
@@ -17,16 +18,17 @@ export default function useDbCrud<T extends unknown>({ table: storeName }: Param
 
   function isCompliant() {
     if(!db.isOpen()) { return false }
-    if(!model) { return false}
+    if(!schema) { return false}
     return true
   }
 
-  const model = useMemo<T | null>(() => {
+  const schema = useMemo<T | null>(() => {
     if(!table?.schema?.indexes) { return null }
-    return Object.values(table.schema.indexes).reduce((r, index) => ({
+    const s = Object.values(table.schema.indexes).reduce((r, index) => ({
       ...r,
       [index.name]: true
     }),{}) as T
+    return objectIsCompliant(s, model) ? s : null
   }, [table])
 
   // --- DB Operations ---
@@ -44,8 +46,8 @@ export default function useDbCrud<T extends unknown>({ table: storeName }: Param
   }
   const store = async (values: Partial<T>): Promise<boolean> => {
     if(!isCompliant()) { return false }
-    if(!objectIsCompliant(model as object, values)) {
-      throw new TypeError('Values are not fully compliant with model')
+    if(!objectIsCompliant(schema as object, values)) {
+      throw new TypeError('Values are not fully compliant with schema')
     }
     await (table as Table).add({
       deleted_at: '',
@@ -55,8 +57,8 @@ export default function useDbCrud<T extends unknown>({ table: storeName }: Param
     return true
   }
   const update = async (id: number, values: Partial<T>): Promise<void> => {
-    if(!objectIsCompliant(model as object, values)) {
-      throw new TypeError('Values are not fully compliant with model')
+    if(!objectIsCompliant(schema as object, values)) {
+      throw new TypeError('Values are not fully compliant with schema')
     }
     const item = await show(id)
     if(!item) {

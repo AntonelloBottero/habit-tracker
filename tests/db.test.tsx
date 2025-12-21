@@ -1,7 +1,7 @@
 import { render, waitFor, screen, act } from '@testing-library/react'
 import { DateTime } from 'luxon'
 import useDb, { DbProvider } from '@/db/useDb'
-import DbClass, { type HabitsSchema } from '@/db/DbClass'
+import DbClass, { habitsModel, type HabitsSchema } from '@/db/DbClass'
 import useDbCrud from '@/db/useDbCrud'
 
 // --- Test db init (powered by fake-indexeddb) ---
@@ -111,7 +111,7 @@ interface DbTestCrudValues<T> {
 }
 
 export const TestDbCrudConsumer = ({ onHookReady }: { onHookReady: (values: DbTestCrudValues<HabitsSchema>) => void }) => {
-  const { index, show, store, update, deleteItem, isCompliant } = useDbCrud({ table: 'habits' })
+  const { index, show, store, update, deleteItem, isCompliant } = useDbCrud({ table: 'habits', model: habitsModel })
 
   // callback that exposes methods to test
   onHookReady({ index, show, store, update, deleteItem, isCompliant })

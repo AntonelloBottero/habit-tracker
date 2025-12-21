@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect, useMemo } from 'react';
 import Modal from '@/components/Modal'
 import FormHabits from '@/components/FormHabits'
-import { type HabitsSchema } from '@/db/DbClass'
+import { habitsModel, type HabitsSchema } from '@/db/DbClass'
 import { ModalRef } from '@/app/types'
 import useDbCrud from '@/db/useDbCrud'
 
@@ -17,7 +17,7 @@ type Habit = Partial<HabitsSchema> & {
 // - When (every day, selected days, except weekends, n days per week/month, etc)
 // - Icon
 export default function HabitsSetup() {
-    const { index } = useDbCrud({ table: 'habits' })
+    const { index } = useDbCrud({ table: 'habits', model: habitsModel })
 
     // --- Existing Habits ---
     const [habits, setHabits] = useState<Habit[]>([])

@@ -1,9 +1,9 @@
 import { DateTime } from "luxon"
-import { HabitsSchema, SlotsSchema } from "@/db/DbClass"
+import { habitsModel, HabitsSchema, SlotsSchema } from "@/db/DbClass"
 import useDbCrud from '@/db/useDbCrud'
 
 export default function useHabits() {
-  const { index } = useDbCrud({ table: 'habits' })
+  const { index } = useDbCrud({ table: 'habits', model: habitsModel })
 
   // --- Calculate monthly slots based on habit and date ---
   function calculateMonthlySlots(habit: HabitsSchema & { id: number }, date: string): SlotsSchema[] {
@@ -38,7 +38,7 @@ export default function useHabits() {
   // --- Fetch habits to calculate slots ---
   async function fetchManageableHabits(manage_from: string): Promise<HabitsSchema[]> {
     if(!manage_from) { return [] }
-    return await index(item => (item as HabitsSchema).manage_from <= manage_from) as HabitsSchema[]
+    return await index(item => item.manage_from <= manage_from) as HabitsSchema[]
   }
 
   return { calculateMonthlySlots, fetchManageableHabits }
