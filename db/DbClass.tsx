@@ -49,7 +49,7 @@ export interface SlotsSchema {
   event_ids: number[]
   count: number
   completion: number,
-  active_to: string | null
+  active_to: string
 }
 
 export const slotsModel: SlotsSchema = {
@@ -57,7 +57,7 @@ export const slotsModel: SlotsSchema = {
   event_ids: [],
   count: 0,
   completion: 0,
-  active_to: null
+  active_to: ''
 }
 
 export default class DbClass extends Dexie {
