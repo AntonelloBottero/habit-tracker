@@ -1,10 +1,11 @@
 import { DateTime } from "luxon"
-import { habitsModel, HabitsSchema, slotsModel, SlotsSchema } from "@/db/DbClass"
+import { eventsModel, EventsSchema, habitsModel, HabitsSchema, slotsModel, SlotsSchema } from "@/db/DbClass"
 import useDbCrud from '@/db/useDbCrud'
 
 export default function useHabits() {
   const habitsCrud = useDbCrud({ table: 'habits', model: habitsModel })
   const slotsCrud = useDbCrud({ table: 'slots', model: slotsModel })
+  const eventsCrud = useDbCrud({ table: 'events', model: eventsModel })
 
   // --- Calculate monthly slots based on habit and date ---
   function calculateMonthlySlots(habit: HabitsSchema & { id: number }, date: string): SlotsSchema[] {
@@ -21,7 +22,7 @@ export default function useHabits() {
     const daysCount = granularityDaysCount[habit.granularity] || 1
     const granularityTimes = habit.granularity === 'daily' ? 1 : (habit.granularity_times || 1)
 
-    const activeTo = habit.granularity !== 'yearly' ? to : DateTime.fromISO(date).endOf('year')
+    let activeTo = habit.granularity !== 'yearly' ? to : DateTime.fromISO(date).endOf('year')
     const slots = []
     do {
       slots.push({
@@ -31,9 +32,9 @@ export default function useHabits() {
         completion: 0,
         active_to: activeTo.toISO()
       })
-      activeTo.minus({ days: daysCount })
-    } while(activeTo.toFormat('yyyy-MM-dd') >= from.toFormat('yyyy-MM-dd'))
-    return slots
+      activeTo = activeTo.minus({ days: daysCount })
+    } while(activeTo.minus({ days: daysCount }).toFormat('yyyy-MM-dd') >= from.toFormat('yyyy-MM-dd')) // temporarily removing a day/week/month/year simulates an active_from field (we won't add a new slot if the active period spans across two months)
+    return slots as SlotsSchema[]
   }
 
   // --- Fetch habits to calculate slots ---
@@ -50,5 +51,12 @@ export default function useHabits() {
     }) as SlotsSchema[]
   }
 
-  return { calculateMonthlySlots, fetchManageableHabits, fetchActiveSlots }
+  async function fetchEvents(from: string, to: string): Promise<EventsSchema[]> {
+    if(!from || !to) { return [] }
+    return await eventsCrud.index(item => {
+      return item.datetime >= from && item.datetime <= to
+    }) as EventsSchema[]
+  }
+
+  return { calculateMonthlySlots, fetchManageableHabits, fetchActiveSlots, fetchEvents }
 }

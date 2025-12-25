@@ -33,13 +33,13 @@ export const habitsModel: HabitsSchema = {
 // events schema and model
 export interface EventsSchema {
   habit_id: number | null
-  datetime: string | null
+  datetime: string
   completed: number
 }
 
 export const eventsModel: EventsSchema = {
   habit_id: null,
-  datetime: null,
+  datetime: '',
   completed: 0
 }
 
