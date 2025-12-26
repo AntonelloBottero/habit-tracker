@@ -15,7 +15,7 @@ const rules = {
   last_name: [validators.required],
   count: [validators.numeric]
 }
-/* describe("useForm", () => {
+describe("useForm", () => {
   test('model init equals defaultValues', () => {
     const useFormRendered = renderHook(() => useForm({ defaultValues }))
     expect(JSON.stringify(useFormRendered.result.current.model)).toBe(JSON.stringify(defaultValues))
@@ -72,7 +72,7 @@ const rules = {
       expect(useFormRendered.result.current.errorMessages.last_name?.length).toBe(1)
     })
   })
-}) */
+})
 
 // --- useHabits ---
 import useHabits from '@/hooks/useHabits'
@@ -80,8 +80,8 @@ import useHabits from '@/hooks/useHabits'
 interface HabitTestValues {
   calculateMonthlySlots: (habit: HabitsSchema, date: string) => SlotsSchema[]
   fetchManageableHabits: (mamange_from: string) => Promise<HabitsSchema[]>,
-  fetchActiveSlots: () => Promise<SlotsSchema[]>,
-  fetchEvents: () => Promise<EventsSchema[]>
+  fetchActiveSlots: (from: string) => Promise<SlotsSchema[]>,
+  fetchEvents: (from: string, to: string) => Promise<EventsSchema[]>
 }
 
 const testDb = new DbClass('TestDatabase')
@@ -195,19 +195,19 @@ describe('useHabits', () => {
       event_ids: [],
       count: index + 1,
       completion: 0,
-      active_to: DateTime.now().minus({ days: 1 }).minus({ days: index * 2 }).toISO(), // excludes first
+      active_to: DateTime.now().minus({ days: 1 }).plus({ days: index * 2 }).toISO(), // excludes first
       deleted_at: ''
     })) as SlotsSchema[]
     await testDb.slots.bulkAdd(slots)
 
-    const activeSlots = await hookValues.fetchActiveSlots()
+    const activeSlots = await hookValues.fetchActiveSlots(DateTime.now().toISO())
     await waitFor(async () => {
       expect(activeSlots.length).toBe(5)
-      expect(activeSlots[0].completion).toBe(2)
+      expect(activeSlots[0].count).toBe(2)
     })
   })
 
-  /* test('fetchEvents', async () => {
+  test('fetchEvents', async () => {
     let hookValues: HabitTestValues
     render(
       <DbProvider externalDb={testDb}>
@@ -229,21 +229,24 @@ describe('useHabits', () => {
     const eventInside = {
       habit_id: 1,
       datetime: startOfWeek.plus({ days: 1 }).toISO(),
-      completed: 1
+      completed: 1,
+      deleted_at: ''
     } as EventsSchema
 
     // 2. Event outside range (before)
     const eventBefore = {
       habit_id: 1,
       datetime: startOfWeek.minus({ days: 1 }).toISO(),
-      completed: 1
+      completed: 1,
+      deleted_at: ''
     } as EventsSchema
 
     // 3. Event outside range (after)
     const eventAfter = {
       habit_id: 1,
       datetime: startOfWeek.plus({ weeks: 1, days: 1 }).toISO(),
-      completed: 1
+      completed: 1,
+      deleted_at: ''
     } as EventsSchema
 
     // 4. Soft deleted event inside range
@@ -255,11 +258,11 @@ describe('useHabits', () => {
     } as EventsSchema // Type assertion to bypass TS if Schema definition in test file is strict but DB allows extra props
     await testDb.events.bulkAdd([eventInside, eventBefore, eventAfter, eventDeleted])
 
-    const fetchedEvents = await hookValues.fetchEvents()
+    const fetchedEvents = await hookValues.fetchEvents(startOfWeek.toISO(), startOfWeek.endOf('week').toISO())
     await waitFor(async () => {
       expect(fetchedEvents.length).toBe(1)
       expect(fetchedEvents[0].datetime).toBe(eventInside.datetime)
       // Additional check to ensure soft delete works (if implementation supports it) or at least date filtering works.
     })
-  }) */
+  })
 })
