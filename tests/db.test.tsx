@@ -129,7 +129,7 @@ describe('DB CRUD', () => {
     testDb.close()
   })
 
-  test('create', async () => {
+  test('store', async () => {
     let hookValues: DbTestCrudValues<HabitsSchema>
     render(
       <DbProvider externalDb={testDb}>

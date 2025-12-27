@@ -10,14 +10,14 @@ interface Params<T> {
 }
 
 export default function useDbCrud<T extends object>({ table: storeName, model }: Params<T>) {
-  const { db } = useDb()
+  const { db, dbIsOpen } = useDb()
 
   const table = useMemo<Table | null>(() => {
     return db.table(storeName) || null
   }, [name])
 
   function isCompliant() {
-    if(!db.isOpen()) { return false }
+    if(dbIsOpen !== true) { return false }
     if(!schema) { return false}
     return true
   }

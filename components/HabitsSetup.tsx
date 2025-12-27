@@ -18,7 +18,7 @@ type Habit = Partial<HabitsSchema> & {
 // - When (every day, selected days, except weekends, n days per week/month, etc)
 // - Icon
 export default function HabitsSetup() {
-    const { index } = useDbCrud({ table: 'habits', model: habitsModel })
+    const { index, isCompliant } = useDbCrud({ table: 'habits', model: habitsModel })
 
     // --- Existing Habits ---
     const [habits, setHabits] = useState<Habit[]>([])
@@ -41,9 +41,9 @@ export default function HabitsSetup() {
     }
     useEffect(() => {
         fetchHabits()
-    }, [])
+    }, [isCompliant()])
 
-    // --- Manage form ad habits store/update
+    // --- Manage form ad habits store/update ---
     const formModalRef = useRef<ModalRef>(null)
     const [formHabitsValues, setFormHabitsValues] = useState<Habit | undefined>(undefined)
     const addHabit = (type: 'good' | 'bad') => {

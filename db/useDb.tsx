@@ -32,12 +32,13 @@ export function DbProvider({ children, externalDb }: ProviderProps) {
   // --- Open db ---
   const [dbIsOpen, setDbIsOpen] = useState<boolean | 'pending'>(false)
   async function open() {
-    if(db.isOpen()) { return undefined }
+    if(dbIsOpen !== false) { return undefined }
     setDbIsOpen('pending')
     try {
     await db.open()
     setDbIsOpen(true)
     } catch(error) {
+      console.log('error', error)
       setDbIsOpen(false)
     }
   }
