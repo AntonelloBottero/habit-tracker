@@ -39,7 +39,7 @@ body {
   background: linear-gradient(200deg, rgba(255,255,255, 1.000) 0.000%, rgba(255,255,255, 1.000) 16.667%, rgba(255,255,255, 1.000) 33.333%, rgba(255,255,255, 1.000) 50.000%, rgba(255,255,255, 1.000) 66.667%, rgba(255,255,255, 1.000) 83.333%, #C2EABD 100.000%);
 }
 
-.shadow-ht {
+.__shadow-ht {
   box-shadow: rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(194, 234, 189, .5) -2px 4px 6px -1px, rgba(194, 234, 189, 0.5) -2px 2px 4px -2px;
 }
 
@@ -61,7 +61,7 @@ body {
 .ht-interaction:hover::before {
   opacity:.08;
 }
-.ht-interaction:active::before {
+.ht-interaction:active::before, .ht-interaction.ht-interaction--active::before {
   opacity:.16;
 }
 
@@ -73,5 +73,9 @@ body {
 .ht-btn {
   cursor:pointer;
   @apply inline-flex justify-center items-center gap-2
+}
+
+.shadow-ht {
+  @apply shadow-lg shadow-green-200/50
 }
 

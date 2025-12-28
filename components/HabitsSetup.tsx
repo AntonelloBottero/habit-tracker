@@ -75,7 +75,7 @@ export default function HabitsSetup() {
                         </button>
                     </p>
                     {goodHabits.map(habit => (
-                        <HabitsCard key={habit.id} habit={habit} />
+                        <HabitsCard key={habit.id} habit={habit} className="mt-2" />
                     ))}
                 </div>
                 <div className="inline-block w-0.5 self-stretch bg-neutral-100 dark:bg-white/10"></div>
