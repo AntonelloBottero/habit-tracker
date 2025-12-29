@@ -52,6 +52,11 @@ export default function HabitsSetup() {
             type
         })
     }
+    function editHabit(habit: Habit) {
+        if(!habit) { return undefined }
+        formModalRef.current?.show()
+        setFormHabitsValues(habit)
+    }
 
     const handleFormSave = () => {
         formModalRef.current?.hide()
@@ -66,7 +71,7 @@ export default function HabitsSetup() {
                         Flex you good intentions.<br/>
                         <button
                             type="button"
-                            className="px-3 py-1 mt-1 text-sm font-medium text-center bg-primary outline-glass rounded-lg ht-interaction w-full ht-btn"
+                            className="px-3 py-1 mt-1 text-sm font-medium text-center bg-primary shadow-ht rounded-lg ht-interaction w-full ht-btn"
                             onClick={() => addHabit('good')}
                         >
                             <span>
@@ -75,7 +80,7 @@ export default function HabitsSetup() {
                         </button>
                     </p>
                     {goodHabits.map(habit => (
-                        <HabitsCard key={habit.id} habit={habit} className="mt-2" />
+                        <HabitsCard key={habit.id} habit={habit} className="mt-4" onClick={() => { editHabit(habit) }} />
                     ))}
                 </div>
                 <div className="inline-block w-0.5 self-stretch bg-neutral-100 dark:bg-white/10"></div>
@@ -84,7 +89,7 @@ export default function HabitsSetup() {
                         We are not made of just sugar.<br />
                         <button
                             type="button"
-                            className="px-3 py-1 mt-1 text-sm font-medium text-center bg-primary outline-glass rounded-lg ht-interaction w-full ht-btn"
+                            className="px-3 py-1 mt-1 text-sm font-medium text-center bg-primary shadow-ht rounded-lg ht-interaction w-full ht-btn"
                             onClick={() => addHabit('bad')}
                         >
                             <span>

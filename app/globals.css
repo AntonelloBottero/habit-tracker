@@ -45,6 +45,7 @@ body {
 
 .ht-interaction {
   position:relative;
+  cursor:pointer;
 }
 .ht-interaction::before {
     content:"";

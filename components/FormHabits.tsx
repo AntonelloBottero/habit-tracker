@@ -35,6 +35,10 @@ export default function FormHabits({ values, onSave }: Props) {
     init(values)
   }, [values])
 
+  const isNew = useMemo(() => {
+    return !values?.id
+  }, [values])
+
   // --- granularity times ---
   const granularityTimes = useMemo(() => {
     let count = 1
