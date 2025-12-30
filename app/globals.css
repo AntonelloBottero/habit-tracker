@@ -27,8 +27,7 @@ body {
 
 .outline-glass {
   border-style: solid;
-  border-width: 0 0 2px 2px;
-  border-color:rgba(0,0,0,.08);
+  border-bottom:1px solid rgba(0,0,0,.08);
 }
 
 .font-monda {

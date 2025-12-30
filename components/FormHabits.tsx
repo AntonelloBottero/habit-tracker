@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, type ChangeEvent } from 'react'
+import { useState, useEffect, useMemo, type ChangeEvent, useRef } from 'react'
 import { DateTime } from 'luxon'
 import InputWrapper from '@/components/InputWrapper'
 import ColorPicker from '@/components/ColorPicker'
@@ -7,6 +7,9 @@ import { CheckCircleIcon } from '@heroicons/react/24/solid'
 import { habitsModel, type HabitsSchema } from '@/db/DbClass'
 import useForm, {Rules, validators} from '@/hooks/useForm'
 import useDbCrud from '@/db/useDbCrud'
+import ConfirmModal from './ConfirmModal'
+import { ConfirmModalRef } from '@/app/types'
+import { CheckCircle } from '@project-lary/react-material-symbols-700-rounded'
 
 type Values = Partial<HabitsSchema> & {
   id?: number
@@ -95,6 +98,14 @@ export default function FormHabits({ values, onSave }: Props) {
     }
     setLoading(false)
   }
+
+  // --- Delete ---
+  const confirmDeleteModalRef = useRef<ConfirmModalRef>(null)
+  async function deleteHabit() {
+    const confirmed = await confirmDeleteModalRef.current?.confirm()
+    console.log('confirmed', confirmed)
+  }
+
 
   return (
     <form onSubmit={handleFormSubmit} className="grid grid-cols-2 gap-3">
@@ -187,9 +198,17 @@ export default function FormHabits({ values, onSave }: Props) {
           )}/>
         </div>
 
-        <div className="col-span-2 text-right">
-          <button type="submit" className="ht-btn ht-interaction rounded-lg bg-primary py-2 px-5 outline-glass">
-            <CheckCircleIcon className="size-6" />
+        <div className="col-span-2 flex justify-end items-center">
+          {!isNew && (
+            <>
+              <button type="button" className="ht-btn ht-interaction rounded-lg bg-red-50 text-red-500 py-2 px-5 mr-2" onClick={deleteHabit}>
+                Delete
+              </button>
+              <ConfirmModal ref={confirmDeleteModalRef} />
+            </>
+          )}
+          <button type="submit" className="ht-btn ht-interaction rounded-lg bg-primary shadow-ht py-2 px-5 outline-glass">
+            <CheckCircle className="size-5" />
             Confirm
           </button>
         </div>
