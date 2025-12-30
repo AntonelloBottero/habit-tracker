@@ -5,6 +5,10 @@ export interface ModalRef {
     hide: () => void
 }
 
+export interface ConfirmModalRef {
+    confirm: () => Promise<boolean>
+}
+
 export interface FakeInputChangeEvent { // simulates a regular form input change event
     target: {
         value?: boolean
