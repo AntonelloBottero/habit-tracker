@@ -1,34 +1,45 @@
 import { ConfirmModalRef } from '@/app/types'
 import ConfirmModal from '@/components/ConfirmModal'
 import { fireEvent, render, screen, within } from '@testing-library/react'
-import { act, useRef } from 'react'
+import { act, useRef, useEffect } from 'react'
+
+const TestConfirmModalConsumer = ({ onComponentReady, ...props }: { onComponentReady: (values: ConfirmModalRef) => void}) => {
+  const confirmModalRef = useRef(null)
+  useEffect(() => {
+    if(confirmModalRef.current) {
+      onComponentReady(confirmModalRef.current as ConfirmModalRef)
+    }
+  }, [confirmModalRef])
+
+  return <ConfirmModal ref={confirmModalRef} {...props} />
+}
 
 describe('ConfirmDialog', () => {
   test('Modal visibility', async () => {
-    const confirmModalRef = useRef<ConfirmModalRef | undefined>(undefined)
-    render(<ConfirmModal ref={confirmModalRef} />)
+    let confirmModalRef: ConfirmModalRef
+    render(<TestConfirmModalConsumer onComponentReady={(values) => { confirmModalRef = values}} />)
 
     await act(() => {
-      expect(confirmModalRef.current).toBeDefined()
+      expect(confirmModalRef).toBeDefined()
     })
 
     act(() => {
-      (confirmModalRef.current as ConfirmModalRef).confirm()
+      (confirmModalRef as ConfirmModalRef).confirm()
       const ModalElement = screen.getByRole('confirm-modal')
       expect(ModalElement).toBeVisible()
     })
   })
 
   test('confirm', async () => {
-    const confirmModalRef = useRef<ConfirmModalRef | undefined>(undefined)
-    render(<ConfirmModal ref={confirmModalRef} />)
+    let confirmModalRef: ConfirmModalRef
+    render(<TestConfirmModalConsumer onComponentReady={(values) => { confirmModalRef = values}} />)
 
     await act(() => {
-      expect(confirmModalRef.current).toBeDefined()
+      expect(confirmModalRef).toBeDefined()
     })
 
     act(() => {
-      (confirmModalRef.current as ConfirmModalRef).confirm().then((confirmed: boolean) => {
+      (confirmModalRef as ConfirmModalRef).confirm().then((confirmed: boolean) => {
         expect(confirmed).toBe(true)
       })
       const ModalElement = screen.getByRole('confirm-modal')

@@ -6,7 +6,7 @@ export interface ModalRef {
 }
 
 export interface ConfirmModalRef {
-    confirm: () => Promise<boolean>
+    confirm: () => Promise<unknown>
 }
 
 export interface FakeInputChangeEvent { // simulates a regular form input change event
