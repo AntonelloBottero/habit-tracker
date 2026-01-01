@@ -56,7 +56,7 @@ describe('ColorPicker component', () => {
     })
   })
 
-  test('Clicking on a default color triggers correct value update', async () => {
+  test('Clicking on a default color triggers correct value update', () => {
     const defaultColor = defaultColors[1]
     function setColorValue(value: string) {
       expect(value).toBe(defaultColor)

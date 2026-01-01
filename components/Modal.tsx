@@ -11,9 +11,10 @@ interface Props {
     title?: string,
     children?: ReactElement | ReactElement[],
     size?: string
+    role?: string
 }
 
-const Modal = forwardRef<ModalRef>(({ title, children, size = 'max-w-xl' }: Props, ref) => {
+const Modal = forwardRef<ModalRef>(({ title, children, size = 'max-w-xl', role = 'modal' }: Props, ref) => {
   const [value, setValue] = useState(false)
   const show = () => {
     setValue(true)
@@ -28,7 +29,7 @@ const Modal = forwardRef<ModalRef>(({ title, children, size = 'max-w-xl' }: Prop
   }))
 
   const modal = (
-    <div tabIndex={-1} aria-hidden="true" className={(!value ? 'hidden ' : 'flex') + ' overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-full max-h-full bg-black/25'}>
+    <div role={role} tabIndex={-1} aria-hidden="true" className={(!value ? 'hidden ' : 'flex') + ' overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-full max-h-full bg-black/25'}>
       <div className={`relative p-4 w-full ${size} max-h-full`}>
         <div className="relative bg-white rounded-lg shadow-sm dark:bg-gray-700">
           <div className="flex items-center justify-between p-4 md:p-5 rounded-t ">

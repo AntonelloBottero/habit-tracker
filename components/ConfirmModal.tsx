@@ -32,11 +32,7 @@ const ConfirmModal = forwardRef<ConfirmModalRef>(({
   }
 
   function resolveConfirm(confirmed: boolean) {
-    if(confirmed) {
-      confirmPromise.current?.resolve(true)
-    } else {
-      confirmPromise.current?.reject(false)
-    }
+    confirmPromise.current?.resolve(confirmed)
   }
 
   useImperativeHandle(ref, () => ({
@@ -50,6 +46,9 @@ const ConfirmModal = forwardRef<ConfirmModalRef>(({
           {text}
         </div>
         {confirmPromise.current && (<div className="flex justify-end">
+          <button type="button" className="ht-btn ht-interaction rounded-lg bg-gray-100 py-2 px-5" onClick={() => {resolveConfirm(false)}}>
+            Cancel
+          </button>
           <button type="button" className="ht-btn ht-interaction rounded-lg bg-gray-800 shadow-lg shadow-gray-400/50 text-white py-2 px-5" onClick={() => {resolveConfirm(true)}}>
             {confirmActionText}
           </button>
