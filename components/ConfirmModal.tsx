@@ -1,5 +1,5 @@
 import { ConfirmModalRef, ModalRef } from "@/app/types"
-import { forwardRef, useImperativeHandle, useRef, useState } from "react"
+import { forwardRef, useImperativeHandle, useRef } from "react"
 import Modal from "@/components/Modal"
 
 interface Props {
@@ -13,7 +13,7 @@ interface ConfirmPromise {
   reject: (value: boolean) => unknown
 }
 
-const ConfirmModal = forwardRef<ConfirmModalRef>(({
+const ConfirmModal = forwardRef<ConfirmModalRef, Props>(({
   title = 'Confirm your action',
   text = 'Are you sure you want to proceed?',
   confirmActionText = 'Confirm'

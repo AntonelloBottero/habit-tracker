@@ -1,4 +1,4 @@
-import { useState, ReactElement, forwardRef, useImperativeHandle } from 'react'
+import { useState, forwardRef, useImperativeHandle, ReactNode } from 'react'
 import { createPortal } from 'react-dom' // we want the modal to be appended at the end of the document, in order to avoid relative and overflow hidden containers
 import { ModalRef } from '@/app/types'
 
@@ -9,12 +9,13 @@ const modalRoot = typeof document !== 'undefined'
 
 interface Props {
     title?: string,
-    children?: ReactElement | ReactElement[],
+    children?: ReactNode,
     size?: string
     role?: string
 }
 
-const Modal = forwardRef<ModalRef>(({ title, children, size = 'max-w-xl', role = 'modal' }: Props, ref) => {
+// Typescript needs the component props to be explicited in order to infere the correct props on component instance
+const Modal = forwardRef<ModalRef, Props>(({ title, children, size = 'max-w-xl', role = 'modal' }: Props, ref) => {
   const [value, setValue] = useState(false)
   const show = () => {
     setValue(true)

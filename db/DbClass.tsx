@@ -1,6 +1,12 @@
 import Dexie, { Table } from 'dexie' // Assumi di aver spostato gli schemi qui
 
 // --- Schemas and Models ---
+interface DbResourceSchema {
+  id: number
+  created_at: string
+  updated_at: string
+  deleted_at: string
+}
 
 // options schema
 export interface OptionsSchema {
@@ -19,6 +25,7 @@ export interface HabitsSchema {
   enough_amount: string
   manage_from: string
 }
+export type Habit = DbResourceSchema & HabitsSchema
 export const habitsModel: HabitsSchema = {
   type: '',
   name: '',

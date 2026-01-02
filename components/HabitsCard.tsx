@@ -5,7 +5,7 @@ import TonalIcon from '@/components/TonalIcon'
 interface Props {
     habit: HabitsSchema & { id: number }
     className?: string
-    onClick?: () => never
+    onClick?: () => void | never
 }
 
 export default function HabitsCard({ habit, className = '', onClick }: Props) {

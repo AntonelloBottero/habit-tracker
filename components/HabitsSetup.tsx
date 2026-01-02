@@ -32,10 +32,9 @@ export default function HabitsSetup() {
     const fetchHabits = async () => {
         try {
         const habits = await index()
-        console.log('habits', habits)
         setHabits(habits)
         } catch(error) {
-            console.log('error', error)
+            console.error(error)
             setHabits([])
         }
     }
@@ -62,6 +61,11 @@ export default function HabitsSetup() {
         formModalRef.current?.hide()
         fetchHabits()
     }
+
+    const formModalTitle = useMemo(() => {
+        const operation = !formHabitsValues?.id ? 'Your new' : 'Edit your'
+        return `${operation} ${formHabitsValues?.type ?? ''} habit`
+    }, [formHabitsValues])
 
     return (
         <>
@@ -97,10 +101,13 @@ export default function HabitsSetup() {
                             </span>
                         </button>
                     </p>
+                    {badHabits.map(habit => (
+                        <HabitsCard key={habit.id} habit={habit} className="mt-4" onClick={() => { editHabit(habit) }} />
+                    ))}
                 </div>
             </div>
 
-            <Modal ref={formModalRef}  title="Your New Good Habit">
+            <Modal ref={formModalRef} title={formModalTitle}>
                 <FormHabits values={formHabitsValues} onSave={handleFormSave} onDelete={handleFormSave} />
             </Modal>
         </>
