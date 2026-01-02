@@ -1,6 +1,6 @@
 import { ConfirmModalRef } from '@/app/types'
 import ConfirmModal from '@/components/ConfirmModal'
-import { fireEvent, render, screen, waitFor, within } from '@testing-library/react'
+import { fireEvent, render, screen, within } from '@testing-library/react'
 import '@testing-library/jest-dom'
 import { act, useRef, useEffect } from 'react'
 
@@ -16,7 +16,7 @@ const TestConfirmModalConsumer = ({ onComponentReady, ...props }: { onComponentR
 }
 
 describe('ConfirmDialog', () => {
-  /* test('Modal visibility', async () => {
+  test('Modal visibility', async () => {
     let confirmModalRef: ConfirmModalRef
     render(<TestConfirmModalConsumer onComponentReady={(values) => { confirmModalRef = values}} />)
 
@@ -39,9 +39,10 @@ describe('ConfirmDialog', () => {
       expect(confirmModalRef).toBeDefined()
     })
 
-    await act(async () => {
-      const confirmed = await (confirmModalRef as ConfirmModalRef).confirm()
-      expect(confirmed).toBe(true)
+    await act(() => {
+      (confirmModalRef as ConfirmModalRef).confirm().then((confirmed) => {
+        expect(confirmed).toBe(true)
+      })
       const ModalElement = screen.getByRole('confirm-modal', { hidden: true })
       const ModalContext = within(ModalElement)
       const ConfirmBtnElement = ModalContext.getByText('Confirm')
@@ -54,7 +55,7 @@ describe('ConfirmDialog', () => {
         }),
       )
     })
-  }) */
+  })
 
   test('cancel', async () => {
     let confirmModalRef: ConfirmModalRef
@@ -64,12 +65,13 @@ describe('ConfirmDialog', () => {
       expect(confirmModalRef).toBeDefined()
     })
 
-    await act(async () => {
-      const confirmed = (confirmModalRef as ConfirmModalRef).confirm()
+    await act(() => {
+      (confirmModalRef as ConfirmModalRef).confirm().then((confirmed) => {
+        expect(confirmed).toBe(false)
+      })
       const ModalElement = screen.getByRole('confirm-modal', { hidden: true })
       const ModalContext = within(ModalElement)
       const CancelBtnElement = ModalContext.getByText('Cancel')
-      console.log('CancelBtnElement', CancelBtnElement)
       expect(CancelBtnElement).toBeDefined()
       fireEvent(
         CancelBtnElement,
@@ -78,11 +80,10 @@ describe('ConfirmDialog', () => {
           cancelable: true,
         }),
       )
-      expect(confirmed).toBe(false)
     })
   })
 
-  /* test('customization', async () => {
+  test('customization', async () => {
     const title = 'Custom confirm title'
     const text = 'Custom confirm text'
     const confirmActionText = 'Custom confirm action'
@@ -103,5 +104,5 @@ describe('ConfirmDialog', () => {
       const ConfirmActionElement = ModalContext.getByText(confirmActionText)
       expect(ConfirmActionElement).toBeDefined()
     })
-  }) */
+  })
 })
