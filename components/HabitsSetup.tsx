@@ -106,6 +106,13 @@ export default function HabitsSetup() {
                     ))}
                 </div>
             </div>
+            <div className="mt-4 flex justify-end items-center">
+                {!habits.length && (
+                    <div className="text-sm text-gray-500 mr-4">
+                        Add at least an habit to continue
+                    </div>
+                )}
+            </div>
 
             <Modal ref={formModalRef} title={formModalTitle}>
                 <FormHabits values={formHabitsValues} onSave={handleFormSave} onDelete={handleFormSave} />
