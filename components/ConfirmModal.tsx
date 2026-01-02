@@ -33,6 +33,7 @@ const ConfirmModal = forwardRef<ConfirmModalRef>(({
 
   function resolveConfirm(confirmed: boolean) {
     confirmPromise.current?.resolve(confirmed)
+    modalRef.current?.hide()
   }
 
   useImperativeHandle(ref, () => ({

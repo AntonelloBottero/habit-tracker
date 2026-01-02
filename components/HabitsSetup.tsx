@@ -101,7 +101,7 @@ export default function HabitsSetup() {
             </div>
 
             <Modal ref={formModalRef}  title="Your New Good Habit">
-                <FormHabits values={formHabitsValues} onSave={handleFormSave} />
+                <FormHabits values={formHabitsValues} onSave={handleFormSave} onDelete={handleFormSave} />
             </Modal>
         </>
     )

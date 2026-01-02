@@ -3,7 +3,6 @@ import { DateTime } from 'luxon'
 import InputWrapper from '@/components/InputWrapper'
 import ColorPicker from '@/components/ColorPicker'
 import CheckboxBtn from '@/components/CheckboxBtn'
-import { CheckCircleIcon } from '@heroicons/react/24/solid'
 import { habitsModel, type HabitsSchema } from '@/db/DbClass'
 import useForm, {Rules, validators} from '@/hooks/useForm'
 import useDbCrud from '@/db/useDbCrud'
@@ -18,6 +17,7 @@ type Values = Partial<HabitsSchema> & {
 interface Props {
     values?: Values
     onSave?: () => never | void
+    onDelete?: () => never | void
 }
 
 const rules: Rules = {
@@ -31,7 +31,7 @@ const rules: Rules = {
 
 const granularities: string[] = ['daily', 'weekly', 'monthly', 'yearly']
 
-export default function FormHabits({ values, onSave }: Props) {
+export default function FormHabits({ values, onSave, onDelete }: Props) {
   // --- useForm ---
   const { model, changeField, init, errorMessages, handleFormSubmit } = useForm({ defaultValues: habitsModel, rules, onSubmit })
   useEffect(() => {
@@ -71,7 +71,7 @@ export default function FormHabits({ values, onSave }: Props) {
   }
 
   // --- Save data ---
-  const { store, update } = useDbCrud({ table: 'habits', model: habitsModel })
+  const { store, update, deleteItem } = useDbCrud({ table: 'habits', model: habitsModel })
   const id = useMemo(()=> {
     return values?.id
   }, [values])
@@ -93,7 +93,7 @@ export default function FormHabits({ values, onSave }: Props) {
         onSave()
       }
     } catch(error) {
-      console.log('error', error)
+      console.error(error)
       // TODO: notify error to user
     }
     setLoading(false)
@@ -101,9 +101,23 @@ export default function FormHabits({ values, onSave }: Props) {
 
   // --- Delete ---
   const confirmDeleteModalRef = useRef<ConfirmModalRef>(null)
+  const [loadingDelete, setLoadingDelete] = useState<boolean>(false)
   async function deleteHabit() {
+    if(loadingDelete || isNew) { return undefined }
     const confirmed = await confirmDeleteModalRef.current?.confirm()
-    console.log('confirmed', confirmed)
+    if(!confirmed) { return undefined }
+
+    setLoadingDelete(true)
+    try{
+      await deleteItem(id as number)
+      if(onDelete) {
+        onDelete()
+      }
+    } catch(error) {
+      console.error(error)
+      // TODO: notify error to user
+    }
+    setLoadingDelete(false)
   }
 
 
