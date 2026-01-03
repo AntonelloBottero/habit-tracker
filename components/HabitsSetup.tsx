@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useMemo } from 'react';
-import { habitsModel, type HabitsSchema } from '@/db/DbClass'
+import { habitsModel, type HabitsSchema, type DbResourceSchema } from '@/db/DbClass'
 import { ModalRef } from '@/app/types'
 import useDbCrud from '@/db/useDbCrud'
 import Modal from '@/components/Modal'
@@ -7,10 +7,6 @@ import FormHabits from '@/components/FormHabits'
 import HabitsCard from '@/components/HabitsCard'
 import { CalendarCheck } from '@project-lary/react-material-symbols-700-rounded';
 import useHabits from '@/hooks/useHabits';
-
-type Habit = Partial<HabitsSchema> & {
-    id?: number
-}
 
 // Card made of 2 sections -> Good and Bad habits
 // every section accepts any number of items
@@ -23,7 +19,7 @@ export default function HabitsSetup() {
     const { index, isCompliant } = useDbCrud({ table: 'habits', model: habitsModel })
 
     // --- Existing Habits ---
-    const [habits, setHabits] = useState<Habit[]>([])
+    const [habits, setHabits] = useState<DbResourceSchema<HabitsSchema>[]>([])
     const goodHabits = useMemo(() => {
         return habits.filter(habit => habit.type === 'good')
     }, [habits])
@@ -46,14 +42,14 @@ export default function HabitsSetup() {
 
     // --- Manage form ad habits store/update ---
     const formModalRef = useRef<ModalRef>(null)
-    const [formHabitsValues, setFormHabitsValues] = useState<Habit | undefined>(undefined)
+    const [formHabitsValues, setFormHabitsValues] = useState<Partial<DbResourceSchema<HabitsSchema>> | undefined>(undefined)
     const addHabit = (type: 'good' | 'bad') => {
         formModalRef.current?.show()
         setFormHabitsValues({
             type
         })
     }
-    function editHabit(habit: Habit) {
+    function editHabit(habit: DbResourceSchema<HabitsSchema>) {
         if(!habit) { return undefined }
         formModalRef.current?.show()
         setFormHabitsValues(habit)
@@ -74,7 +70,7 @@ export default function HabitsSetup() {
     const [loadingSetup, setLoadingSetup] = useState()
     async function setup() {
         if(!habits.length) { return undefined }
-        
+
     }
 
     return (

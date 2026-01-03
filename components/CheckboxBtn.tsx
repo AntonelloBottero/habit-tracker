@@ -4,9 +4,9 @@
  * @props {HTMLInputElement} // handle the component like any other input element
  * @returns {TSX.Element}
  */
-import { useMemo } from 'react'
+import { ChangeEvent, useMemo } from 'react'
 import { CheckCircleIcon } from '@heroicons/react/24/solid'
-import { FormFieldProps } from "@/app/types"
+import type { FormFieldProps } from "@/app/types"
 
 interface Props extends FormFieldProps {
   defaultChecked: boolean
@@ -31,7 +31,7 @@ export default function CheckboxBtn(props: Props) {
       target: {
         checked: !defaultChecked
       }
-    })
+    } as ChangeEvent<HTMLInputElement>)
   }
 
   return (

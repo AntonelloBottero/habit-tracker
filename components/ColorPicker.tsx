@@ -6,7 +6,7 @@
  */
 import { defaultColors } from "@/utils/constants"
 
-import { useState, useEffect, useMemo } from "react"
+import { useState, useEffect, useMemo, ChangeEvent } from "react"
 import useDb from "@/db/useDb"
 import { BookmarkIcon } from '@heroicons/react/24/solid'
 import { FormFieldProps } from "@/app/types"
@@ -29,7 +29,7 @@ export default function ColorPicker(props: FormFieldProps) {
       target: {
         value
       }
-    })
+    } as ChangeEvent<HTMLInputElement>)
   }
 
   const {value, onChange, ...inputProps } = props

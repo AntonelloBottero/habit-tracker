@@ -3,16 +3,14 @@ import { DateTime } from 'luxon'
 import InputWrapper from '@/components/InputWrapper'
 import ColorPicker from '@/components/ColorPicker'
 import CheckboxBtn from '@/components/CheckboxBtn'
-import { habitsModel, type HabitsSchema } from '@/db/DbClass'
+import { habitsModel, type HabitsSchema, type DbResourceSchema } from '@/db/DbClass'
 import useForm, {Rules, validators} from '@/hooks/useForm'
 import useDbCrud from '@/db/useDbCrud'
 import ConfirmModal from './ConfirmModal'
 import { ConfirmModalRef } from '@/app/types'
 import { CheckCircle } from '@project-lary/react-material-symbols-700-rounded'
 
-type Values = Partial<HabitsSchema> & {
-  id?: number
-}
+type Values = Partial<DbResourceSchema<HabitsSchema>>
 
 interface Props {
     values?: Values

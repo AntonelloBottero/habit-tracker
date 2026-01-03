@@ -3,6 +3,7 @@ import { DateTime } from 'luxon'
 import { objectIsCompliant } from "@/utils/index"
 import { useMemo } from 'react'
 import { type Table } from 'dexie'
+import { type DbResourceSchema } from '@/db/DbClass'
 
 interface Params<T> {
   table: string
@@ -32,14 +33,14 @@ export default function useDbCrud<T extends object>({ table: storeName, model }:
   }, [table])
 
   // --- DB Operations ---
-  const index = async (filter?: (item: T) => boolean): Promise<T[]> => {
+  const index = async (filter?: (item: DbResourceSchema<T>) => boolean): Promise<DbResourceSchema<T>[]> => {
     if(!isCompliant()) { return [] }
     const query = (table as Table).where('deleted_at').equals('') // TODO sort by created_at
     return filter
       ? query.filter(filter).toArray()
       : query.toArray()
   }
-  const show = async (id: number): Promise<T | undefined> => {
+  const show = async (id: number): Promise<DbResourceSchema<T> | undefined> => {
     if(!isCompliant()) { return undefined }
     const item = await (table as Table).where('id').equals(id).and(item => item.deleted_at === '').first()
     return item
@@ -56,7 +57,7 @@ export default function useDbCrud<T extends object>({ table: storeName, model }:
     })
     return true
   }
-  const update = async (id: number, values: Partial<T>): Promise<void> => {
+  const update = async (id: number, values: Partial<DbResourceSchema<T>>): Promise<void> => {
     if(!objectIsCompliant(schema as object, values)) {
       throw new TypeError('Values are not fully compliant with schema')
     }
