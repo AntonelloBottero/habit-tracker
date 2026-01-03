@@ -79,6 +79,7 @@ export default function useDbCrud<T extends object>({ table: storeName, model }:
   }
 
   return {
+    db,
     index,
     show,
     store,

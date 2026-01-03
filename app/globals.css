@@ -64,6 +64,9 @@ body {
 .ht-interaction:active::before, .ht-interaction.ht-interaction--active::before {
   opacity:.16;
 }
+.ht-interaction:disabled::before {
+  opacity:0 !important;
+}
 
 /* --- Class presets (with @apply) --- */
 .ht-form-input {
@@ -73,6 +76,14 @@ body {
 .ht-btn {
   cursor:pointer;
   @apply inline-flex justify-center items-center gap-2
+}
+.ht-btn.ht-btn--size-large {
+  @apply rounded-lg py-2 px-5
+}
+.ht-btn:disabled {
+  opacity:.5;
+  cursor:default;
+  box-shadow:none !important;
 }
 
 .shadow-ht {

@@ -1,7 +1,7 @@
 import Dexie, { Table } from 'dexie' // Assumi di aver spostato gli schemi qui
 
 // --- Schemas and Models ---
-interface DbResourceSchema {
+export type DbResourceSchema<T> = T & {
   id: number
   created_at: string
   updated_at: string
@@ -25,7 +25,6 @@ export interface HabitsSchema {
   enough_amount: string
   manage_from: string
 }
-export type Habit = DbResourceSchema & HabitsSchema
 export const habitsModel: HabitsSchema = {
   type: '',
   name: '',

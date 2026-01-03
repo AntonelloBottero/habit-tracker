@@ -16,7 +16,7 @@ export default function HabitsCard({ habit, className = '', onClick }: Props) {
   }
 
   return habit ? (
-    <div className={`${className} ht-interaction py-3 px-4 rounded-lg bg-green-50 outline-1 outline-offset-1 outline-green-100 flex flex-col gap-2`} onClick={() => { handleOnClick()}}>
+    <div className={`${className} ht-interaction pt-2 pb-3 px-4 rounded-lg bg-green-50 outline-1 outline-offset-1 outline-green-200 flex flex-col gap-2`} onClick={() => { handleOnClick()}}>
       <div className="flex items-center gap-2">
         <div className="grow mr-2">
           {habit.name}
@@ -25,8 +25,8 @@ export default function HabitsCard({ habit, className = '', onClick }: Props) {
           habit.type !== 'bad' ? <NorthEast className="text-xl" /> : <SouthEast className="text-xl" />
         )} />
       </div>
-      <div className="flex items-center flex-wrap gap-3">
-        <div className="flex items-center gap-1 text-sm">
+      <div className="flex items-center flex-wrap gap-2">
+        <div className="flex items-center gap-1 text-sm mr-1">
           <CalendarToday />
           <span>
             {habit.granularity}
@@ -34,7 +34,7 @@ export default function HabitsCard({ habit, className = '', onClick }: Props) {
           </span>
         </div>
         {habit.enough_amount && (
-          <div className="flex items-center gap-1 text-sm">
+          <div className="flex items-center gap-1 text-sm mr-1">
             <CheckCircle />
             <span>
               {habit.enough_amount}

@@ -5,6 +5,8 @@ import useDbCrud from '@/db/useDbCrud'
 import Modal from '@/components/Modal'
 import FormHabits from '@/components/FormHabits'
 import HabitsCard from '@/components/HabitsCard'
+import { CalendarCheck } from '@project-lary/react-material-symbols-700-rounded';
+import useHabits from '@/hooks/useHabits';
 
 type Habit = Partial<HabitsSchema> & {
     id?: number
@@ -67,10 +69,18 @@ export default function HabitsSetup() {
         return `${operation} ${formHabitsValues?.type ?? ''} habit`
     }, [formHabitsValues])
 
+    // --- Setup ---
+    const { createMonthlySlots } = useHabits()
+    const [loadingSetup, setLoadingSetup] = useState()
+    async function setup() {
+        if(!habits.length) { return undefined }
+        
+    }
+
     return (
         <>
-            <div className="flex gap-3 w-full p-6 bg-white border border-gray-200 rounded-lg shadow-ht dark:bg-gray-800 dark:border-gray-700">
-                <div className="grow">
+            <div className="flex gap-3 w-full p-6 bg-white outline-1 outline-offset-1 outline-green-100 rounded-lg shadow-ht dark:bg-gray-800 dark:border-gray-700">
+                <div className="grow basis-1/2">
                     <p>
                         Flex you good intentions.<br/>
                         <button
@@ -88,7 +98,7 @@ export default function HabitsSetup() {
                     ))}
                 </div>
                 <div className="inline-block w-0.5 self-stretch bg-neutral-100 dark:bg-white/10"></div>
-                <div className="grow">
+                <div className="grow basis-1/2">
                     <p>
                         We are not made of just sugar.<br />
                         <button
@@ -112,6 +122,10 @@ export default function HabitsSetup() {
                         Add at least an habit to continue
                     </div>
                 )}
+                <button type="button" className="ht-btn ht-btn--size-large ht-interaction bg-primary shadow-ht" disabled={!habits.length} onClick={() => { setup() }}>
+                    <CalendarCheck />
+                    Start monitoring
+                </button>
             </div>
 
             <Modal ref={formModalRef} title={formModalTitle}>

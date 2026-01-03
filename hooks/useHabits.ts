@@ -43,6 +43,19 @@ export default function useHabits() {
     return await habitsCrud.index(item => item.manage_from <= manage_from) as HabitsSchema[]
   }
 
+  // --- Create Monthly slots (fetchManageableHabits * calculateMonthlySlots) ---
+  async function createMonthlySlots(datetime: string): Promise<void> {
+    const manage_from = DateTime.fromISO(datetime).startOf('month')
+    if(!manage_from) { return undefined }
+    const updated_managed_from = manage_from.endOf('month')
+    try {
+      const habits = await fetchManageableHabits(manage_from.toISO() as string)
+      const slots = calculateMonthlySlots(habits, datetime)
+    } catch(error) {
+
+    }
+  }
+
   // fetch slots to be presented to user
   async function fetchActiveSlots(from: string): Promise<SlotsSchema[]> {
     if(!from) { return [] }
@@ -58,5 +71,11 @@ export default function useHabits() {
     }) as EventsSchema[]
   }
 
-  return { calculateMonthlySlots, fetchManageableHabits, fetchActiveSlots, fetchEvents }
+  return {
+    calculateMonthlySlots,
+    fetchManageableHabits,
+    createMonthlySlots,
+    fetchActiveSlots,
+    fetchEvents
+  }
 }
