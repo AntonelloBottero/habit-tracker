@@ -16,7 +16,9 @@ export default defineConfig([
     rules: {
       'indent': ['error', 2],
       'semi': ['error', 'never'],
-      'no-trailing-spaces': 'error'
+      'no-trailing-spaces': 'error',
+      'block-spacing': 'error',
+      'func-style': ['error', 'declaration']
     }
   },
   // next

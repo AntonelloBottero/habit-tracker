@@ -37,7 +37,7 @@ interface Params<T extends object> {
 // --- Hook ---
 export default function useForm<T extends object>({ defaultValues, rules, onSubmit } : Params<T>) {
   // --- Model reducer ---
-  const modelReducer = (state: T, { type, key, value }: ModelReducerAction<T>): T => {
+  function modelReducer(state: T, { type, key, value }: ModelReducerAction<T>): T {
     switch(type) {
     case 'batch':
       const batchValue = value as T
@@ -62,7 +62,7 @@ export default function useForm<T extends object>({ defaultValues, rules, onSubm
 
   // --- Error messages ---
   const [errorMessages, setErrorMessages] = useState<ErrorMessages>({})
-  const validate = (key?: string, value?: T | unknown): boolean => {
+  function validate(key?: string, value?: T | unknown): boolean {
     const keys = !key ? Object.keys(rules || {}) : [key] // which fields we should check
     setErrorMessages({
       ...errorMessages,
@@ -77,13 +77,13 @@ export default function useForm<T extends object>({ defaultValues, rules, onSubm
   }
 
   // --- Update single field and check field rules ---
-  const changeField = (key: string, value: string | number | boolean): void => {
+  function changeField(key: string, value: string | number | boolean): void {
     dispatchModel({ type: 'update', key, value})
     validate(key, value)
   }
 
   // --- Handle Form submit ---
-  const handleFormSubmit = (e: FormEvent<HTMLFormElement>): void => {
+  function handleFormSubmit(e: FormEvent<HTMLFormElement>): void {
     e.preventDefault()
     if(validate() && typeof onSubmit === 'function') {
       onSubmit()
@@ -91,7 +91,7 @@ export default function useForm<T extends object>({ defaultValues, rules, onSubm
   }
 
   // --- Init ---
-  const init = (values: Partial<T> | null = null): void => {
+  function init(values: Partial<T> | null = null): void {
     setErrorMessages({})
     dispatchModel({ type: 'batch', key: undefined, value: values })
   }

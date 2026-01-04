@@ -43,7 +43,7 @@ export default function HabitsSetup() {
     // --- Manage form ad habits store/update ---
     const formModalRef = useRef<ModalRef>(null)
     const [formHabitsValues, setFormHabitsValues] = useState<Partial<DbResourceSchema<HabitsSchema>> | undefined>(undefined)
-    const addHabit = (type: 'good' | 'bad') => {
+    function addHabit(type: 'good' | 'bad') {
         formModalRef.current?.show()
         setFormHabitsValues({
             type
@@ -55,7 +55,7 @@ export default function HabitsSetup() {
         setFormHabitsValues(habit)
     }
 
-    const handleFormSave = () => {
+    function handleFormSave() {
         formModalRef.current?.hide()
         fetchHabits()
     }

@@ -21,7 +21,7 @@ const ConfirmModal = forwardRef<ConfirmModalRef, Props>(({
   const confirmPromise = useRef<ConfirmPromise | undefined>(undefined)
   const modalRef = useRef<ModalRef>(null)
 
-  const confirm = async () => {
+  async function confirm() {
     modalRef.current?.show()
     return new Promise((resolve, reject) => {
       confirmPromise.current = {
@@ -47,10 +47,10 @@ const ConfirmModal = forwardRef<ConfirmModalRef, Props>(({
           {text}
         </div>
         <div className="flex justify-end">
-          <button type="button" className="ht-btn ht-interaction rounded-lg bg-gray-100 py-2 px-5" onClick={() => {resolveConfirm(false)}}>
+          <button type="button" className="ht-btn ht-interaction rounded-lg bg-gray-100 py-2 px-5" onClick={() => { resolveConfirm(false) }}>
             Cancel
           </button>
-          <button type="button" className="ht-btn ht-interaction rounded-lg bg-gray-800 shadow-lg shadow-gray-400/50 text-white py-2 px-5" onClick={() => {resolveConfirm(true)}}>
+          <button type="button" className="ht-btn ht-interaction rounded-lg bg-gray-800 shadow-lg shadow-gray-400/50 text-white py-2 px-5" onClick={() => { resolveConfirm(true) }}>
             {confirmActionText}
           </button>
         </div>

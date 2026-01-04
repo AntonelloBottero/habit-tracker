@@ -17,10 +17,10 @@ interface Props {
 // Typescript needs the component props to be explicited in order to infere the correct props on component instance
 const Modal = forwardRef<ModalRef, Props>(({ title, children, size = 'max-w-xl', role = 'modal' }: Props, ref) => {
   const [value, setValue] = useState(false)
-  const show = () => {
+  function show() {
     setValue(true)
   }
-  const hide = () => {
+  function hide() {
     setValue(false)
   }
   // customizes the ref object the parent can access

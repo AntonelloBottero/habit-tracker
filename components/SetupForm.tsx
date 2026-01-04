@@ -24,7 +24,7 @@ export default function SetupForm({ onSubmit }: Props) {
     setCanSubmit(true)
   }, [name])
 
-  const submit = async () => {
+  async function submit() {
     if(!canSubmit) { return }
     setLoading(true)
     await createOption('name', name)

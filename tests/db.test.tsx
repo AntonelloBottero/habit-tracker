@@ -1,7 +1,7 @@
 import { render, waitFor, screen, act } from '@testing-library/react'
 import { DateTime } from 'luxon'
 import useDb, { DbProvider } from '@/db/useDb'
-import DbClass, { habitsModel, type HabitsSchema } from '@/db/DbClass'
+import DbClass, { DbResourceSchema, habitsModel, type HabitsSchema } from '@/db/DbClass'
 import useDbCrud from '@/db/useDbCrud'
 
 // --- Test db init (powered by fake-indexeddb) ---
@@ -88,7 +88,7 @@ describe('Db Provider', () => {
 })
 
 // --- DB CRUD ---
-// habit to CRUD
+// habits to CRUD
 const testHabit: HabitsSchema = {
   type: 'good',
   name: 'Test habit 1',
@@ -99,14 +99,38 @@ const testHabit: HabitsSchema = {
   enough_amount: '',
   manage_from: ''
 }
+const testHabit2 = {
+  type: 'good',
+  name: 'Test habit 2',
+  color: '#E6AF2E',
+  granularity: 'daily',
+  include_weekends: true,
+  granularity_times: 1,
+  enough_amount: '',
+  manage_from: ''
+} as HabitsSchema
+const testHabit3 = {
+  type: 'good',
+  name: 'Test habit 3',
+  color: '#E6AF2E',
+  granularity: 'daily',
+  include_weekends: true,
+  granularity_times: 1,
+  enough_amount: '',
+  manage_from: '',
+  deleted_at: DateTime.now().toISO()
+} as HabitsSchema
 
 // DB CRUD consumer
 interface DbTestCrudValues<T> {
   index: () => Promise<T[]>
   show: (id: number) => Promise<T | undefined>
   store: (values: Partial<T>) => Promise<boolean>
+  bulkStore: (values: Partial<T>[]) => Promise<DbResourceSchema<T>[]>
   update: (id: number, values: Partial<T>) => Promise<void>
+  bulkUpdate: (values: Partial<DbResourceSchema<T>>) => Promise<DbResourceSchema<T>[]>
   deleteItem: (id: number) => Promise<void>
+  bulkDelete: (ids: number[]) => Promise<void>
   isCompliant: () => boolean
 }
 
@@ -114,7 +138,7 @@ export const TestDbCrudConsumer = ({ onHookReady }: { onHookReady: (values: DbTe
   const { index, show, store, update, deleteItem, isCompliant } = useDbCrud({ table: 'habits', model: habitsModel })
 
   // callback that exposes methods to test
-  onHookReady({ index, show, store, update, deleteItem, isCompliant })
+  onHookReady({ index, show, store, bulkStore, update, bulkUpdate, deleteItem, bulkDelete, isCompliant })
 
   // No rendering needed
   return null
@@ -130,7 +154,7 @@ describe('DB CRUD', () => {
   })
 
   test('store', async () => {
-    let hookValues: DbTestCrudValues<HabitsSchema>
+    let hookValues!: DbTestCrudValues<HabitsSchema>
     render(
       <DbProvider externalDb={testDb}>
         <TestDbCrudConsumer onHookReady={(values) => { hookValues = values }} />
@@ -151,31 +175,29 @@ describe('DB CRUD', () => {
     })
   })
 
+  test('bulkStore', async () => {
+    let hookValues!: DbTestCrudValues<HabitsSchema>
+    render(
+      <DbProvider externalDb={testDb}>
+        <TestDbCrudConsumer onHookReady={(values) => { hookValues = values }} />
+      </DbProvider>
+    )
+    await waitFor(() => {
+      expect(hookValues).toBeDefined()
+      expect(hookValues.isCompliant()).toBe(true)
+    })
+
+    const storedHabits = await hookValues.bulkStore([testHabit, testHabit2, testHabit3])
+    const testHabits = await hookValues.index()
+    await waitFor(() => {
+      expect(storedHabits.length).toBe(3)
+      expect(storedHabits.length).toBe(testHabits.length)
+      expect(storedHabits[0].name).toBe(testHabits[1].name)
+    })
+  })
+
   test('index', async () => {
-    const testHabit2 = {
-      type: 'good',
-      name: 'Test habit 2',
-      color: '#E6AF2E',
-      granularity: 'daily',
-      include_weekends: true,
-      granularity_times: 1,
-      enough_amount: '',
-      manage_from: ''
-    } as HabitsSchema
-
-    const testHabit3 = {
-      type: 'good',
-      name: 'Test habit 3',
-      color: '#E6AF2E',
-      granularity: 'daily',
-      include_weekends: true,
-      granularity_times: 1,
-      enough_amount: '',
-      manage_from: '',
-      deleted_at: DateTime.now().toISO()
-    } as HabitsSchema
-
-    let hookValues: DbTestCrudValues<HabitsSchema>
+    let hookValues!: DbTestCrudValues<HabitsSchema>
     render(
       <DbProvider externalDb={testDb}>
         <TestDbCrudConsumer onHookReady={(values) => { hookValues = values }} />
@@ -199,7 +221,7 @@ describe('DB CRUD', () => {
   })
 
   test('show', async () => {
-    let hookValues: DbTestCrudValues<HabitsSchema>
+    let hookValues!: DbTestCrudValues<HabitsSchema>
     render(
       <DbProvider externalDb={testDb}>
         <TestDbCrudConsumer onHookReady={(values) => { hookValues = values }} />
@@ -214,7 +236,7 @@ describe('DB CRUD', () => {
   })
 
   test('update', async () => {
-    let hookValues: DbTestCrudValues<HabitsSchema>
+    let hookValues!: DbTestCrudValues<HabitsSchema>
     render(
       <DbProvider externalDb={testDb}>
         <TestDbCrudConsumer onHookReady={(values) => { hookValues = values }} />
@@ -236,8 +258,12 @@ describe('DB CRUD', () => {
     })
   })
 
+  test('bulkPut', async () => {
+
+  })
+
   test('deleteItem', async () => {
-    let hookValues: DbTestCrudValues<HabitsSchema>
+    let hookValues!: DbTestCrudValues<HabitsSchema>
     render(
       <DbProvider externalDb={testDb}>
         <TestDbCrudConsumer onHookReady={(values) => { hookValues = values }} />

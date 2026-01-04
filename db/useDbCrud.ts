@@ -33,19 +33,21 @@ export default function useDbCrud<T extends object>({ table: storeName, model }:
   }, [table])
 
   // --- DB Operations ---
-  const index = async (filter?: (item: DbResourceSchema<T>) => boolean): Promise<DbResourceSchema<T>[]> => {
+  async function index(filter?: (item: DbResourceSchema<T>) => boolean): Promise<DbResourceSchema<T>[]> {
     if(!isCompliant()) { return [] }
     const query = (table as Table).where('deleted_at').equals('') // TODO sort by created_at
     return filter
       ? query.filter(filter).toArray()
       : query.toArray()
   }
-  const show = async (id: number): Promise<DbResourceSchema<T> | undefined> => {
+
+  async function show(id: number): Promise<DbResourceSchema<T> | undefined> {
     if(!isCompliant()) { return undefined }
     const item = await (table as Table).where('id').equals(id).and(item => item.deleted_at === '').first()
     return item
   }
-  const store = async (values: Partial<T>): Promise<boolean> => {
+
+  async function store(values: Partial<T>): Promise<boolean> {
     if(!isCompliant()) { return false }
     if(!objectIsCompliant(schema as object, values)) {
       throw new TypeError('Values are not fully compliant with schema')
@@ -57,7 +59,8 @@ export default function useDbCrud<T extends object>({ table: storeName, model }:
     })
     return true
   }
-  const update = async (id: number, values: Partial<DbResourceSchema<T>>): Promise<void> => {
+
+  async function update(id: number, values: Partial<DbResourceSchema<T>>): Promise<void> {
     if(!objectIsCompliant(schema as object, values)) {
       throw new TypeError('Values are not fully compliant with schema')
     }
@@ -71,7 +74,8 @@ export default function useDbCrud<T extends object>({ table: storeName, model }:
       updated_at: DateTime.now().toISO()
     })
   }
-  const deleteItem = async(id: number): Promise<void> => {
+
+  async function deleteItem(id: number): Promise<void> {
     const item = await show(id)
     if(!item) {
       throw new ReferenceError('Resource could not be found')

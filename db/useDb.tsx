@@ -50,7 +50,7 @@ export function DbProvider({ children, externalDb }: ProviderProps) {
   const [availableOptionValues, setAvailableOptionValues] = useState<AvailableOptionValues>({}) // Options requested already in the current session
 
   // get option
-  const showOption = async (key: string): Promise<OptionsSchema | undefined> => {
+  async function showOption(key: string): Promise<OptionsSchema | undefined> {
     if(!key) { return undefined }
     try {
       const option: OptionsSchema | undefined = await db.options.where('key').equalsIgnoreCase(key).first()
@@ -61,7 +61,7 @@ export function DbProvider({ children, externalDb }: ProviderProps) {
   }
 
   // insert new option, or update it if the key exists already
-  const createOption = async (key: string, value?: string | number): Promise<boolean> => {
+  async function createOption(key: string, value?: string | number): Promise<boolean> {
     if(!key) { return false }
     const formattedKey = key.toLocaleLowerCase()
     const option = await showOption(key)
@@ -77,7 +77,7 @@ export function DbProvider({ children, externalDb }: ProviderProps) {
   }
 
   // retrieves an option
-  const getOption = async (key: string): Promise<unknown> => {
+  async function getOption(key: string): Promise<unknown> {
     const availableOption: unknown = availableOptionValues[key]
     if(availableOption) { return availableOption }
 
@@ -93,7 +93,7 @@ export function DbProvider({ children, externalDb }: ProviderProps) {
   }
 
   // register data that is not intended to fit in options table, but we want it provided inside context
-  const registerExternalOption = (key: string, value: never): void => {
+  function registerExternalOption(key: string, value: never): void {
     setAvailableOptionValues({
       ...availableOptionValues,
       [key]: value
