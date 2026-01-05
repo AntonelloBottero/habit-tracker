@@ -63,14 +63,15 @@ export default function useDbCrud<T extends object>({ table: storeName, model }:
 
   async function bulkStore(values: Partial<T>[]): Promise<DbResourceSchema<T>[] | false> {
     if(!isCompliant() || !Array.isArray(values) || !values.length) { return false }
-    const formattedValues = values.reduce((r, v) => {
+    const created_at = DateTime.now()
+    const formattedValues = values.reduce((r, v, i) => {
       if(!objectIsCompliant(schema as object, v) || !r) { return false }
       return [
         ...r,
         {
           deleted_at: '',
           ...v,
-          created_at: DateTime.now().toISO(),
+          created_at: created_at.plus({milliseconds: i}).toISO(), // slight difference to ensure index() will order them correctly
         }
       ]
     }, [])
