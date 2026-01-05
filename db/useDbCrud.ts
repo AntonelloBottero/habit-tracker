@@ -32,7 +32,7 @@ export default function useDbCrud<T extends object>({ table: storeName, model }:
     return objectIsCompliant(s, model) ? s : null
   }, [table])
 
-  // --- DB Operations ---
+  // --- Fetch ---
   async function index(filter?: (item: DbResourceSchema<T>) => boolean): Promise<DbResourceSchema<T>[]> {
     if(!isCompliant()) { return [] }
     const query = (table as Table).where('deleted_at').equals('') // TODO sort by created_at
@@ -47,6 +47,7 @@ export default function useDbCrud<T extends object>({ table: storeName, model }:
     return item
   }
 
+  // --- Store ---
   async function store(values: Partial<T>): Promise<boolean> {
     if(!isCompliant()) { return false }
     if(!objectIsCompliant(schema as object, values)) {
@@ -80,6 +81,7 @@ export default function useDbCrud<T extends object>({ table: storeName, model }:
     return await index(item => ids.includes(item.id))
   }
 
+  // --- Update ---
   async function update(id: number, values: Partial<DbResourceSchema<T>>): Promise<void> {
     if(!objectIsCompliant(schema as object, values)) {
       throw new TypeError('Values are not fully compliant with schema')
@@ -98,25 +100,41 @@ export default function useDbCrud<T extends object>({ table: storeName, model }:
   async function bulkUpdate(values: Partial<DbResourceSchema<T>>[]): Promise<DbResourceSchema<T>[] | false> {
     if(!isCompliant() || !Array.isArray(values) || !values.length) { return false }
     const valueIds = values.map(v => v.id)
-    const existingValues = await index(item => valueIds.includes(item.id))
+    const existingValues = await index(item => valueIds.includes(item.id)) // ensures that full resource will be updated, preventing potential data loss
     const formattedValues = values.reduce((r, v) => {
-      if(!objectIsCompliant(schema as object, v) || !r) { return false }
+      const existingValue = existingValues.find(ev => ev.id === v.id)
+      if(!objectIsCompliant(schema as object, v) || !r || !existingValue) { return false }
       return [
         ...r,
         {
+          ...existingValue,
           ...v,
           updated_at: DateTime.now().toISO(),
         }
       ]
     }, [])
+    if(!formattedValues) {
+      throw new TypeError('Values are not fully compliant with schema')
+    }
+    const ids = await (table as Table).bulkAdd(formattedValues, undefined, { allKeys: true })
+    return await index(item => ids.includes(item.id))
   }
 
+  // --- Delete ---
   async function deleteItem(id: number): Promise<void> {
     const item = await show(id)
     if(!item) {
       throw new ReferenceError('Resource could not be found')
     }
     await (table as Table).delete(id)
+  }
+
+  async function bulkDelete(ids: number[]): Promise<void> {
+    const items = await index(item => ids.includes(item.id))
+    if(!items.length) {
+      throw new ReferenceError('Resource could not be found')
+    }
+    await (table as Table).bulkDelete(ids)
   }
 
   return {
@@ -126,7 +144,9 @@ export default function useDbCrud<T extends object>({ table: storeName, model }:
     store,
     bulkStore,
     update,
+    bulkUpdate,
     deleteItem,
+    bulkDelete,
     // for testing purposes
     isCompliant
   }

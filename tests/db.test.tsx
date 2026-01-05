@@ -120,6 +120,17 @@ const testHabit3 = {
   manage_from: '',
   deleted_at: DateTime.now().toISO()
 } as HabitsSchema
+const testHabit4 = {
+  type: 'good',
+  name: 'Test habit 4',
+  color: '#E6AF2E',
+  granularity: 'daily',
+  include_weekends: true,
+  granularity_times: 1,
+  enough_amount: '',
+  manage_from: '',
+  deleted_at: ''
+} as HabitsSchema
 
 // DB CRUD consumer
 interface DbTestCrudValues<T> {
@@ -134,8 +145,8 @@ interface DbTestCrudValues<T> {
   isCompliant: () => boolean
 }
 
-export const TestDbCrudConsumer = ({ onHookReady }: { onHookReady: (values: DbTestCrudValues<HabitsSchema>) => void }) => {
-  const { index, show, store, update, deleteItem, isCompliant } = useDbCrud({ table: 'habits', model: habitsModel })
+function TestDbCrudConsumer({ onHookReady }: { onHookReady: (values: DbTestCrudValues<HabitsSchema>) => void }) {
+  const { index, show, store, bulkStore, update, bulkUpdate, deleteItem, bulkDelete, isCompliant } = useDbCrud({ table: 'habits', model: habitsModel })
 
   // callback that exposes methods to test
   onHookReady({ index, show, store, bulkStore, update, bulkUpdate, deleteItem, bulkDelete, isCompliant })
@@ -187,7 +198,7 @@ describe('DB CRUD', () => {
       expect(hookValues.isCompliant()).toBe(true)
     })
 
-    const storedHabits = await hookValues.bulkStore([testHabit, testHabit2, testHabit3])
+    const storedHabits = await hookValues.bulkStore([testHabit, testHabit2, testHabit4])
     const testHabits = await hookValues.index()
     await waitFor(() => {
       expect(storedHabits.length).toBe(3)
@@ -270,7 +281,7 @@ describe('DB CRUD', () => {
       expect(hookValues.isCompliant()).toBe(true)
     })
 
-    const storedHabits = await hookValues.bulkStore([testHabit, testHabit2, testHabit3])
+    const storedHabits = await hookValues.bulkStore([testHabit, testHabit2, testHabit4])
     const testHabit2Name = 'edit 2'
     storedHabits[1].name = testHabit2Name
     await hookValues.bulkStore(storedHabits)
@@ -311,7 +322,7 @@ describe('DB CRUD', () => {
       expect(hookValues.isCompliant()).toBe(true)
     })
 
-    const storedHabits = await hookValues.bulkStore([testHabit, testHabit2, testHabit3])
+    const storedHabits = await hookValues.bulkStore([testHabit, testHabit2, testHabit4])
     await hookValues.bulkDelete([1, 3])
     const habits = await hookValues.index()
     await waitFor(() => {
