@@ -60,6 +60,26 @@ export default function useDbCrud<T extends object>({ table: storeName, model }:
     return true
   }
 
+  async function bulkStore(values: Partial<T>[]): Promise<DbResourceSchema<T>[] | false> {
+    if(!isCompliant() || !Array.isArray(values) || !values.length) { return false }
+    const formattedValues = values.reduce((r, v) => {
+      if(!objectIsCompliant(schema as object, v) || !r) { return false }
+      return [
+        ...r,
+        {
+          deleted_at: '',
+          ...v,
+          created_at: DateTime.now().toISO(),
+        }
+      ]
+    }, [])
+    if(!formattedValues) {
+      throw new TypeError('Values are not fully compliant with schema')
+    }
+    const ids = await (table as Table).bulkAdd(formattedValues, undefined, { allKeys: true })
+    return await index(item => ids.includes(item.id))
+  }
+
   async function update(id: number, values: Partial<DbResourceSchema<T>>): Promise<void> {
     if(!objectIsCompliant(schema as object, values)) {
       throw new TypeError('Values are not fully compliant with schema')
@@ -75,6 +95,22 @@ export default function useDbCrud<T extends object>({ table: storeName, model }:
     })
   }
 
+  async function bulkUpdate(values: Partial<DbResourceSchema<T>>[]): Promise<DbResourceSchema<T>[] | false> {
+    if(!isCompliant() || !Array.isArray(values) || !values.length) { return false }
+    const valueIds = values.map(v => v.id)
+    const existingValues = await index(item => valueIds.includes(item.id))
+    const formattedValues = values.reduce((r, v) => {
+      if(!objectIsCompliant(schema as object, v) || !r) { return false }
+      return [
+        ...r,
+        {
+          ...v,
+          updated_at: DateTime.now().toISO(),
+        }
+      ]
+    }, [])
+  }
+
   async function deleteItem(id: number): Promise<void> {
     const item = await show(id)
     if(!item) {
@@ -88,6 +124,7 @@ export default function useDbCrud<T extends object>({ table: storeName, model }:
     index,
     show,
     store,
+    bulkStore,
     update,
     deleteItem,
     // for testing purposes

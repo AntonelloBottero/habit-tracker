@@ -258,8 +258,27 @@ describe('DB CRUD', () => {
     })
   })
 
-  test('bulkPut', async () => {
+  test('bulkUpdate', async () => {
+    let hookValues!: DbTestCrudValues<HabitsSchema>
+    render(
+      <DbProvider externalDb={testDb}>
+        <TestDbCrudConsumer onHookReady={(values) => { hookValues = values }} />
+      </DbProvider>
+    )
+    await waitFor(() => {
+      expect(hookValues).toBeDefined()
+      expect(hookValues.isCompliant()).toBe(true)
+    })
 
+    const storedHabits = await hookValues.bulkStore([testHabit, testHabit2, testHabit3])
+    const testHabit2Name = 'edit 2'
+    storedHabits[1].name = testHabit2Name
+    await hookValues.bulkStore(storedHabits)
+    const habits = await hookValues.index()
+    await waitFor(() => {
+      expect(habits.length).toBe(storedHabits.length)
+      expect(habits[1].name).toBe(testHabit2Name)
+    })
   })
 
   test('deleteItem', async () => {
@@ -277,6 +296,27 @@ describe('DB CRUD', () => {
       await hookValues.deleteItem(1)
       const newTestHabits = await hookValues.index()
       expect(newTestHabits.length).toBe(0)
+    })
+  })
+
+  test('bulkDelete', async () => {
+    let hookValues!: DbTestCrudValues<HabitsSchema>
+    render(
+      <DbProvider externalDb={testDb}>
+        <TestDbCrudConsumer onHookReady={(values) => { hookValues = values }} />
+      </DbProvider>
+    )
+    await waitFor(() => {
+      expect(hookValues).toBeDefined()
+      expect(hookValues.isCompliant()).toBe(true)
+    })
+
+    const storedHabits = await hookValues.bulkStore([testHabit, testHabit2, testHabit3])
+    await hookValues.bulkDelete([1, 3])
+    const habits = await hookValues.index()
+    await waitFor(() => {
+      expect(habits.length).toBe(storedHabits.length - 2)
+      expect(habits[0].name).toBe(testHabit2.name)
     })
   })
 })
