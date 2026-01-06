@@ -104,7 +104,7 @@ export default function useDbCrud<T extends object>({ table: storeName, model }:
     const existingValues = await index(item => valueIds.includes(item.id)) // ensures that full resource will be updated, preventing potential data loss
     const formattedValues = values.reduce((r, v) => {
       const existingValue = existingValues.find(ev => ev.id === v.id)
-      if(!objectIsCompliant(schema as object, v) || !r || !existingValue) { return false }
+      if(!objectIsCompliant(existingValue as DbResourceSchema<T>, v) || !r) { return false }
       return [
         ...r,
         {
@@ -117,7 +117,7 @@ export default function useDbCrud<T extends object>({ table: storeName, model }:
     if(!formattedValues) {
       throw new TypeError('Values are not fully compliant with schema')
     }
-    const ids = await (table as Table).bulkAdd(formattedValues, undefined, { allKeys: true })
+    const ids = await (table as Table).bulkPut(formattedValues, undefined, { allKeys: true })
     return await index(item => ids.includes(item.id))
   }
 

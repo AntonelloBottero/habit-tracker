@@ -203,7 +203,7 @@ describe('DB CRUD', () => {
     await waitFor(() => {
       expect(storedHabits.length).toBe(3)
       expect(storedHabits.length).toBe(testHabits.length)
-      expect(storedHabits[0].name).toBe(testHabits[1].name)
+      expect(storedHabits[1].name).toBe(testHabits[1].name)
     })
   })
 
@@ -284,7 +284,7 @@ describe('DB CRUD', () => {
     const storedHabits = await hookValues.bulkStore([testHabit, testHabit2, testHabit4])
     const testHabit2Name = 'edit 2'
     storedHabits[1].name = testHabit2Name
-    await hookValues.bulkStore(storedHabits)
+    await hookValues.bulkUpdate(storedHabits)
     const habits = await hookValues.index()
     await waitFor(() => {
       expect(habits.length).toBe(storedHabits.length)
