@@ -23,12 +23,12 @@ export default function useDbCrud<T extends object>({ table: storeName, model }:
     return true
   }
 
-  const schema = useMemo<T | null>(() => {
+  const schema = useMemo<DbResourceSchema<T> | null>(() => {
     if(!table?.schema?.indexes) { return null }
     const s = Object.values(table.schema.indexes).reduce((r, index) => ({
       ...r,
       [index.name]: true
-    }),{}) as T
+    }),{}) as DbResourceSchema<T>
     return objectIsCompliant(s, model) ? s : null
   }, [table])
 
@@ -63,21 +63,16 @@ export default function useDbCrud<T extends object>({ table: storeName, model }:
 
   async function bulkStore(values: Partial<T>[]): Promise<DbResourceSchema<T>[] | false> {
     if(!isCompliant() || !Array.isArray(values) || !values.length) { return false }
-    const created_at = DateTime.now()
-    const formattedValues = values.reduce((r, v, i) => {
-      if(!objectIsCompliant(schema as object, v) || !r) { return false }
-      return [
-        ...r,
-        {
-          deleted_at: '',
-          ...v,
-          created_at: created_at.plus({milliseconds: i}).toISO(), // slight difference to ensure index() will order them correctly
-        }
-      ]
-    }, [])
-    if(!formattedValues) {
+    const isAllCompliant = values.every((value) => objectIsCompliant(schema as DbResourceSchema<T>, value))
+    if(!isAllCompliant) {
       throw new TypeError('Values are not fully compliant with schema')
     }
+    const created_at = DateTime.now()
+    const formattedValues = values.map((value, index) => ({
+      deleted_at: '',
+      ...value,
+      created_at: created_at.plus({milliseconds: index}).toISO(), // slight difference to ensure index() will order them correctly
+    }))
     const ids = await (table as Table).bulkAdd(formattedValues, undefined, { allKeys: true })
     return await index(item => ids.includes(item.id))
   }
@@ -102,21 +97,16 @@ export default function useDbCrud<T extends object>({ table: storeName, model }:
     if(!isCompliant() || !Array.isArray(values) || !values.length) { return false }
     const valueIds = values.map(v => v.id)
     const existingValues = await index(item => valueIds.includes(item.id)) // ensures that full resource will be updated, preventing potential data loss
-    const formattedValues = values.reduce((r, v) => {
-      const existingValue = existingValues.find(ev => ev.id === v.id)
-      if(!objectIsCompliant(existingValue as DbResourceSchema<T>, v) || !r) { return false }
-      return [
-        ...r,
-        {
-          ...existingValue,
-          ...v,
-          updated_at: DateTime.now().toISO(),
-        }
-      ]
-    }, [])
-    if(!formattedValues) {
-      throw new TypeError('Values are not fully compliant with schema')
+    const isAllCompliant = values.every(value => existingValues.find(ev => ev.id === value.id) && objectIsCompliant(schema as DbResourceSchema<T>, value))
+    if(!isAllCompliant) {
+      throw new TypeError('Values are not fully compliant with schema 2')
     }
+    const updated_at = DateTime.now()
+    const formattedValues = values.map((value, index) => ({
+      ...existingValues.find(ev => ev.id === value.id),
+      ...value,
+      updated_at: updated_at.plus({milliseconds: index}).toISO(), // slight difference to ensure index() will order them correctly
+    }))
     const ids = await (table as Table).bulkPut(formattedValues, undefined, { allKeys: true })
     return await index(item => ids.includes(item.id))
   }
