@@ -10,7 +10,7 @@ export default function Page() {
   const { getOption } = useDb()
   const [name, setName] = useState<string>('')
   const [tab, setTab] = useState(0)
-  const getName = async () => {
+  async function getName() {
     const nameOption = await getOption('name') as string | undefined
     setName(nameOption || '')
   }
@@ -22,7 +22,7 @@ export default function Page() {
   useEffect(() => {
     getName()
   }, [])
-  const handleSetupFormSubmit = () => {
+  function handleSetupFormSubmit() {
     getName()
   }
 
@@ -32,7 +32,7 @@ export default function Page() {
       <main className="flex flex-col row-start-2 items-center sm:items-start">
         <TabsWindow value={tab}>
           <div className="w-full max-w-90">
-            <h1 className="text-4xl font-monda">Welcome habiter!</h1>
+            <h1 className="text-4xl font-monda">Welcome!</h1>
             <p>New in here? Start by inserting your name...<br />
                         ...or whatever you want us to call you</p>
             <div className="w-full mt-4">
