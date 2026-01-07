@@ -28,7 +28,7 @@ export default function useDbCrud<T extends object>({ table: storeName, model }:
     const s = Object.values(table.schema.indexes).reduce((r, index) => ({
       ...r,
       [index.name]: true
-    }),{}) as DbResourceSchema<T>
+    }),{ id: true }) as DbResourceSchema<T>
     return objectIsCompliant(s, model) ? s : null
   }, [table])
 
@@ -97,7 +97,9 @@ export default function useDbCrud<T extends object>({ table: storeName, model }:
     if(!isCompliant() || !Array.isArray(values) || !values.length) { return false }
     const valueIds = values.map(v => v.id)
     const existingValues = await index(item => valueIds.includes(item.id)) // ensures that full resource will be updated, preventing potential data loss
-    const isAllCompliant = values.every(value => existingValues.find(ev => ev.id === value.id) && objectIsCompliant(schema as DbResourceSchema<T>, value))
+    const isAllCompliant = values.every(value => {
+      return existingValues.find(ev => ev.id === value.id) && objectIsCompliant(schema as DbResourceSchema<T>, value)
+    })
     if(!isAllCompliant) {
       throw new TypeError('Values are not fully compliant with schema 2')
     }

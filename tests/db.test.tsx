@@ -1,4 +1,4 @@
-import { render, waitFor, screen, act } from '@testing-library/react'
+import { render, waitFor, screen } from '@testing-library/react'
 import { DateTime } from 'luxon'
 import useDb, { DbProvider } from '@/db/useDb'
 import DbClass, { DbResourceSchema, habitsModel, type HabitsSchema } from '@/db/DbClass'
@@ -14,7 +14,7 @@ interface DbTestValues {
     createOption: (key: string, value?: string | number) => Promise<boolean>;
 }
 
-export const TestDbConsumer = ({ onHookReady }: { onHookReady: (values: DbTestValues) => void }) => {
+function TestDbConsumer({ onHookReady }: { onHookReady: (values: DbTestValues) => void }) {
   const { dbIsOpen, getOption, createOption } = useDb()
 
   // callback that exposes methods to test
