@@ -1,7 +1,7 @@
 import { render, act, renderHook, waitFor } from "@testing-library/react"
 import { DateTime } from 'luxon'
 import { DbProvider } from '@/db/useDb'
-import DbClass, { SlotsSchema, type HabitsSchema, EventsSchema } from '@/db/DbClass'
+import DbClass, { SlotsSchema, type HabitsSchema, EventsSchema, DbResourceSchema } from '@/db/DbClass'
 
 // --- useForm ---
 import useForm, { validators } from '@/hooks/useForm'
@@ -78,7 +78,7 @@ describe("useForm", () => {
 import useHabits from '@/hooks/useHabits'
 
 interface HabitTestValues {
-  calculateMonthlySlots: (habit: HabitsSchema, date: string) => SlotsSchema[]
+  calculateMonthlySlots: (habit: DbResourceSchema<HabitsSchema>, date: string) => SlotsSchema[]
   fetchManageableHabits: (mamange_from: string) => Promise<HabitsSchema[]>,
   fetchActiveSlots: (from: string) => Promise<SlotsSchema[]>,
   fetchEvents: (from: string, to: string) => Promise<EventsSchema[]>
@@ -103,7 +103,7 @@ describe('useHabits', () => {
   })
 
   test('calculateMonthlySlots', async () => {
-    let hookValues: HabitTestValues
+    let hookValues!: HabitTestValues
     render(
       <DbProvider externalDb={testDb}>
         <TestHabitConsumer onHookReady={(values) => { hookValues = values }} />
@@ -114,7 +114,8 @@ describe('useHabits', () => {
       expect(hookValues).toBeDefined()
     })
 
-    const testHabit1: HabitsSchema = {
+    const testHabit1 = {
+      id: 1,
       type: 'good',
       name: 'Test habit 1',
       color: '#E6AF2E',
@@ -122,13 +123,17 @@ describe('useHabits', () => {
       include_weekends: true,
       granularity_times: 3,
       enough_amount: '',
-      manage_from: ''
-    }
+      manage_from: '',
+      created_at: '',
+      updated_at: '',
+      deleted_at: ''
+    } as DbResourceSchema<HabitsSchema>
     const slots1 = hookValues.calculateMonthlySlots(testHabit1, DateTime.now().toISO())
     expect(slots1.length).toBe(4)
     expect(slots1[0].count).toBe(3)
 
-    const testHabit2: HabitsSchema = {
+    const testHabit2 = {
+      id: 2,
       type: 'good',
       name: 'Test habit 2',
       color: '#E6AF2E',
@@ -136,15 +141,18 @@ describe('useHabits', () => {
       include_weekends: false,
       granularity_times: 2,
       enough_amount: '',
-      manage_from: ''
-    }
+      manage_from: '',
+      created_at: '',
+      updated_at: '',
+      deleted_at: ''
+    } as DbResourceSchema<HabitsSchema>
     const slots2 = hookValues.calculateMonthlySlots(testHabit2, DateTime.now().toISO())
     expect(slots2.length).toBe(1)
     expect(slots2[0].count).toBe(2)
   })
 
   test('fetchManageableHabits', async () => {
-    let hookValues: HabitTestValues
+    let hookValues!: HabitTestValues
     render(
       <DbProvider externalDb={testDb}>
         <TestHabitConsumer onHookReady={(values) => { hookValues = values }} />
@@ -176,7 +184,7 @@ describe('useHabits', () => {
   })
 
   test('fetchActiveSlots', async () => {
-    let hookValues: HabitTestValues
+    let hookValues!: HabitTestValues
     render(
       <DbProvider externalDb={testDb}>
         <TestHabitConsumer onHookReady={(values) => { hookValues = values }} />
@@ -208,7 +216,7 @@ describe('useHabits', () => {
   })
 
   test('fetchEvents', async () => {
-    let hookValues: HabitTestValues
+    let hookValues!: HabitTestValues
     render(
       <DbProvider externalDb={testDb}>
         <TestHabitConsumer onHookReady={(values) => { hookValues = values }} />

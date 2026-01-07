@@ -4,11 +4,13 @@ import '@testing-library/jest-dom' // for toBeInTheDocument() assertion
 import { DbProvider } from '@/db/useDb'
 
 // --- DbProvider mock ---
-const dbProviderMock = ({ children }: Readonly<{ children: ReactNode }>) => (
-  <DbProvider>
-    { children }
-  </DbProvider>
-)
+function dbProviderMock({ children }: Readonly<{ children: ReactNode }>) {
+  return (
+    <DbProvider>
+      { children }
+    </DbProvider>
+  )
+}
 
 // --- InputWrapper ---
 import InputWrapper from '@/components/InputWrapper'

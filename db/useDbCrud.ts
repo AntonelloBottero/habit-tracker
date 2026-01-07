@@ -95,7 +95,7 @@ export default function useDbCrud<T extends object>({ table: storeName, model }:
 
   async function bulkUpdate(values: Partial<DbResourceSchema<T>>[]): Promise<DbResourceSchema<T>[] | false> {
     if(!isCompliant() || !Array.isArray(values) || !values.length) { return false }
-    const valueIds = values.map(v => v.id)
+    const valueIds = values.map(v => v.id) as number[]
     const existingValues = await index(item => valueIds.includes(item.id)) // ensures that full resource will be updated, preventing potential data loss
     const isAllCompliant = values.every(value => {
       return existingValues.find(ev => ev.id === value.id) && objectIsCompliant(schema as DbResourceSchema<T>, value)

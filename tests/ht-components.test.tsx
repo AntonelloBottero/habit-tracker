@@ -4,7 +4,7 @@ import { fireEvent, render, screen, within } from '@testing-library/react'
 import '@testing-library/jest-dom'
 import { act, useRef, useEffect } from 'react'
 
-const TestConfirmModalConsumer = ({ onComponentReady, ...props }: { onComponentReady: (values: ConfirmModalRef) => void}) => {
+function TestConfirmModalConsumer({ onComponentReady, ...props }: { onComponentReady: (values: ConfirmModalRef) => void}) {
   const confirmModalRef = useRef(null)
   useEffect(() => {
     if(confirmModalRef.current) {
@@ -18,7 +18,7 @@ const TestConfirmModalConsumer = ({ onComponentReady, ...props }: { onComponentR
 describe('ConfirmDialog', () => {
   test('Modal visibility', async () => {
     let confirmModalRef: ConfirmModalRef
-    render(<TestConfirmModalConsumer onComponentReady={(values) => { confirmModalRef = values}} />)
+    render(<TestConfirmModalConsumer onComponentReady={(values) => { confirmModalRef = values }} />)
 
     await act(() => {
       expect(confirmModalRef).toBeDefined()
@@ -33,7 +33,7 @@ describe('ConfirmDialog', () => {
 
   test('confirm', async () => {
     let confirmModalRef: ConfirmModalRef
-    render(<TestConfirmModalConsumer onComponentReady={(values) => { confirmModalRef = values}} />)
+    render(<TestConfirmModalConsumer onComponentReady={(values) => { confirmModalRef = values }} />)
 
     await act(() => {
       expect(confirmModalRef).toBeDefined()
@@ -59,7 +59,7 @@ describe('ConfirmDialog', () => {
 
   test('cancel', async () => {
     let confirmModalRef: ConfirmModalRef
-    render(<TestConfirmModalConsumer onComponentReady={(values) => { confirmModalRef = values}} />)
+    render(<TestConfirmModalConsumer onComponentReady={(values) => { confirmModalRef = values }} />)
 
     await act(() => {
       expect(confirmModalRef).toBeDefined()
@@ -88,7 +88,7 @@ describe('ConfirmDialog', () => {
     const text = 'Custom confirm text'
     const confirmActionText = 'Custom confirm action'
     let confirmModalRef: ConfirmModalRef
-    render(<TestConfirmModalConsumer onComponentReady={(values) => { confirmModalRef = values}} title={title} text={text} confirmActionText={confirmActionText} />)
+    render(<TestConfirmModalConsumer onComponentReady={(values) => { confirmModalRef = values }} title={title} text={text} confirmActionText={confirmActionText} />)
 
     await act(() => {
       expect(confirmModalRef).toBeDefined()

@@ -137,9 +137,9 @@ interface DbTestCrudValues<T> {
   index: () => Promise<T[]>
   show: (id: number) => Promise<T | undefined>
   store: (values: Partial<T>) => Promise<boolean>
-  bulkStore: (values: Partial<T>[]) => Promise<DbResourceSchema<T>[]>
+  bulkStore: (values: Partial<T>[]) => Promise<false | DbResourceSchema<T>[]>
   update: (id: number, values: Partial<T>) => Promise<void>
-  bulkUpdate: (values: Partial<DbResourceSchema<T>>) => Promise<DbResourceSchema<T>[]>
+  bulkUpdate: (values: Partial<DbResourceSchema<T>>[]) => Promise<false | DbResourceSchema<T>[]>
   deleteItem: (id: number) => Promise<void>
   bulkDelete: (ids: number[]) => Promise<void>
   isCompliant: () => boolean
@@ -198,7 +198,7 @@ describe('DB CRUD', () => {
       expect(hookValues.isCompliant()).toBe(true)
     })
 
-    const storedHabits = await hookValues.bulkStore([testHabit, testHabit2, testHabit4])
+    const storedHabits = await hookValues.bulkStore([testHabit, testHabit2, testHabit4]) as DbResourceSchema<HabitsSchema>[]
     const testHabits = await hookValues.index()
     await waitFor(() => {
       expect(storedHabits.length).toBe(3)
@@ -281,7 +281,7 @@ describe('DB CRUD', () => {
       expect(hookValues.isCompliant()).toBe(true)
     })
 
-    const storedHabits = await hookValues.bulkStore([testHabit, testHabit2, testHabit4])
+    const storedHabits = await hookValues.bulkStore([testHabit, testHabit2, testHabit4]) as DbResourceSchema<HabitsSchema>[]
     const testHabit2Name = 'edit 2'
     storedHabits[1].name = testHabit2Name
     await hookValues.bulkUpdate(storedHabits)
@@ -322,7 +322,7 @@ describe('DB CRUD', () => {
       expect(hookValues.isCompliant()).toBe(true)
     })
 
-    const storedHabits = await hookValues.bulkStore([testHabit, testHabit2, testHabit4])
+    const storedHabits = await hookValues.bulkStore([testHabit, testHabit2, testHabit4]) as DbResourceSchema<HabitsSchema>[]
     await hookValues.bulkDelete([1, 3])
     const habits = await hookValues.index()
     await waitFor(() => {
