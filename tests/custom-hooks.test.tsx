@@ -85,7 +85,7 @@ interface HabitTestValues {
 }
 
 const testDb = new DbClass('TestDatabase')
-export const TestHabitConsumer = ({ onHookReady }: { onHookReady: (values: HabitTestValues) => void }) => {
+function TestHabitConsumer({ onHookReady }: { onHookReady: (values: HabitTestValues) => void }) {
   const { calculateMonthlySlots, fetchManageableHabits, fetchActiveSlots, fetchEvents } = useHabits()
 
   // callback that exposes methods to test

@@ -1,5 +1,5 @@
 import { DateTime } from "luxon"
-import { eventsModel, EventsSchema, habitsModel, HabitsSchema, slotsModel, SlotsSchema } from "@/db/DbClass"
+import { eventsModel, EventsSchema, habitsModel, HabitsSchema, slotsModel, SlotsSchema, DbResourceSchema } from "@/db/DbClass"
 import useDbCrud from '@/db/useDbCrud'
 
 export default function useHabits() {
@@ -8,8 +8,8 @@ export default function useHabits() {
   const eventsCrud = useDbCrud({ table: 'events', model: eventsModel })
 
   // --- Calculate monthly slots based on habit and date ---
-  function calculateMonthlySlots(habit: HabitsSchema & { id: number }, date: string): SlotsSchema[] {
-    if(!habit || !date) { return []}
+  function calculateMonthlySlots(habit: DbResourceSchema<HabitsSchema> & { id: number }, date: string): SlotsSchema[] {
+    if(!habit || !date) { return [] }
 
     const from = DateTime.fromISO(date).startOf('month')
     const to = DateTime.fromISO(date).endOf('month')
@@ -38,9 +38,9 @@ export default function useHabits() {
   }
 
   // --- Fetch habits to calculate slots ---
-  async function fetchManageableHabits(manage_from: string): Promise<HabitsSchema[]> {
+  async function fetchManageableHabits(manage_from: string): Promise<DbResourceSchema<HabitsSchema>[]> {
     if(!manage_from) { return [] }
-    return await habitsCrud.index(item => item.manage_from <= manage_from) as HabitsSchema[]
+    return await habitsCrud.index(item => item.manage_from <= manage_from) as DbResourceSchema<HabitsSchema>[]
   }
 
   // --- Create Monthly slots (fetchManageableHabits * calculateMonthlySlots) ---
@@ -50,9 +50,17 @@ export default function useHabits() {
     const updated_managed_from = manage_from.endOf('month')
     try {
       const habits = await fetchManageableHabits(manage_from.toISO() as string)
-      const slots = calculateMonthlySlots(habits, datetime)
+      const slots = habits
+        .map((habit) => calculateMonthlySlots(habit, datetime))
+        .flat()
+      await slotsCrud.bulkStore(slots)
+      const updatedHabits = habits.map((habit) => ({
+        ...habit,
+        manage_from: updated_managed_from
+      })) as unknown as DbResourceSchema<HabitsSchema>[]
+      await habitsCrud.bulkUpdate(updatedHabits)
     } catch(error) {
-
+      console.error(error)
     }
   }
 
