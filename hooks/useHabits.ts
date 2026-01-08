@@ -65,7 +65,7 @@ export default function useHabits() {
   }
 
   // fetch slots to be presented to user
-  async function fetchActiveSlots(from: string): Promise<SlotsSchema[]> {
+  async function fetchActiveSlots(from: string): Promise<DbResourceSchema<SlotsSchema[]>> {
     if(!from) { return [] }
     return await slotsCrud.index(item => {
       return item.active_to >= from // regardless of the time range (month, week, day), every slots still active will be included
