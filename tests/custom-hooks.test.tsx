@@ -79,17 +79,18 @@ import useHabits from '@/hooks/useHabits'
 
 interface HabitTestValues {
   calculateMonthlySlots: (habit: DbResourceSchema<HabitsSchema>, date: string) => SlotsSchema[]
-  fetchManageableHabits: (mamange_from: string) => Promise<HabitsSchema[]>,
-  fetchActiveSlots: (from: string) => Promise<SlotsSchema[]>,
+  fetchManageableHabits: (mamange_from: string) => Promise<HabitsSchema[]>
+  createMonthlySlots: (datetime: string) => Promise<void>
+  fetchActiveSlots: (from: string) => Promise<SlotsSchema[]>
   fetchEvents: (from: string, to: string) => Promise<EventsSchema[]>
 }
 
 const testDb = new DbClass('TestDatabase')
 function TestHabitConsumer({ onHookReady }: { onHookReady: (values: HabitTestValues) => void }) {
-  const { calculateMonthlySlots, fetchManageableHabits, fetchActiveSlots, fetchEvents } = useHabits()
+  const { calculateMonthlySlots, fetchManageableHabits, createMonthlySlots, fetchActiveSlots, fetchEvents } = useHabits()
 
   // callback that exposes methods to test
-  onHookReady({ calculateMonthlySlots, fetchManageableHabits, fetchActiveSlots, fetchEvents })
+  onHookReady({ calculateMonthlySlots, fetchManageableHabits, createMonthlySlots, fetchActiveSlots, fetchEvents })
 
   return null
 }
@@ -271,6 +272,49 @@ describe('useHabits', () => {
       expect(fetchedEvents.length).toBe(1)
       expect(fetchedEvents[0].datetime).toBe(eventInside.datetime)
       // Additional check to ensure soft delete works (if implementation supports it) or at least date filtering works.
+    })
+  })
+
+  test('createMonthlySlots', async () => {
+    const testHabit = {
+      type: 'good',
+      name: 'Test habit 1',
+      color: '#E6AF2E',
+      granularity: 'weekly',
+      include_weekends: true,
+      granularity_times: 3,
+      enough_amount: '',
+      manage_from: '',
+      created_at: '',
+      updated_at: '',
+      deleted_at: ''
+    } as DbResourceSchema<HabitsSchema>
+    const date = DateTime.now()
+
+    let hookValues!: HabitTestValues
+    render(
+      <DbProvider externalDb={testDb}>
+        <TestHabitConsumer onHookReady={(values) => { hookValues = values }} />
+      </DbProvider>
+    )
+    await waitFor(() => {
+      expect(hookValues).toBeDefined()
+      expect(testDb.isOpen()).toBe(true)
+    })
+
+    await testDb.habits.add(testHabit)
+    await hookValues.createMonthlySlots(date.toISO())
+
+    const habits = await testDb.habits.filter(item => item.manage_from === date.endOf('month').toISO()).toArray()
+    await waitFor(() => {
+      expect(habits.length).toBe(1)
+      expect(habits[0].name).toBe(testHabit.name)
+    })
+
+    const slots = await testDb.slots.toArray()
+    await waitFor(() => {
+      expect(slots.length).toBe(4)
+      expect(slots[1].habit_id).toBe(habits[0].id)
     })
   })
 })

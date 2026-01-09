@@ -55,7 +55,7 @@ export default function useHabits() {
     await slotsCrud.bulkStore(slots)
     const updatedHabits = habits.map((habit) => ({
       ...habit,
-      manage_from: updated_managed_from
+      manage_from: updated_managed_from.toISO()
     })) as unknown as DbResourceSchema<HabitsSchema>[]
     await habitsCrud.bulkUpdate(updatedHabits)
   }

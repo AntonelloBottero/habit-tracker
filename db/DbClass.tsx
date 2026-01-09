@@ -67,10 +67,10 @@ export const slotsModel: SlotsSchema = {
 }
 
 export default class DbClass extends Dexie {
-  options!: Table<OptionsSchema, 'id'>
-  habits!: Table<HabitsSchema, 'id'>
-  events!: Table<EventsSchema, 'id'>
-  slots!: Table<SlotsSchema, 'id'>
+  options!: Table<DbResourceSchema<OptionsSchema>, 'id'>
+  habits!: Table<DbResourceSchema<HabitsSchema>, 'id'>
+  events!: Table<DbResourceSchema<EventsSchema>, 'id'>
+  slots!: Table<DbResourceSchema<SlotsSchema>, 'id'>
   constructor(name: string) {
     super(name)
     this.version(1).stores({
