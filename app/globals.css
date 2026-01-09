@@ -84,7 +84,7 @@ body {
   @apply rounded-lg py-2 px-5
 }
 .ht-btn.ht-btn--variant-primary {
-  @apply bg-primary outline-offset-1 outline-lime-400
+  @apply bg-primary
 }
 .ht-btn:disabled {
   opacity:.5;

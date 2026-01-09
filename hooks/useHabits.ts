@@ -48,28 +48,24 @@ export default function useHabits() {
     const manage_from = DateTime.fromISO(datetime).startOf('month')
     if(!manage_from) { return undefined }
     const updated_managed_from = manage_from.endOf('month')
-    try {
-      const habits = await fetchManageableHabits(manage_from.toISO() as string)
-      const slots = habits
-        .map((habit) => calculateMonthlySlots(habit, datetime))
-        .flat()
-      await slotsCrud.bulkStore(slots)
-      const updatedHabits = habits.map((habit) => ({
-        ...habit,
-        manage_from: updated_managed_from
-      })) as unknown as DbResourceSchema<HabitsSchema>[]
-      await habitsCrud.bulkUpdate(updatedHabits)
-    } catch(error) {
-      console.error(error)
-    }
+    const habits = await fetchManageableHabits(manage_from.toISO() as string)
+    const slots = habits
+      .map((habit) => calculateMonthlySlots(habit, datetime))
+      .flat()
+    await slotsCrud.bulkStore(slots)
+    const updatedHabits = habits.map((habit) => ({
+      ...habit,
+      manage_from: updated_managed_from
+    })) as unknown as DbResourceSchema<HabitsSchema>[]
+    await habitsCrud.bulkUpdate(updatedHabits)
   }
 
   // fetch slots to be presented to user
-  async function fetchActiveSlots(from: string): Promise<DbResourceSchema<SlotsSchema[]>> {
+  async function fetchActiveSlots(from: string): Promise<DbResourceSchema<SlotsSchema>[]> {
     if(!from) { return [] }
     return await slotsCrud.index(item => {
       return item.active_to >= from // regardless of the time range (month, week, day), every slots still active will be included
-    }) as SlotsSchema[]
+    })
   }
 
   async function fetchEvents(from: string, to: string): Promise<EventsSchema[]> {

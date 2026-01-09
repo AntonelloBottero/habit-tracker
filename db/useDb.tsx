@@ -12,7 +12,7 @@ interface AvailableOptionValues {
 interface DbContextProvider {
   db: DbClass
   dbIsOpen: boolean | 'pending'
-  createOption: (key: string, value?: string | number) => Promise<boolean>
+  createOption: (key: string, value?: string | number | boolean) => Promise<boolean>
   getOption: (key: string) => Promise<unknown>
   registerExternalOption: (key: string, value: never) => void
 }

@@ -1,21 +1,20 @@
 import { useState, useRef, useEffect, useMemo } from 'react';
 import { habitsModel, type HabitsSchema, type DbResourceSchema } from '@/db/DbClass'
 import { ModalRef } from '@/app/types'
+import useDb from '@/db/useDb'
 import useDbCrud from '@/db/useDbCrud'
 import Modal from '@/components/Modal'
 import FormHabits from '@/components/FormHabits'
 import HabitsCard from '@/components/HabitsCard'
 import { CalendarCheck } from '@project-lary/react-material-symbols-700-rounded';
 import useHabits from '@/hooks/useHabits';
+import { DateTime } from 'luxon';
 
-// Card made of 2 sections -> Good and Bad habits
-// every section accepts any number of items
-// adding or editing an element opens a dedicated form modal
-// Form modal has default and advanced settings:
-// - Name
-// - When (every day, selected days, except weekends, n days per week/month, etc)
-// - Icon
-export default function HabitsSetup() {
+interface Props {
+	onSetup?: () => never | void
+}
+
+export default function HabitsSetup({ onSetup }: Props) {
 	const { index, isCompliant } = useDbCrud({ table: 'habits', model: habitsModel })
 
 	// --- Existing Habits ---
@@ -67,10 +66,21 @@ export default function HabitsSetup() {
 
 	// --- Setup ---
 	const { createMonthlySlots } = useHabits()
-	const [loadingSetup, setLoadingSetup] = useState()
+	const { createOption } = useDb()
+	const [loadingSetup, setLoadingSetup] = useState<boolean>(false)
 	async function setup() {
 		if(!habits.length) { return undefined }
-
+		setLoadingSetup(true)
+		try {
+			await createMonthlySlots(DateTime.now().toISO())
+			await createOption('setup_completed', true)
+			if(onSetup) {
+				onSetup()
+			}
+		} catch(error) {
+			console.error(error)
+		}
+		setLoadingSetup(false)
 	}
 
 	return (
