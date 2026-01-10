@@ -79,7 +79,7 @@ export default function FormHabits({ values, onSave, onDelete }: Props) {
     setLoading(true)
     const fullModel = {
       ...model,
-      manage_from: DateTime.now().toISO()
+      manage_from: ''
     }
     try {
       if(!id) {
