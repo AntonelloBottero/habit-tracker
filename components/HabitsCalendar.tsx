@@ -1,12 +1,12 @@
 // components/BigCalendar.js
-'use client';
+'use client'
 
-import { useState, useMemo } from 'react';
-import { Calendar, momentLocalizer } from 'react-big-calendar';
-import 'react-big-calendar/lib/css/react-big-calendar.css';
-import moment from 'moment';
+import { useState, useMemo } from 'react'
+import { Calendar, momentLocalizer } from 'react-big-calendar'
+import 'react-big-calendar/lib/css/react-big-calendar.css'
+import moment from 'moment'
 
-const localizer = momentLocalizer(moment);
+const localizer = momentLocalizer(moment)
 
 const events = [
   {
@@ -16,10 +16,10 @@ const events = [
     end: new Date(2025, 9, 21, 10, 30, 0),
   },
   // Aggiungi altri eventi
-];
+]
 
-const MyBigCalendar = () => {
-  const [myEvents, setMyEvents] = useState(events);
+export default function HabitsCalendar() {
+  const [myEvents, setMyEvents] = useState(events)
 
   return (
     <div className="w-full h-[600px]">
@@ -29,9 +29,8 @@ const MyBigCalendar = () => {
         startAccessor="start"
         endAccessor="end"
         style={{ height: 500 }}
+        className="shadow-ht"
       />
     </div>
-  );
-};
-
-export default MyBigCalendar;
+  )
+}
