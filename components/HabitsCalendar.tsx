@@ -2,11 +2,9 @@
 'use client'
 
 import { useState, useMemo } from 'react'
-import { Calendar, momentLocalizer } from 'react-big-calendar'
-import 'react-big-calendar/lib/css/react-big-calendar.css'
-import moment from 'moment'
-
-const localizer = momentLocalizer(moment)
+import FullCalendar from '@fullcalendar/react'
+import dayGridPlugin from '@fullcalendar/daygrid'
+import "@/css/habits-calendar.css"
 
 const events = [
   {
@@ -22,14 +20,10 @@ export default function HabitsCalendar() {
   const [myEvents, setMyEvents] = useState(events)
 
   return (
-    <div className="w-full h-[600px]">
-      <Calendar
-        localizer={localizer}
-        events={myEvents}
-        startAccessor="start"
-        endAccessor="end"
-        style={{ height: 500 }}
-        className="shadow-ht"
+    <div className="w-full h-[600px] habits-calendar">
+      <FullCalendar
+        plugins={[ dayGridPlugin ]}
+        initialView="dayGridMonth"
       />
     </div>
   )

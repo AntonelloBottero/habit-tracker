@@ -1,0 +1,21 @@
+.habits-calendar .fc-theme-standard .fc-scrollgrid,
+.habits-calendar .fc-theme-standard td,
+.habits-calendar .fc-theme-standard th {
+  border-color: var(--color-green-200);
+}
+
+.habits-calendar {
+  --ht-shadow-color: color-mix(in oklab, color-mix(in oklab, var(--color-green-200) 50%, transparent) var(--tw-shadow-alpha), transparent);
+  --ht-shadow: 0 10px 15px -3px var(--ht-shadow-color, rgba(0, 0, 0, .1)), 0 4px 6px -4px var(--ht-shadow-color, rgba(0, 0, 0, .1));
+}
+
+.habits-calendar .fc-theme-standard .fc-scrollgrid {
+  border-radius: var(--radius-lg);
+  overflow:hidden;
+  box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--ht-shadow);
+}
+
+.habits-calendar .fc .fc-daygrid-day-number {
+  flex-grow:1;
+  text-align:center;
+}

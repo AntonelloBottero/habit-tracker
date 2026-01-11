@@ -12,6 +12,9 @@
   },
   "dependencies": {
     "@floating-ui/react": "^0.27.16",
+    "@fullcalendar/core": "^6.1.20",
+    "@fullcalendar/daygrid": "^6.1.20",
+    "@fullcalendar/react": "^6.1.20",
     "@heroicons/react": "^2.2.0",
     "@project-lary/react-material-symbols-700-rounded": "^0.35.0",
     "dexie": "^4.2.0",
@@ -19,7 +22,6 @@
     "luxon": "^3.7.2",
     "next": "15.5.2",
     "react": "19.1.0",
-    "react-big-calendar": "^1.19.4",
     "react-dom": "19.1.0"
   },
   "devDependencies": {
