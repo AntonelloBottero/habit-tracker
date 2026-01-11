@@ -1,9 +1,9 @@
-// components/BigCalendar.js
 'use client'
 
 import { useState, useMemo } from 'react'
 import FullCalendar from '@fullcalendar/react'
 import dayGridPlugin from '@fullcalendar/daygrid'
+import Sidebar from './Sidebar'
 import "@/css/habits-calendar.css"
 
 const events = [
@@ -20,11 +20,14 @@ export default function HabitsCalendar() {
   const [myEvents, setMyEvents] = useState(events)
 
   return (
-    <div className="w-full h-[600px] habits-calendar">
-      <FullCalendar
-        plugins={[ dayGridPlugin ]}
-        initialView="dayGridMonth"
-      />
+    <div className="w-full h-full habits-calendar flex">
+      <div className="flex-grow h-full">
+        <FullCalendar
+          plugins={[ dayGridPlugin ]}
+          initialView="dayGridMonth"
+        />
+      </div>
+      <Sidebar initialValue={true} />
     </div>
   )
 }

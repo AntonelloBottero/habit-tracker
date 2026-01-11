@@ -1,7 +1,7 @@
 .habits-calendar .fc-theme-standard .fc-scrollgrid,
 .habits-calendar .fc-theme-standard td,
 .habits-calendar .fc-theme-standard th {
-  border-color: var(--color-green-200);
+  border-color: var(--color-neutral-200);
 }
 
 .habits-calendar {
