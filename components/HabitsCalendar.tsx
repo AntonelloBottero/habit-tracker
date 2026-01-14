@@ -1,23 +1,32 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useEffect } from 'react'
 import FullCalendar from '@fullcalendar/react'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import Sidebar from './Sidebar'
+import useDbCrud from '@/db/useDbCrud'
+import { DbResourceSchema, habitsModel, HabitsSchema } from '@/db/DbClass'
 import "@/css/habits-calendar.css"
 
-const events = [
-  {
-    id: 0,
-    title: 'La mia prima abitudine',
-    start: new Date(2025, 9, 21, 10, 0, 0),
-    end: new Date(2025, 9, 21, 10, 30, 0),
-  },
-  // Aggiungi altri eventi
-]
-
 export default function HabitsCalendar() {
-  const [myEvents, setMyEvents] = useState(events)
+  // --- Habits ---
+  const habitsCrud = useDbCrud({table: 'habits', model: habitsModel })
+  const [habits, setHabits] = useState<DbResourceSchema<HabitsSchema>[]>([])
+
+  async function fetchHabits() {
+    let h: DbResourceSchema<HabitsSchema>[]
+    try {
+      h = await habitsCrud.index()
+    } catch(error) {
+      console.error(error)
+      h = []
+    }
+    setHabits(h)
+  }
+
+  useEffect(() => {
+    fetchHabits()
+  }, [])
 
   return (
     <div className="w-full h-full habits-calendar flex">
