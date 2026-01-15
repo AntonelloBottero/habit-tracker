@@ -23,7 +23,7 @@ const Sidebar = forwardRef<SidebarRef, Props>(({ initialValue = false, width = '
 
   return (
     <aside className="gradient-primary h-full flex-shrink overflow-y-scroll" style={{ maxWidth: width, flexBasis: width }}>
-      <div className="pa-6">
+      <div className="py-4 px-4">
         {children}
       </div>
     </aside>

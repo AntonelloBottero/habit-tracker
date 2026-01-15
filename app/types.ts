@@ -1,3 +1,4 @@
+import { DbResourceSchema, HabitsSchema, SlotsSchema } from "@/db/DbClass"
 import { ChangeEvent } from "react"
 
 export interface ModalRef {
@@ -28,4 +29,8 @@ export interface FormFieldProps {
 	placeholder?: string
 	className?: string
 	onChange: (e: ChangeEvent<HTMLInputElement>) => void
+}
+
+export type SlotWithHabit = DbResourceSchema<SlotsSchema> & {
+	habit: DbResourceSchema<HabitsSchema>
 }
