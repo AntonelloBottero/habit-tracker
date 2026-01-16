@@ -15,7 +15,7 @@ export default function HabitsCardHeader({ habit, className = '' }: Props) {
       </div>
       <TonalIcon color={habit.color} icon={(
         habit.type !== 'bad' ? <NorthEast className="text-xl" /> : <SouthEast className="text-xl" />
-      )} />
+      )} className="my-n1" />
     </div>
   ) : null
 }

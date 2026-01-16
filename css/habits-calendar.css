@@ -24,3 +24,10 @@
   flex-grow:1;
   text-align:center;
 }
+
+.habits-calendar .fc .fc-toolbar-title {
+  font-family: var(--font-monda);
+  font-size: var(--text-2xl);
+  line-height: var(--tw-leading, var(--text-2xl--line-height));
+  font-weight: var(--font-weight-bold);
+}

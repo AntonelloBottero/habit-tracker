@@ -9,6 +9,7 @@ import Sidebar from '@/components/Sidebar'
 import useDbCrud from '@/db/useDbCrud'
 import useHabits from '@/hooks/useHabits'
 import CompressedSlotsCard from '@/components/CompressedSlotsCard'
+import SlotsCard from '@/components/SlotsCard'
 import "@/css/habits-calendar.css"
 import { HabitWithSlots } from '@/app/types'
 
@@ -64,12 +65,12 @@ export default function HabitsCalendar() {
           datesSet={handleDatesSet}
         />
       </div>
-      <Sidebar initialValue={true} width="320px" title="Your Schedule">
-        <div className="flex flex-col gap-4">
-          {formattedHabits.map(habit => (
-            <CompressedSlotsCard habit={habit} key={habit.id} />
-          ))}
-        </div>
+      <Sidebar initialValue={true} width="320px" align="right" title="Your Schedule">
+        {formattedHabits.map(habit => (
+          <div key={habit.id}>
+            {habit.slots.length === 1 ? <SlotsCard habit={habit} slot={habit.slots[0]} /> : <CompressedSlotsCard habit={habit} key={habit.id} />}
+          </div>
+        ))}
       </Sidebar>
     </div>
   )

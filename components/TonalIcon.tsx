@@ -6,9 +6,9 @@ interface Props {
     className?: string
 }
 
-export default function TonalIcon({ color, icon }: Props) {
+export default function TonalIcon({ color, icon, className = '' }: Props) {
   return icon ? (
-    <span className="inline-flex justify-center items-center w-7 h-7 ht-interaction ht-interaction--active rounded-full" style={{ color }}>
+    <span className={`${className} inline-flex justify-center items-center w-7 h-7 ht-interaction ht-interaction--active rounded-full`} style={{ color }}>
       {icon}
     </span>
   ) : null

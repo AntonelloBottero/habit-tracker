@@ -1,4 +1,4 @@
-import { useState, useEffect, forwardRef, useImperativeHandle, type ReactNode } from 'react'
+import { useState, useEffect, forwardRef, useImperativeHandle, type ReactNode, useMemo } from 'react'
 import { SidebarRef } from '@/app/types'
 
 interface Props {
@@ -22,11 +22,19 @@ const Sidebar = forwardRef<SidebarRef, Props>(({ initialValue = false, width = '
     setValue(initialValue)
   }, [initialValue])
 
+  const className = useMemo(() => {
+    return [
+      { class: 'border-r-1', value: bordered && align === 'left' },
+      { class: 'border-l-1', value: bordered && align === 'right' },
+      { class: 'border-stone-200', value: bordered }
+    ].filter(cn => cn.value).map(cn => cn.class).join(' ')
+  }, [bordered, align])
+
   return (
-    <aside className="gradient-primary h-full flex-shrink overflow-y-auto border-l-1 border-stone-200 z-100" style={{ maxWidth: width, flexBasis: width }}>
-      <div className="py-4 px-4">
+    <aside className={`${className} gradient-primary h-full flex-shrink overflow-y-auto z-10`} style={{ maxWidth: width, flexBasis: width }}>
+      <div className="py-4 px-4 flex flex-col gap-4">
         {title && (
-          <div className="text-2xl font-monda font-bold mb-4">
+          <div className="text-2xl font-monda font-bold">
             {title}
           </div>
         )}
