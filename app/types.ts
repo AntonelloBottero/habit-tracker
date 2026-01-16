@@ -34,3 +34,7 @@ export interface FormFieldProps {
 export type SlotWithHabit = DbResourceSchema<SlotsSchema> & {
 	habit: DbResourceSchema<HabitsSchema>
 }
+
+export type HabitWithSlots = DbResourceSchema<HabitsSchema> & {
+	slots: DbResourceSchema<SlotsSchema>[]
+}

@@ -4,15 +4,19 @@ import { useState, useEffect, useMemo } from 'react'
 import FullCalendar from '@fullcalendar/react'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import { type DatesSetArg } from '@fullcalendar/core/index.js'
+import { DbResourceSchema, habitsModel, HabitsSchema, SlotsSchema } from '@/db/DbClass'
 import Sidebar from '@/components/Sidebar'
 import useDbCrud from '@/db/useDbCrud'
 import useHabits from '@/hooks/useHabits'
-import { DbResourceSchema, habitsModel, HabitsSchema, SlotsSchema } from '@/db/DbClass'
+import CompressedSlotsCard from '@/components/CompressedSlotsCard'
 import "@/css/habits-calendar.css"
-import SlotsCard from './SlotsCard'
-import { SlotWithHabit } from '@/app/types'
+import { HabitWithSlots } from '@/app/types'
 
 export default function HabitsCalendar() {
+  // --- Active slots ---
+  const { fetchActiveSlots } = useHabits()
+  const [slots, setSlots] = useState<DbResourceSchema<SlotsSchema>[]>([])
+
   // --- Habits ---
   const habitsCrud = useDbCrud({table: 'habits', model: habitsModel })
   const [habits, setHabits] = useState<DbResourceSchema<HabitsSchema>[]>([])
@@ -32,14 +36,12 @@ export default function HabitsCalendar() {
     fetchHabits()
   }, [])
 
-  // --- Active slots ---
-  const { fetchActiveSlots } = useHabits()
-  const [slots, setSlots] = useState<DbResourceSchema<SlotsSchema>[]>([])
-  const formattedSlots = useMemo<SlotWithHabit[]>(() => {
-    return slots.map((slot) => ({
-      ...slot,
-      habit: habits.find(habit => habit.id === slot.habit_id)
-    })) as SlotWithHabit[]
+  const formattedHabits = useMemo<HabitWithSlots[]>(() => {
+    return habits
+      .map((habit) => ({
+        ...habit,
+        slots: slots.filter(slot => slot.habit_id === habit.id)
+      }))
   }, [slots, habits])
 
   // --- Calendar ---
@@ -62,10 +64,10 @@ export default function HabitsCalendar() {
           datesSet={handleDatesSet}
         />
       </div>
-      <Sidebar initialValue={true}>
+      <Sidebar initialValue={true} width="320px" title="Your Schedule">
         <div className="flex flex-col gap-4">
-          {formattedSlots.map(slot => (
-            <SlotsCard slot={slot} key={slot.id} />
+          {formattedHabits.map(habit => (
+            <CompressedSlotsCard habit={habit} key={habit.id} />
           ))}
         </div>
       </Sidebar>

@@ -10,7 +10,7 @@ interface Props {
 export default function HabitsCardHeader({ habit, className = '' }: Props) {
   return habit ? (
     <div className={`${className} flex items-center gap-2`}>
-      <div className="grow mr-2">
+      <div className="grow font-bold mr-2">
         {habit.name}
       </div>
       <TonalIcon color={habit.color} icon={(

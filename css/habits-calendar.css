@@ -9,6 +9,11 @@
   --ht-shadow: 0 10px 15px -3px var(--ht-shadow-color, rgba(0, 0, 0, .1)), 0 4px 6px -4px var(--ht-shadow-color, rgba(0, 0, 0, .1));
 }
 
+.habits-calendar .fc .fc-toolbar.fc-header-toolbar {
+  margin-bottom:0;
+  padding:16px 24px;
+}
+
 .habits-calendar .fc-theme-standard .fc-scrollgrid {
   border-radius: var(--radius-lg);
   overflow:hidden;
