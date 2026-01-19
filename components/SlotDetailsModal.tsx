@@ -1,8 +1,11 @@
-import { useRef } from "react"
-import { DbResourceSchema, HabitsSchema, SlotsSchema } from "@/db/DbClass"
+import { useRef, useState, forwardRef, useImperativeHandle } from "react"
+import { DbResourceSchema, eventsModel, EventsSchema, HabitsSchema, SlotsSchema } from "@/db/DbClass"
 import Modal from "@/components/Modal"
 import HabitsCardHeader from "@/components/HabitsCardHeader"
+import SlotsCompletionChip from "@/components/SlotsCompletionChip"
 import { CalendarToday, CheckCircle } from "@project-lary/react-material-symbols-700-rounded"
+import { ModalRef } from "@/app/types"
+import useDbCrud from "@/db/useDbCrud"
 
 interface Props {
   slot: DbResourceSchema<SlotsSchema>
@@ -10,8 +13,32 @@ interface Props {
   className?: string
 }
 
-export default function SlotDetailsModal({ slot, habit }: Props) {
+const SlotDetailsModal = forwardRef<ModalRef, Props>(({ slot, habit }: Props, ref) => {
   const modalRef = useRef<ModalRef>(null)
+
+  // --- Slot events ---
+  const eventsCrud = useDbCrud({ table: 'events', model: eventsModel })
+  const [events, setEvents] = useState<DbResourceSchema<EventsSchema>[]>([])
+  async function fetchEvents() {
+    try {
+      const e = await eventsCrud.index(item => slot.event_ids.includes(item.id))
+      setEvents(e)
+    } catch(error) {
+      console.error(error)
+      setEvents([])
+    }
+  }
+
+  // --- forwardRef ---
+  function show() {
+    console.log('show')
+    modalRef.current?.show()
+    fetchEvents() // fetch events only when user requests them
+  }
+  useImperativeHandle(ref, () => ({
+    show,
+    hide: () => { modalRef.current?.hide() }
+  }))
 
   return habit ? (
     <Modal ref={modalRef} title="Progress details" size="max-w-md" role="slot-details-modal">
@@ -36,6 +63,14 @@ export default function SlotDetailsModal({ slot, habit }: Props) {
         </div>
       </div>
       <div className="w-full border-t-1 border-stone-200" />
+      <div className="flex items-center gap-2">
+        <div className="grow font-bold mr-2">
+          Slot details
+        </div>
+        <SlotsCompletionChip completion={slot.completion} count={slot.count} />
+      </div>
     </Modal>
   ) : null
-}
+})
+
+export default SlotDetailsModal

@@ -36,7 +36,7 @@ export default function SlotsCard({ slot, habit, className = '' }: Props) {
         </div>
       </div>
 
-      <SlotDetailsModal habit={habit} slot={slot} />
+      <SlotDetailsModal ref={modalRef} habit={habit} slot={slot} />
     </>
   ) : null
 }
