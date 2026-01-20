@@ -1,17 +1,21 @@
 'use client'
 
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, useRef } from 'react'
 import FullCalendar from '@fullcalendar/react'
 import dayGridPlugin from '@fullcalendar/daygrid'
+import interactionPlugin, { DateClickArg } from '@fullcalendar/interaction'
 import { type DatesSetArg } from '@fullcalendar/core/index.js'
-import { DbResourceSchema, habitsModel, HabitsSchema, SlotsSchema } from '@/db/DbClass'
+import { DbResourceSchema, EventsSchema, habitsModel, HabitsSchema, SlotsSchema } from '@/db/DbClass'
 import Sidebar from '@/components/Sidebar'
 import useDbCrud from '@/db/useDbCrud'
 import useHabits from '@/hooks/useHabits'
 import CompressedSlotsCard from '@/components/CompressedSlotsCard'
 import SlotsCard from '@/components/SlotsCard'
+import EventsForm from '@/components/EventsForm'
 import "@/css/habits-calendar.css"
-import { HabitWithSlots } from '@/app/types'
+import { HabitWithSlots, ModalRef } from '@/app/types'
+import { DateTime } from 'luxon'
+import Modal from './Modal'
 
 export default function HabitsCalendar() {
   // --- Active slots ---
@@ -45,6 +49,10 @@ export default function HabitsCalendar() {
       }))
   }, [slots, habits])
 
+  // --- Manage events ---
+  const formEventsModal = useRef<ModalRef>(null)
+  const [formEventsValues, setFormEventsValues] = useState<Partial<DbResourceSchema<EventsSchema>> | undefined>(undefined)
+
   // --- Calendar ---
   async function handleDatesSet(args: DatesSetArg) {
     try {
@@ -56,22 +64,36 @@ export default function HabitsCalendar() {
     }
   }
 
+  function handleDateClick(args: DateClickArg) {
+    setFormEventsValues({
+      datetime: DateTime.fromJSDate(args.date).toISO() || ''
+    })
+  }
+
   return (
-    <div className="w-full h-full habits-calendar flex">
-      <div className="flex-grow h-full bg-white">
-        <FullCalendar
-          plugins={[ dayGridPlugin ]}
-          initialView="dayGridMonth"
-          datesSet={handleDatesSet}
-        />
+    <>
+      <div className="w-full h-full habits-calendar flex">
+        <div className="flex-grow h-full bg-white">
+          <FullCalendar
+            plugins={[ dayGridPlugin, interactionPlugin ]}
+            initialView="dayGridMonth"
+            editable={true}
+            datesSet={handleDatesSet}
+            dateClick={handleDateClick}
+          />
+        </div>
+        <Sidebar initialValue={true} width="320px" align="right" title="Your Schedule">
+          {formattedHabits.map(habit => (
+            <div key={habit.id}>
+              {habit.slots.length === 1 ? <SlotsCard habit={habit} slot={habit.slots[0]} /> : <CompressedSlotsCard habit={habit} key={habit.id} />}
+            </div>
+          ))}
+        </Sidebar>
       </div>
-      <Sidebar initialValue={true} width="320px" align="right" title="Your Schedule">
-        {formattedHabits.map(habit => (
-          <div key={habit.id}>
-            {habit.slots.length === 1 ? <SlotsCard habit={habit} slot={habit.slots[0]} /> : <CompressedSlotsCard habit={habit} key={habit.id} />}
-          </div>
-        ))}
-      </Sidebar>
-    </div>
+
+      <Modal ref={formEventsModal} title="Add event">
+        <EventsForm values={formEventsValues} />
+      </Modal>
+    </>
   )
 }
