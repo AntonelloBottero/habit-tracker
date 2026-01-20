@@ -3,7 +3,7 @@ import { DbResourceSchema, eventsModel, EventsSchema, HabitsSchema, SlotsSchema 
 import Modal from "@/components/Modal"
 import HabitsCardHeader from "@/components/HabitsCardHeader"
 import SlotsCompletionChip from "@/components/SlotsCompletionChip"
-import { CalendarToday, CheckCircle } from "@project-lary/react-material-symbols-700-rounded"
+import { CalendarToday, CheckCircle, CalendarClock } from "@project-lary/react-material-symbols-700-rounded"
 import { ModalRef } from "@/app/types"
 import useDbCrud from "@/db/useDbCrud"
 
@@ -69,6 +69,16 @@ const SlotDetailsModal = forwardRef<ModalRef, Props>(({ slot, habit }: Props, re
         </div>
         <SlotsCompletionChip completion={slot.completion} count={slot.count} />
       </div>
+      {events.length ? (
+        <div className="flex flex-col gap-4">
+          {events.map(event => <div key={event.id}>{event.datetime}</div>)}
+        </div>
+      ) : (
+        <div className="flex flex-col items-center gap-2 mt-6 mb-4 text-center">
+          <CalendarClock className="text-6xl text-gray-200" />
+          No events found
+        </div>
+      )}
     </Modal>
   ) : null
 })
