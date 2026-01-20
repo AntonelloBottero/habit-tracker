@@ -33,12 +33,24 @@ export default function useDbCrud<T extends object>({ table: storeName, model }:
   }, [table])
 
   // --- Fetch ---
-  async function index(filter?: (item: DbResourceSchema<T>) => boolean): Promise<DbResourceSchema<T>[]> {
+  interface SortBy {
+    field: string
+    reverse?: boolean
+  }
+
+  async function index(filter?: (item: DbResourceSchema<T>) => boolean, sortBy?: SortBy): Promise<DbResourceSchema<T>[]> {
     if(!isCompliant()) { return [] }
-    const query = (table as Table).where('deleted_at').equals('') // TODO sort by created_at
-    return filter
-      ? query.filter(filter).toArray()
-      : query.toArray()
+    let query = (table as Table).where('deleted_at').equals('')
+    if(filter) {
+      query.filter(filter).toArray()
+    }
+    if(sortBy?.field) {
+      if(sortBy.reverse) { query.reverse() }
+      query.sortBy(sortBy.field)
+    } else {
+      query.sortBy('created_at')
+    }
+    return query.toArray()
   }
 
   async function show(id: number): Promise<DbResourceSchema<T> | undefined> {

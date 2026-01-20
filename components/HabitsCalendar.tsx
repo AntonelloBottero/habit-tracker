@@ -68,6 +68,7 @@ export default function HabitsCalendar() {
     setFormEventsValues({
       datetime: DateTime.fromJSDate(args.date).toISO() || ''
     })
+    formEventsModal.current?.show()
   }
 
   return (
@@ -91,7 +92,7 @@ export default function HabitsCalendar() {
         </Sidebar>
       </div>
 
-      <Modal ref={formEventsModal} title="Add event">
+      <Modal ref={formEventsModal} title="Add event" size="max-w-md">
         <EventsForm values={formEventsValues} />
       </Modal>
     </>
