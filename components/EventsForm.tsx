@@ -3,6 +3,7 @@ import { DbResourceSchema, EventsSchema, habitsModel, HabitsSchema, slotsModel, 
 import useDbCrud from "@/db/useDbCrud"
 import { Rules, validators } from "@/hooks/useForm"
 import CardsInput from "./CardsInput"
+import HabitsCardHeader from "./HabitsCardHeader"
 
 type Values = Partial<DbResourceSchema<EventsSchema>>
 
@@ -49,7 +50,9 @@ export default function FormEvents({ values, onSave, onDelete }: Props) {
   return (
     <form className="grid grid-cols-1 gap-3">
       <div>
-        <CardsInput items={selectableSlots} />
+        <CardsInput items={selectableSlots} content={(item) => (
+          <HabitsCardHeader habit={item.habit} />
+        )} />
       </div>
     </form>
   )
