@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react"
-import { DbResourceSchema, EventsSchema, habitsModel, HabitsSchema, slotsModel, SlotsSchema } from "@/db/DbClass"
+import { useEffect, useState, useMemo } from "react"
+import { DbResourceSchema, eventsModel, EventsSchema, habitsModel, HabitsSchema, slotsModel, SlotsSchema } from "@/db/DbClass"
 import useDbCrud from "@/db/useDbCrud"
-import { Rules, validators } from "@/hooks/useForm"
+import useForm, { Rules, validators } from "@/hooks/useForm"
 import CardsInput from "@/components/CardsInput"
 import HabitsCardHeader from "@/components/HabitsCardHeader"
 import SlotsCompletionChip from "@/components/SlotsCompletionChip"
@@ -26,6 +26,20 @@ const rules: Rules = {
 }
 
 export default function FormEvents({ values, onSave, onDelete }: Props) {
+  // --- useForm ---
+  const { model, changeField, init, errorMessages, handleFormSubmit } = useForm({ defaultValues: eventsModel, rules, onSubmit })
+  useEffect(() => {
+    init(values)
+    console.log('model', values)
+  }, [values])
+
+  const id = useMemo(()=> {
+    return values?.id
+  }, [values])
+  const isNew = useMemo(() => {
+    return !id
+  }, [values])
+
   // --- Selectable slots ---
   const slotsCrud = useDbCrud({ table: 'slots', model: slotsModel })
   const habitsCrud = useDbCrud({ table: 'habits', model: habitsModel })
@@ -49,10 +63,12 @@ export default function FormEvents({ values, onSave, onDelete }: Props) {
     fetchSelectableSlots(values?.datetime ?? '')
   }, [values])
 
+  function onSubmit() {}
+
   return (
     <form className="grid grid-cols-1 gap-3">
       <div>
-        <CardsInput items={selectableSlots} content={(item) => (
+        <CardsInput value={model.slot_id} items={selectableSlots} content={(item) => (
           <>
             <HabitsCardHeader habit={item.habit} />
             <div className="flex items-center flex-wrap gap-2">
