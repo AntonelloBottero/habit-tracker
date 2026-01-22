@@ -2,8 +2,10 @@ import { useEffect, useState } from "react"
 import { DbResourceSchema, EventsSchema, habitsModel, HabitsSchema, slotsModel, SlotsSchema } from "@/db/DbClass"
 import useDbCrud from "@/db/useDbCrud"
 import { Rules, validators } from "@/hooks/useForm"
-import CardsInput from "./CardsInput"
-import HabitsCardHeader from "./HabitsCardHeader"
+import CardsInput from "@/components/CardsInput"
+import HabitsCardHeader from "@/components/HabitsCardHeader"
+import SlotsCompletionChip from "@/components/SlotsCompletionChip"
+import { CalendarToday } from "@project-lary/react-material-symbols-700-rounded"
 
 type Values = Partial<DbResourceSchema<EventsSchema>>
 
@@ -51,7 +53,21 @@ export default function FormEvents({ values, onSave, onDelete }: Props) {
     <form className="grid grid-cols-1 gap-3">
       <div>
         <CardsInput items={selectableSlots} content={(item) => (
-          <HabitsCardHeader habit={item.habit} />
+          <>
+            <HabitsCardHeader habit={item.habit} />
+            <div className="flex items-center flex-wrap gap-2">
+              <div className="flex items-center gap-1 text-sm mr-1">
+                <CalendarToday />
+                <span>
+                  {item.habit.granularity}
+                  {item.habit.granularity_times > 1 && ` (${item.habit.granularity_times} times)`}
+                </span>
+              </div>
+              <div className="flex items-center gap-1 ml-auto">
+                <SlotsCompletionChip completion={item.completion} count={item.count} />
+              </div>
+            </div>
+          </>
         )} />
       </div>
     </form>
