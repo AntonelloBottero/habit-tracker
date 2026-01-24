@@ -13,7 +13,7 @@ export default function SlotsSelectionChip({ completion, count, expired = false 
   }, [completion, count, expired])
 
   return (
-    <span className={`${bgColor} py-1 px-2 rounded-xl text-xs`}>
+    <span className={`${bgColor} py-0.5 px-2 rounded-xl text-xs`}>
       <b>{completion}</b>/{count}
     </span>
   )

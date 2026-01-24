@@ -6,6 +6,7 @@ import CardsInput from "@/components/CardsInput"
 import HabitsCardHeader from "@/components/HabitsCardHeader"
 import SlotsCompletionChip from "@/components/SlotsCompletionChip"
 import { CalendarToday } from "@project-lary/react-material-symbols-700-rounded"
+import InputWrapper from "./InputWrapper"
 
 type Values = Partial<DbResourceSchema<EventsSchema>>
 
@@ -67,26 +68,32 @@ export default function FormEvents({ values, onSave, onDelete }: Props) {
   return (
     <form className="grid grid-cols-1 gap-3">
       <div>
-        <CardsInput
-          value={model.habit_id}
-          onChange={e => changeField('habit_id', e.target.value)}
-          items={selectableSlots}
-          content={(item) => (
-            <>
-              <HabitsCardHeader habit={item} />
-              <div className="flex items-center flex-wrap gap-2">
-                <div className="flex items-center gap-1 text-sm mr-1">
-                  <CalendarToday />
-                  <span>
-                    {item.granularity}
-                    {item.granularity_times > 1 && ` (${item.granularity_times} times)`}
-                  </span>
-                </div>
-                <div className="flex items-center gap-1 ml-auto">
-                  <SlotsCompletionChip completion={item.slot.completion} count={item.slot.count} />
-                </div>
-              </div>
-            </>
+        <InputWrapper
+          errorMessages={errorMessages.granularity}
+          label="Select the habit"
+          input={(
+            <CardsInput
+              value={model.habit_id}
+              onChange={e => changeField('habit_id', e.target.value)}
+              items={selectableSlots}
+              content={(item) => (
+                <>
+                  <HabitsCardHeader habit={item} dense={true} />
+                  <div className="flex items-center flex-wrap gap-2">
+                    <div className="flex items-center gap-1 text-sm mr-1">
+                      <CalendarToday />
+                      <span>
+                        {item.granularity}
+                        {item.granularity_times > 1 && ` (${item.granularity_times} times)`}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-1 ml-auto">
+                      <SlotsCompletionChip completion={item.slot.completion} count={item.slot.count} />
+                    </div>
+                  </div>
+                </>
+              )}
+            />
           )}
         />
       </div>
