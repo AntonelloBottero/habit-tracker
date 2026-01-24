@@ -19,8 +19,8 @@ export default function InputWrapper({ errorMessages = [], label = '', input}: P
       {cloneElement(input, {
         className: (input.props.className || '') + (errorMessages?.length ? ' bg-red-50 !outline-red-500 text-red-900 placeholder:text-red-500 !focus:outline-red-500 dark:text-red-500 dark:placeholder:text-red-500 !dark:outline-red-500' : '')
       })}
-      {errorMessages.length > 0 && (
-        <div role="input-wrapper-errors" className="mt-1 text-sm text-red-600 dark:text-red-500">
+      {(errorMessages.length > 0 || true) && (
+        <div role="input-wrapper-errors" className="mt-1 text-xs text-red-600 dark:text-red-500 min-h-4">
           {errorMessages.map((msg, index) => (
             <p key={index}>{msg}</p>
           ))}

@@ -119,7 +119,7 @@ export default function FormHabits({ values, onSave, onDelete }: Props) {
 
 
   return (
-    <form onSubmit={handleFormSubmit} className="grid grid-cols-2 gap-3">
+    <form onSubmit={handleFormSubmit} className="grid grid-cols-2 gap-x-3">
       <div className="col-span-2">
         <InputWrapper errorMessages={errorMessages.name} label="Name" input={(
           <input

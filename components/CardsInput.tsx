@@ -9,7 +9,7 @@ interface Props<T> {
   content?: (item: T, selected: boolean) => ReactNode
 }
 
-export default function CardsInput<T extends object>({ value, onChange, items, valueProp = 'id', titleProp = 'name', content}: Props<T>) {
+export default function CardsInput<T extends object>({ value, onChange, items, valueProp = 'id' as keyof T, titleProp = 'name' as keyof T, content}: Props<T>) {
   function handleItemClick(item: T) {
     if(onChange) {
       onChange({
@@ -24,13 +24,13 @@ export default function CardsInput<T extends object>({ value, onChange, items, v
     <div className="grid grid-cols-1 gap-3" role="cards-input">
       {items.map(item => (
         <div
-          key={item[valueProp]}
+          key={item[valueProp] as string | number}
           role="cards-input-item"
           className={`ht-interaction pt-1 pb-1 px-4 rounded-lg ${value === item[valueProp] ? 'bg-green-50 outline-green-200' : 'bg-white outline-stone-200' } outline-1 outline-offset-1 flex flex-col gap-1`}
           onClick={() => { handleItemClick(item) }}
         >
           {!content
-            ? item[titleProp]
+            ? item[titleProp] as string
             : content(item, value === item[valueProp])}
         </div>
       ))}

@@ -75,25 +75,15 @@ export default function FormEvents({ values, onSave, onDelete }: Props) {
   const selectedHabit = useMemo(() => {
     return selectableHabits.find(habit => habit.id === model.habit_id)
   }, [selectableHabits, model])
+
   const enoughAmount = useMemo(() => {
     return selectedHabit?.enough_amount
   }, [selectedHabit])
 
-  const [enoughAmountChecked, setEnoughAmountChecked] = useState<boolean>(false)
-  useEffect(() => { // every time an habit is selected we must ask the user to confirm he did enough
-    setEnoughAmountChecked(false)
-  }, [enoughAmount])
-
-  const enoughAmountErrorMessages = useMemo(() => {
-    return enoughAmount && !enoughAmountChecked ? [
-      'You have to do more...'
-    ] : []
-  }, [enoughAmount, enoughAmountChecked])
-
   function onSubmit() {}
 
   return (
-    <form className="grid grid-cols-1 gap-3">
+    <form className="grid grid-cols-1 gap-x-3">
       <div>
         <InputWrapper errorMessages={errorMessages.datetime} label="Date & time" input={(
           <input
@@ -140,13 +130,13 @@ export default function FormEvents({ values, onSave, onDelete }: Props) {
 
       {enoughAmount && (
         <div>
-          <InputWrapper errorMessages={enoughAmountErrorMessages} label="Did enough?" input={(
+          <InputWrapper label="Did enough?" input={(
             <div className="w-full rounded-lg flex items-center gap-2">
               <CheckboxBtn
-                id="enough_amount"
-                name="enough_amount"
-                defaultChecked={enoughAmountChecked}
-                onChange={e => setEnoughAmountChecked(e.target.checked)}
+                id="completed"
+                name="completed"
+                defaultChecked={!!model.completed}
+                onChange={e => changeField('completed', e.target.checked ? 1 : 0)}
               />
               <div className="text-sm">
                 {enoughAmount}
