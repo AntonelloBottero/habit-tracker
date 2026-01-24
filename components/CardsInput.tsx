@@ -26,7 +26,7 @@ export default function CardsInput<T extends object>({ value, onChange, items, v
         <div
           key={item[valueProp]}
           role="cards-input-item"
-          className={`ht-interaction pt-2 pb-2 px-4 rounded-lg ${value === item[valueProp] ? 'bg-green-50 outline-green-200' : 'bg-white outline-stone-200' } outline-1 outline-offset-1 flex flex-col gap-1`}
+          className={`ht-interaction pt-1 pb-1 px-4 rounded-lg ${value === item[valueProp] ? 'bg-green-50 outline-green-200' : 'bg-white outline-stone-200' } outline-1 outline-offset-1 flex flex-col gap-1`}
           onClick={() => { handleItemClick(item) }}
         >
           {!content
