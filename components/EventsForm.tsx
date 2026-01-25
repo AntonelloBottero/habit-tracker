@@ -9,6 +9,7 @@ import { CalendarToday } from "@project-lary/react-material-symbols-700-rounded"
 import InputWrapper from "@/components/InputWrapper"
 import CheckboxBtn from "@/components/CheckboxBtn"
 import { DateTime } from "luxon"
+import useHabits from "@/hooks/useHabits"
 
 type Values = Partial<DbResourceSchema<EventsSchema>>
 
@@ -49,26 +50,17 @@ export default function FormEvents({ values, onSave, onDelete }: Props) {
   }, [model])
 
   // --- Selectable habits ---
-  const slotsCrud = useDbCrud({ table: 'slots', model: slotsModel })
-  const habitsCrud = useDbCrud({ table: 'habits', model: habitsModel })
+  const { fetchSelectableHabits } = useHabits()
 
   const [selectableHabits, setSelectableHabits] = useState<SelectableHabit[]>([])
-  async function fetchSelectableHabits(datetime: string) {
+
+  useEffect(() => {
     try {
-      const habits = await habitsCrud.index()
-      const slots = await slotsCrud.index(item => item.active_to >= datetime && item.completion < item.count, { field: 'active_to' }) // fetches slots not yet completed, sorted by active_to
-      setSelectableHabits(habits.map(habit => {
-        const slot = slots.find(slot => slot.habit_id === habit.id) // since slots are sorted by active_to, the first one in the array is the most appropriate to be selected, given the datetime of the event
-        return slot ? { ...habit, slot } : null
-      }).filter(Boolean) as SelectableHabit[])
+      fetchSelectableHabits(values?.datetime ?? '').then(setSelectableHabits)
     } catch(error) {
       console.error(error)
       setSelectableHabits([])
     }
-  }
-
-  useEffect(() => {
-    fetchSelectableHabits(values?.datetime ?? '')
   }, [values])
 
   // --- Habit enough amount ---

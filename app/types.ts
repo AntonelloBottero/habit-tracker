@@ -38,3 +38,7 @@ export type SlotWithHabit = DbResourceSchema<SlotsSchema> & {
 export type HabitWithSlots = DbResourceSchema<HabitsSchema> & {
 	slots: DbResourceSchema<SlotsSchema>[]
 }
+
+export type SelectableHabit = DbResourceSchema<HabitsSchema> & {
+	slot: DbResourceSchema<SlotsSchema>
+}
