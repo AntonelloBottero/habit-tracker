@@ -176,7 +176,7 @@ describe('useHabits', () => {
       granularity_times: 1,
       enough_amount: '',
       manage_from: DateTime.now().plus({ days: 1 }).minus({ weeks: index }).toISO()
-    })) as HabitsSchema[]
+    })) as DbResourceSchema<HabitsSchema>[]
     await testDb.habits.bulkAdd(habits)
 
     const manageableHabits = await hookValues.fetchManageableHabits(DateTime.now().startOf('month').toISO())
@@ -209,7 +209,7 @@ describe('useHabits', () => {
       completion: 0,
       active_to: DateTime.now().minus({ days: 1 }).plus({ days: index * 2 }).toISO(), // excludes first
       deleted_at: ''
-    })) as SlotsSchema[]
+    })) as unknown as DbResourceSchema<SlotsSchema>[]
     await testDb.slots.bulkAdd(slots)
 
     const activeSlots = await hookValues.fetchActiveSlots(DateTime.now().toISO())
@@ -243,7 +243,7 @@ describe('useHabits', () => {
       datetime: startOfWeek.plus({ days: 1 }).toISO(),
       completed: 1,
       deleted_at: ''
-    } as EventsSchema
+    } as DbResourceSchema<EventsSchema>
 
     // 2. Event outside range (before)
     const eventBefore = {
@@ -251,7 +251,7 @@ describe('useHabits', () => {
       datetime: startOfWeek.minus({ days: 1 }).toISO(),
       completed: 1,
       deleted_at: ''
-    } as EventsSchema
+    } as DbResourceSchema<EventsSchema>
 
     // 3. Event outside range (after)
     const eventAfter = {
@@ -259,7 +259,7 @@ describe('useHabits', () => {
       datetime: startOfWeek.plus({ weeks: 1, days: 1 }).toISO(),
       completed: 1,
       deleted_at: ''
-    } as EventsSchema
+    } as DbResourceSchema<EventsSchema>
 
     // 4. Soft deleted event inside range
     const eventDeleted = {
@@ -267,7 +267,7 @@ describe('useHabits', () => {
       datetime: startOfWeek.plus({ days: 2 }).toISO(),
       completed: 1,
       deleted_at: DateTime.now().toISO() // Should be ignored
-    } as EventsSchema // Type assertion to bypass TS if Schema definition in test file is strict but DB allows extra props
+    } as DbResourceSchema<EventsSchema> // Type assertion to bypass TS if Schema definition in test file is strict but DB allows extra props
     await testDb.events.bulkAdd([eventInside, eventBefore, eventAfter, eventDeleted])
 
     const fetchedEvents = await hookValues.fetchEvents(startOfWeek.toISO(), startOfWeek.endOf('week').toISO())
