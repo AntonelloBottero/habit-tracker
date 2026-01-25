@@ -134,9 +134,9 @@ const testHabit4 = {
 
 // DB CRUD consumer
 interface DbTestCrudValues<T> {
-  index: () => Promise<T[]>
+  index: () => Promise<DbResourceSchema<T>[]>
   show: (id: number) => Promise<T | undefined>
-  store: (values: Partial<T>) => Promise<boolean>
+  store: (values: Partial<T>) => Promise<DbResourceSchema<T>>
   bulkStore: (values: Partial<T>[]) => Promise<false | DbResourceSchema<T>[]>
   update: (id: number, values: Partial<T>) => Promise<void>
   bulkUpdate: (values: Partial<DbResourceSchema<T>>[]) => Promise<false | DbResourceSchema<T>[]>
@@ -177,11 +177,12 @@ describe('DB CRUD', () => {
       expect(hookValues.isCompliant()).toBe(true)
     })
 
-    await hookValues.store(testHabit)
+    const returnedHabit = await hookValues.store(testHabit)
     const testHabits = await hookValues.index()
 
     await waitFor(async () => {
       expect(testHabits.length).toBe(1)
+      expect(testHabits[0].id).toBe(returnedHabit.id)
       expect(testHabits[0].name).toBe(testHabit.name)
     })
   })

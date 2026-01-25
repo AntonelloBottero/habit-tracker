@@ -60,17 +60,17 @@ export default function useDbCrud<T extends object>({ table: storeName, model }:
   }
 
   // --- Store ---
-  async function store(values: Partial<T>): Promise<boolean> {
+  async function store(values: Partial<T>): Promise<DbResourceSchema<T> | false> {
     if(!isCompliant()) { return false }
     if(!objectIsCompliant(schema as object, values)) {
       throw new TypeError('Values are not fully compliant with schema')
     }
-    await (table as Table).add({
+    const newId = await (table as Table).add({
       deleted_at: '',
       ...values,
       created_at: DateTime.now().toISO(),
     })
-    return true
+    return await show(newId) || false
   }
 
   async function bulkStore(values: Partial<T>[]): Promise<DbResourceSchema<T>[] | false> {

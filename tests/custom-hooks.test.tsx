@@ -417,6 +417,7 @@ describe('useHabits', () => {
       expect(events[0].datetime).toBe(date.toISO())
       expect(slot?.event_ids.length).toBe(1)
       expect(slot?.event_ids[0]).toBe(events[0].id)
+      expect(slot?.completion).toBe(1)
     })
   })
 })

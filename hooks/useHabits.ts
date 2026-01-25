@@ -8,7 +8,8 @@ export default function useHabits() {
   const slotsCrud = useDbCrud({ table: 'slots', model: slotsModel })
   const eventsCrud = useDbCrud({ table: 'events', model: eventsModel })
 
-  // --- Calculate monthly slots based on habit and date ---
+  // --- calculateMonthlySlots ---
+  // Calculate monthly slots based on habit and date
   function calculateMonthlySlots(habit: DbResourceSchema<HabitsSchema> & { id: number }, date: string): SlotsSchema[] {
     if(!habit || !date) { return [] }
 
@@ -47,7 +48,8 @@ export default function useHabits() {
     return await habitsCrud.index(item => item.manage_from <= manage_from) as DbResourceSchema<HabitsSchema>[]
   }
 
-  // --- Create Monthly slots (fetchManageableHabits * calculateMonthlySlots) ---
+  // --- createMonthlySlots ---
+  // Create Monthly slots (fetchManageableHabits * calculateMonthlySlots)
   async function createMonthlySlots(datetime: string): Promise<void> {
     const manage_from = DateTime.fromISO(datetime).startOf('month')
     if(!manage_from) { return undefined }
@@ -64,6 +66,7 @@ export default function useHabits() {
     await habitsCrud.bulkUpdate(updatedHabits)
   }
 
+  // --- fetchActiveSlots ---
   // fetch slots to be presented to user
   async function fetchActiveSlots(from: string): Promise<DbResourceSchema<SlotsSchema>[]> {
     if(!from) { return [] }
@@ -72,6 +75,7 @@ export default function useHabits() {
     })
   }
 
+  // --- fetchSelectableHabits ---
   // fetch habits linkable to an event -> habits that have an active slot based on the datetime desired
   async function fetchSelectableHabits(datetime: string): Promise<SelectableHabit[]> {
     const habits = await habitsCrud.index()
@@ -82,11 +86,31 @@ export default function useHabits() {
     }).filter(Boolean) as SelectableHabit[]
   }
 
+  // --- fetchEvents ---
   async function fetchEvents(from: string, to: string): Promise<EventsSchema[]> {
     if(!from || !to) { return [] }
     return await eventsCrud.index(item => {
       return item.datetime >= from && item.datetime <= to
     }) as EventsSchema[]
+  }
+
+  // --- saveEvent ---
+  async function saveEvent(model: EventsSchema, slot_id: number): Promise<void> {
+    const now = DateTime.now()
+    const slots = await slotsCrud.index(item => item.id === slot_id && item.active_to >= now.toISO() && item.completion < item.count)
+    if(!slots.length) {
+      throw new ReferenceError('The slot linked to the habit you chose is expired')
+    }
+
+    const newEvent = await eventsCrud.store(model)
+
+    const slot = slots[0]
+    const updatedSlot = {
+      ...slot,
+      event_ids: [...slot.event_ids, (newEvent as DbResourceSchema<EventsSchema>).id],
+      completion: slot.completion + 1
+    }
+    await slotsCrud.update(slot.id, updatedSlot)
   }
 
   return {
@@ -95,6 +119,7 @@ export default function useHabits() {
     createMonthlySlots,
     fetchActiveSlots,
     fetchEvents,
-    fetchSelectableHabits
+    fetchSelectableHabits,
+    saveEvent
   }
 }
