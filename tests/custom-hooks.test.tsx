@@ -370,6 +370,53 @@ describe('useHabits', () => {
       expect(DateTime.fromISO(selectableHabits[1].slot.active_to).toFormat('dd/MM/yyyy')).toBe(date.toFormat('dd/MM/yyyy')) // daily slots are placed in each day, so the selectable daily slot is today's slot
       expect(DateTime.fromISO(selectableHabits[0].slot.active_to).toFormat('dd/MM/yyyy')).toBe(date.endOf('month').toFormat('dd/MM/yyyy'))
     })
+  })
 
+  test('saveEvent', async () => {
+    const testHabit1 = {
+      type: 'good',
+      name: 'Test habit 1',
+      color: '#E6AF2E',
+      granularity: 'daily',
+      include_weekends: true,
+      granularity_times: 1,
+      enough_amount: '',
+      manage_from: '',
+      created_at: '',
+      updated_at: '',
+      deleted_at: ''
+    } as DbResourceSchema<HabitsSchema>
+    const date = DateTime.now()
+
+    let hookValues!: HabitTestValues
+    render(
+      <DbProvider externalDb={testDb}>
+        <TestHabitConsumer onHookReady={(values) => { hookValues = values }} />
+      </DbProvider>
+    )
+    await waitFor(() => {
+      expect(hookValues).toBeDefined()
+      expect(testDb.isOpen()).toBe(true)
+    })
+
+    await testDb.habits.add(testHabit1)
+    await hookValues.createMonthlySlots(date.toISO())
+    const selectableHabits = await hookValues.fetchSelectableHabits(date.toISO())
+
+    const event = {
+      habit_id: selectableHabits[0].id,
+      datetime: date.toISO(),
+      completed: 1
+    } as EventsSchema
+    const slot_id = selectableHabits[0].slot.id
+    await hookValues.saveEvent(event, slot_id)
+    const events = await testDb.events.toArray()
+    const slot = await testDb.slots.filter(item => item.id === slot_id).first()
+    await waitFor(() => {
+      expect(events.length).toBe(1)
+      expect(events[0].datetime).toBe(date.toISO())
+      expect(slot?.event_ids.length).toBe(1)
+      expect(slot?.event_ids[0]).toBe(events[0].id)
+    })
   })
 })
