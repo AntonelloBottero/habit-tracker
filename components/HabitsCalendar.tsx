@@ -73,8 +73,8 @@ export default function HabitsCalendar() {
 
   return (
     <>
-      <div className="w-full h-full habits-calendar flex">
-        <div className="flex-grow h-full bg-white">
+      <div className="w-full min-h-full habits-calendar flex">
+        <div className="flex-grow min-h-full bg-white p-6 lg:px-10">
           <FullCalendar
             plugins={[ dayGridPlugin, interactionPlugin ]}
             initialView="dayGridMonth"

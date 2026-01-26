@@ -16,7 +16,7 @@ export default function CheckboxBtn(props: Props) {
   // --- button className ---
   const { className, defaultChecked, onChange } = props
   const btnClassName = useMemo(() => {
-    const checkedStateClassName = defaultChecked ? 'bg-primary' : 'outline-1 outline-gray-300'
+    const checkedStateClassName = defaultChecked ? 'bg-primary shadow-ht' : 'outline-1 outline-gray-300'
     return `ht-btn ht-interaction rounded-lg  w-8 h-8 ${className} ${checkedStateClassName}`
   }, [className, defaultChecked])
 

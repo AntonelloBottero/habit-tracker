@@ -1,4 +1,5 @@
 import { useEffect, useState, useMemo } from "react"
+import { CalendarCheck } from '@project-lary/react-material-symbols-700-rounded'
 import { DbResourceSchema, eventsModel, EventsSchema, habitsModel, HabitsSchema, slotsModel, SlotsSchema } from "@/db/DbClass"
 import useDbCrud from "@/db/useDbCrud"
 import useForm, { Rules, validators } from "@/hooks/useForm"
@@ -8,6 +9,7 @@ import SlotsCompletionChip from "@/components/SlotsCompletionChip"
 import { CalendarToday } from "@project-lary/react-material-symbols-700-rounded"
 import InputWrapper from "@/components/InputWrapper"
 import CheckboxBtn from "@/components/CheckboxBtn"
+import ConfirmModal from '@/components/ConfirmModal'
 import { DateTime } from "luxon"
 import useHabits from "@/hooks/useHabits"
 
@@ -26,7 +28,7 @@ type SelectableHabit = DbResourceSchema<HabitsSchema> & {
 const rules: Rules = {
   habit_id: [validators.required],
   datetime: [validators.required],
-  completed: [validators.required, validators.number]
+  completed: [validators.required, validators.numeric]
 }
 
 export default function FormEvents({ values, onSave, onDelete }: Props) {
@@ -72,10 +74,29 @@ export default function FormEvents({ values, onSave, onDelete }: Props) {
     return selectedHabit?.enough_amount
   }, [selectedHabit])
 
-  function onSubmit() {}
+  // --- Save ---
+  const [loading, setLoading] = useState(false)
+    async function onSubmit() {
+      if(!isNew || loading || (enoughAmount && !model.completed)) { return undefined }
+      setLoading(true)
+      const fullModel = {
+        ...model,
+        manage_from: ''
+      }
+      try {
+        
+        if(onSave) {
+          onSave()
+        }
+      } catch(error) {
+        console.error(error)
+        // TODO: notify error to user
+      }
+      setLoading(false)
+    }
 
   return (
-    <form className="grid grid-cols-1 gap-x-3">
+    <form onSubmit={handleFormSubmit} className="grid grid-cols-1 gap-x-3">
       <div>
         <InputWrapper errorMessages={errorMessages.datetime} label="Date & time" input={(
           <input
@@ -91,7 +112,7 @@ export default function FormEvents({ values, onSave, onDelete }: Props) {
       </div>
       <div>
         <InputWrapper
-          errorMessages={errorMessages.granularity}
+          errorMessages={errorMessages.habit_id}
           label="Select the habit"
           input={(
             <CardsInput
@@ -123,7 +144,7 @@ export default function FormEvents({ values, onSave, onDelete }: Props) {
       {enoughAmount && (
         <div>
           <InputWrapper label="Did enough?" input={(
-            <div className="w-full rounded-lg flex items-center gap-2">
+            <div className="w-full rounded-lg flex items-center outline-1 -outline-offset-1 outline-white gap-2">
               <CheckboxBtn
                 id="completed"
                 name="completed"
@@ -137,6 +158,29 @@ export default function FormEvents({ values, onSave, onDelete }: Props) {
           )} />
         </div>
       )}
+
+      <div className="flex justify-end items-center gap-4">
+        {isNew ? (
+          <>
+          {enoughAmount && !model.completed && (
+            <div className="text-sm text-gray-600">
+              You have to do more...
+            </div>
+          )}
+          <button type="submit" className="ht-btn ht-btn--size-large ht-interaction bg-primary shadow-ht" disabled={!!enoughAmount && !model.completed}>
+            <CalendarCheck />
+            Add event
+          </button>
+          </>
+        ) : (
+          <>
+            <button type="button" className="ht-btn ht-interaction rounded-lg bg-red-50 text-red-500 py-2 px-5 mr-2" onClick={deleteHabit}>
+              Delete
+            </button>
+            <ConfirmModal ref={confirmDeleteModalRef} />
+          </>
+        )}
+      </div>
     </form>
   )
 }
