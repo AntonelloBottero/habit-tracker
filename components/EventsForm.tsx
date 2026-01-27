@@ -32,6 +32,8 @@ const rules: Rules = {
 }
 
 export default function FormEvents({ values, onSave, onDelete }: Props) {
+  const { fetchSelectableHabits, saveEvent } = useHabits()
+
   // --- useForm ---
   const { model, changeField, init, errorMessages, handleFormSubmit } = useForm({ defaultValues: eventsModel, rules, onSubmit })
   useEffect(() => {
@@ -52,10 +54,7 @@ export default function FormEvents({ values, onSave, onDelete }: Props) {
   }, [model])
 
   // --- Selectable habits ---
-  const { fetchSelectableHabits } = useHabits()
-
   const [selectableHabits, setSelectableHabits] = useState<SelectableHabit[]>([])
-
   useEffect(() => {
     try {
       fetchSelectableHabits(values?.datetime ?? '').then(setSelectableHabits)
@@ -75,16 +74,15 @@ export default function FormEvents({ values, onSave, onDelete }: Props) {
   }, [selectedHabit])
 
   // --- Save ---
+  const slot_id = useMemo(() => {
+    return selectedHabit?.slot?.id
+  }, [selectedHabit])
   const [loading, setLoading] = useState(false)
     async function onSubmit() {
       if(!isNew || loading || (enoughAmount && !model.completed)) { return undefined }
       setLoading(true)
-      const fullModel = {
-        ...model,
-        manage_from: ''
-      }
       try {
-        
+        await saveEvent(model, slot_id as number)
         if(onSave) {
           onSave()
         }

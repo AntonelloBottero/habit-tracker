@@ -5,7 +5,7 @@ import FullCalendar from '@fullcalendar/react'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import interactionPlugin, { DateClickArg } from '@fullcalendar/interaction'
 import { type DatesSetArg } from '@fullcalendar/core/index.js'
-import { DbResourceSchema, EventsSchema, habitsModel, HabitsSchema, SlotsSchema } from '@/db/DbClass'
+import { DbResourceSchema, eventsModel, EventsSchema, habitsModel, HabitsSchema, SlotsSchema } from '@/db/DbClass'
 import Sidebar from '@/components/Sidebar'
 import useDbCrud from '@/db/useDbCrud'
 import useHabits from '@/hooks/useHabits'
@@ -54,10 +54,15 @@ export default function HabitsCalendar() {
   const [formEventsValues, setFormEventsValues] = useState<Partial<DbResourceSchema<EventsSchema>> | undefined>(undefined)
 
   // --- Calendar ---
+  const calendarRef = useRef<FullCalendar>(null)
+
+  const eventsCrud = useDbCrud({ table: 'events', model: eventsModel })
+  const [events, setEvents] = useState<DbResourceSchema<EventsSchema>[]>([])
+
   async function handleDatesSet(args: DatesSetArg) {
     try {
-      const s = await fetchActiveSlots(args.startStr)
-      setSlots(s)
+      await fetchActiveSlots(args.startStr).then(setSlots)
+      await eventsCrud.index(item => item.datetime >= args.startStr && item.datetime <= args.endStr).then(setEvents)
     } catch(error) {
       console.error(error)
       setSlots([])
@@ -71,11 +76,16 @@ export default function HabitsCalendar() {
     formEventsModal.current?.show()
   }
 
+  function handleEventsFormSave() {
+    calendarRef.current?.getApi()?.refetchEvents()
+  }
+
   return (
     <>
       <div className="w-full min-h-full habits-calendar flex">
-        <div className="flex-grow min-h-full bg-white p-6 lg:px-10">
+        <div className="flex-grow bg-white p-6 lg:px-10">
           <FullCalendar
+            ref={calendarRef}
             plugins={[ dayGridPlugin, interactionPlugin ]}
             initialView="dayGridMonth"
             editable={true}
@@ -93,7 +103,7 @@ export default function HabitsCalendar() {
       </div>
 
       <Modal ref={formEventsModal} title="Add event" size="max-w-md">
-        <EventsForm values={formEventsValues} />
+        <EventsForm values={formEventsValues} onSave={handleEventsFormSave} />
       </Modal>
     </>
   )
