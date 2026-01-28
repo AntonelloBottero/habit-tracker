@@ -47,6 +47,7 @@ export default function HabitsCalendar() {
         ...habit,
         slots: slots.filter(slot => slot.habit_id === habit.id)
       }))
+      .filter(habit => habit.slots.length)
   }, [slots, habits])
 
   // --- Manage events ---
@@ -60,6 +61,7 @@ export default function HabitsCalendar() {
   const [events, setEvents] = useState<DbResourceSchema<EventsSchema>[]>([])
 
   async function handleDatesSet(args: DatesSetArg) {
+    console.log('args', args)
     try {
       await fetchActiveSlots(args.startStr).then(setSlots)
       await eventsCrud.index(item => item.datetime >= args.startStr && item.datetime <= args.endStr).then(setEvents)

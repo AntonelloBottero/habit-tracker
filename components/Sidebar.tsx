@@ -31,7 +31,7 @@ const Sidebar = forwardRef<SidebarRef, Props>(({ initialValue = false, width = '
   }, [bordered, align])
 
   return (
-    <aside className={`${className} gradient-primary h-full flex-shrink overflow-y-auto z-10`} style={{ maxWidth: width, flexBasis: width }}>
+    <aside className={`${className} gradient-primary h-full flex-shrink self-stretch overflow-y-auto z-10`} style={{ maxWidth: width, flexBasis: width }}>
       <div className="py-4 px-4 flex flex-col gap-4">
         {title && (
           <div className="text-2xl font-monda font-bold">
