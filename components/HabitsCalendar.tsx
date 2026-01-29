@@ -61,9 +61,8 @@ export default function HabitsCalendar() {
   const [events, setEvents] = useState<DbResourceSchema<EventsSchema>[]>([])
 
   async function handleDatesSet(args: DatesSetArg) {
-    console.log('args', args)
     try {
-      await fetchActiveSlots(args.startStr).then(setSlots)
+      await fetchActiveSlots(args.startStr, args.endStr).then(setSlots)
       await eventsCrud.index(item => item.datetime >= args.startStr && item.datetime <= args.endStr).then(setEvents)
     } catch(error) {
       console.error(error)

@@ -82,7 +82,7 @@ interface HabitTestValues {
   calculateMonthlySlots: (habit: DbResourceSchema<HabitsSchema>, date: string) => SlotsSchema[]
   fetchManageableHabits: (mamange_from: string) => Promise<HabitsSchema[]>
   createMonthlySlots: (datetime: string) => Promise<void>
-  fetchActiveSlots: (from: string) => Promise<SlotsSchema[]>
+  fetchActiveSlots: (from: string, to: string) => Promise<SlotsSchema[]>
   fetchSelectableHabits: (datetime: string) => Promise<SelectableHabit[]>
   fetchEvents: (from: string, to: string) => Promise<EventsSchema[]>
   saveEvent: (model: EventsSchema, slot_id: number) => Promise<void>
@@ -212,7 +212,7 @@ describe('useHabits', () => {
     })) as unknown as DbResourceSchema<SlotsSchema>[]
     await testDb.slots.bulkAdd(slots)
 
-    const activeSlots = await hookValues.fetchActiveSlots(DateTime.now().toISO())
+    const activeSlots = await hookValues.fetchActiveSlots(DateTime.now().startOf('month').toISO(), DateTime.now().endOf('month').toISO())
     await waitFor(async () => {
       expect(activeSlots.length).toBe(5)
       expect(activeSlots[0].count).toBe(2)

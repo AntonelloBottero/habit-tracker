@@ -68,22 +68,19 @@ export default function useHabits() {
 
   // --- fetchActiveSlots ---
   // fetch slots to be presented to user
-  async function fetchActiveSlots(from: string): Promise<DbResourceSchema<SlotsSchema>[]> {
-    if(!from) { return [] }
-
-    const endOfMonth = DateTime.fromISO(from).endOf('month').toISO() // slots are monthly
-    console.log('endOfMonth', endOfMonth, from)
-    if(!endOfMonth) { return [] }
+  async function fetchActiveSlots(from: string, to: string): Promise<DbResourceSchema<SlotsSchema>[]> {
+    if(!from || !to) { return [] }
     return await slotsCrud.index(item => {
-      return item.active_to >= from && item.active_to <= endOfMonth // regardless of the time range (month, week, day), every slots still active will be included
+      return item.active_to >= from && item.active_to <= to // regardless of the time range (month, week, day), every slots still active will be included
     })
   }
 
   // --- fetchSelectableHabits ---
   // fetch habits linkable to an event -> habits that have an active slot based on the datetime desired
   async function fetchSelectableHabits(datetime: string): Promise<SelectableHabit[]> {
+    const now = DateTime.now().toISO()
     const habits = await habitsCrud.index()
-    const slots = await slotsCrud.index(item => item.active_to >= datetime && item.completion < item.count, { field: 'active_to', reverse: true }) // fetches slots not yet completed, sorted by active_to
+    const slots = await slotsCrud.index(item => item.active_to <= datetime && item.active_to >= now && item.completion < item.count, { field: 'active_to', reverse: true }) // fetches slots not expired and not yet completed, sorted by active_to
     return habits.map(habit => {
       const slot = slots.find(slot => slot.habit_id === habit.id) // since slots are sorted by active_to, the first one in the array is the most appropriate to be selected, given the datetime of the event
       return slot ? { ...habit, slot } : null
