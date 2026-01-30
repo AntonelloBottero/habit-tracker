@@ -53,12 +53,29 @@ export default function HabitsCalendar() {
   // --- Manage events ---
   const formEventsModal = useRef<ModalRef>(null)
   const [formEventsValues, setFormEventsValues] = useState<Partial<DbResourceSchema<EventsSchema>> | undefined>(undefined)
+  const [events, setEvents] = useState<DbResourceSchema<EventsSchema>[]>([])
+
+  const formattedEvents = useMemo(() => {
+    return events
+      .map(event => {
+        const habit = habits.find(habit => habit.id === event.habit_id)
+        if(!habit) { return null }
+        return {
+          ...event,
+          habit,
+          // fullcalendar compliant params
+          title: habit.name,
+          date: event.datetime,
+          color: habit.color
+        }
+      })
+      .filter(Boolean)
+  }, [events, habits])
 
   // --- Calendar ---
   const calendarRef = useRef<FullCalendar>(null)
 
   const eventsCrud = useDbCrud({ table: 'events', model: eventsModel })
-  const [events, setEvents] = useState<DbResourceSchema<EventsSchema>[]>([])
 
   async function handleDatesSet(args: DatesSetArg) {
     try {
@@ -67,6 +84,7 @@ export default function HabitsCalendar() {
     } catch(error) {
       console.error(error)
       setSlots([])
+      setEvents([])
     }
   }
 
@@ -79,6 +97,7 @@ export default function HabitsCalendar() {
 
   function handleEventsFormSave() {
     calendarRef.current?.getApi()?.refetchEvents()
+    formEventsModal.current?.hide()
   }
 
   return (
@@ -90,6 +109,7 @@ export default function HabitsCalendar() {
             plugins={[ dayGridPlugin, interactionPlugin ]}
             initialView="dayGridMonth"
             editable={true}
+            events={formattedEvents}
             datesSet={handleDatesSet}
             dateClick={handleDateClick}
           />
