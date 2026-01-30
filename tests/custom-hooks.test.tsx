@@ -83,9 +83,9 @@ interface HabitTestValues {
   fetchManageableHabits: (mamange_from: string) => Promise<HabitsSchema[]>
   createMonthlySlots: (datetime: string) => Promise<void>
   fetchActiveSlots: (from: string, to: string) => Promise<SlotsSchema[]>
-  fetchSelectableHabits: (datetime: string) => Promise<SelectableHabit[]>
+  fetchSelectableHabits: (datetime: string, now?: string | null) => Promise<SelectableHabit[]>
   fetchEvents: (from: string, to: string) => Promise<EventsSchema[]>
-  saveEvent: (model: EventsSchema, slot_id: number) => Promise<void>
+  saveEvent: (model: EventsSchema, slot_id: number, now?: string) => Promise<void>
 }
 
 const testDb = new DbClass('TestDatabase')
@@ -207,7 +207,7 @@ describe('useHabits', () => {
       event_ids: [],
       count: index + 1,
       completion: 0,
-      active_to: DateTime.now().minus({ days: 1 }).plus({ days: index * 2 }).toISO(), // excludes first
+      active_to: DateTime.now().startOf('month').minus({ days: 1 }).plus({ days: index * 2 }).toISO(), // excludes first
       deleted_at: ''
     })) as unknown as DbResourceSchema<SlotsSchema>[]
     await testDb.slots.bulkAdd(slots)
@@ -348,7 +348,7 @@ describe('useHabits', () => {
       updated_at: '',
       deleted_at: ''
     } as DbResourceSchema<HabitsSchema>
-    const date = DateTime.now()
+    const date = DateTime.now().set({ day: 15 }) // middle of month is suitable for tests
 
     let hookValues!: HabitTestValues
     render(
@@ -364,7 +364,7 @@ describe('useHabits', () => {
     await testDb.habits.bulkAdd([testHabit1, testHabit2])
     await hookValues.createMonthlySlots(date.toISO())
 
-    const selectableHabits = await hookValues.fetchSelectableHabits(date.toISO())
+    const selectableHabits = await hookValues.fetchSelectableHabits(date.endOf('month').toISO(), date.toISO())
     await waitFor(() => {
       expect(selectableHabits.length).toBe(2)
       expect(DateTime.fromISO(selectableHabits[1].slot.active_to).toFormat('dd/MM/yyyy')).toBe(date.toFormat('dd/MM/yyyy')) // daily slots are placed in each day, so the selectable daily slot is today's slot
@@ -386,7 +386,7 @@ describe('useHabits', () => {
       updated_at: '',
       deleted_at: ''
     } as DbResourceSchema<HabitsSchema>
-    const date = DateTime.now()
+    const date = DateTime.now().set({ day: 15 })
 
     let hookValues!: HabitTestValues
     render(
@@ -401,7 +401,7 @@ describe('useHabits', () => {
 
     await testDb.habits.add(testHabit1)
     await hookValues.createMonthlySlots(date.toISO())
-    const selectableHabits = await hookValues.fetchSelectableHabits(date.toISO())
+    const selectableHabits = await hookValues.fetchSelectableHabits(date.endOf('month').toISO(), date.toISO())
 
     const event = {
       habit_id: selectableHabits[0].id,
@@ -409,7 +409,7 @@ describe('useHabits', () => {
       completed: 1
     } as EventsSchema
     const slot_id = selectableHabits[0].slot.id
-    await hookValues.saveEvent(event, slot_id)
+    await hookValues.saveEvent(event, slot_id, date.toISO())
     const events = await testDb.events.toArray()
     const slot = await testDb.slots.filter(item => item.id === slot_id).first()
     await waitFor(() => {

@@ -77,10 +77,10 @@ export default function useHabits() {
 
   // --- fetchSelectableHabits ---
   // fetch habits linkable to an event -> habits that have an active slot based on the datetime desired
-  async function fetchSelectableHabits(datetime: string): Promise<SelectableHabit[]> {
-    const now = DateTime.now().toISO()
+  async function fetchSelectableHabits(datetime: string, now: string | null = null): Promise<SelectableHabit[]> {
+    const internalNow = now || DateTime.now().toISO() // we allow caller to give a today string for testing purposes
     const habits = await habitsCrud.index()
-    const slots = await slotsCrud.index(item => item.active_to <= datetime && item.active_to >= now && item.completion < item.count, { field: 'active_to', reverse: true }) // fetches slots not expired and not yet completed, sorted by active_to
+    const slots = await slotsCrud.index(item => item.active_to <= datetime && item.active_to >= internalNow && item.completion < item.count, { field: 'active_to', reverse: true }) // fetches slots not expired and not yet completed, sorted by active_to
     return habits.map(habit => {
       const slot = slots.find(slot => slot.habit_id === habit.id) // since slots are sorted by active_to, the first one in the array is the most appropriate to be selected, given the datetime of the event
       return slot ? { ...habit, slot } : null
@@ -96,9 +96,9 @@ export default function useHabits() {
   }
 
   // --- saveEvent ---
-  async function saveEvent(model: EventsSchema, slot_id: number): Promise<void> {
-    const now = DateTime.now()
-    const slots = await slotsCrud.index(item => item.id === slot_id && item.active_to >= now.toISO() && item.completion < item.count)
+  async function saveEvent(model: EventsSchema, slot_id: number, now?: string): Promise<void> {
+    const internalNow = now || DateTime.now().toISO()
+    const slots = await slotsCrud.index(item => item.id === slot_id && item.active_to >= internalNow && item.completion < item.count) // we have to check if slot is still available
     if(!slots.length) {
       throw new ReferenceError('The slot linked to the habit you chose is expired')
     }
