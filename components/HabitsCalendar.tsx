@@ -102,13 +102,25 @@ export default function HabitsCalendar() {
 
   return (
     <>
-      <div className="w-full min-h-full habits-calendar flex">
+      <div className="w-full min-h-full habits-calendar flex items-stretch">
         <div className="flex-grow bg-white p-6 lg:px-10">
           <FullCalendar
             ref={calendarRef}
             plugins={[ dayGridPlugin, interactionPlugin ]}
             initialView="dayGridMonth"
             editable={true}
+            customButtons={{
+              addEvent: {
+                text: 'Add event',
+                click: function() {
+                  alert('clicked the custom button!');
+                },
+              },
+            }}
+            header={{
+              left: 'title today',
+              right: 'prev,next addEvent',
+            }}
             events={formattedEvents}
             datesSet={handleDatesSet}
             dateClick={handleDateClick}
