@@ -78,13 +78,21 @@ export default function useHabits() {
   // --- fetchSelectableHabits ---
   // fetch habits linkable to an event -> habits that have an active slot based on the datetime desired
   async function fetchSelectableHabits(datetime: string, now: string | null = null): Promise<SelectableHabit[]> {
-    const internalNow = now || DateTime.now().toISO() // we allow caller to give a today string for testing purposes
+    const internalNow = now ? DateTime.fromISO(now) : DateTime.now() // we allow caller to give a today string for testing purposes
     const habits = await habitsCrud.index()
-    const slots = await slotsCrud.index(item => item.active_to <= datetime && item.active_to >= internalNow && item.completion < item.count, { field: 'active_to', reverse: true }) // fetches slots not expired and not yet completed, sorted by active_to
-    return habits.map(habit => {
-      const slot = slots.find(slot => slot.habit_id === habit.id) // since slots are sorted by active_to, the first one in the array is the most appropriate to be selected, given the datetime of the event
-      return slot ? { ...habit, slot } : null
-    }).filter(Boolean) as SelectableHabit[]
+    const selectableHabits = await Promise.all(
+      habits.map(async habit => {
+        const slots = await slotsCrud.index(item => item.habit_id === habit.id
+            && item.active_to >= datetime
+            && item.active_to >= internalNow.toISO()
+            && item.active_to <= internalNow.endOf('month').toISO()
+            && item.completion < item.count,
+        { field: 'id', reverse: false }) // fetches slots not expired and not yet completed, sorted by active_to
+        const slot = slots[0]
+        return slot ? { ...habit, slot } : null
+      })
+    )
+    return selectableHabits.filter(Boolean) as SelectableHabit[]
   }
 
   // --- fetchEvents ---

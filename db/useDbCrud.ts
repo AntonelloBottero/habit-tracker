@@ -42,15 +42,15 @@ export default function useDbCrud<T extends object>({ table: storeName, model }:
     if(!isCompliant()) { return [] }
     let query = (table as Table).where('deleted_at').equals('')
     if(filter) {
-      query.filter(filter).toArray()
+      query = query.filter(filter)
     }
     if(sortBy?.field) {
-      if(sortBy.reverse) { query.reverse() }
-      query.sortBy(sortBy.field)
+      if(sortBy.reverse) { query = query.reverse() }
+      return query.sortBy(sortBy.field)
     } else {
-      query.sortBy('created_at')
+      query = query.reverse()
+      return query.sortBy('created_at')
     }
-    return query.toArray()
   }
 
   async function show(id: number): Promise<DbResourceSchema<T> | undefined> {
