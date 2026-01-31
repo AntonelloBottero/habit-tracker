@@ -2,15 +2,15 @@
 
 import { useState, useEffect } from "react"
 import Link from "next/link"
-import useDb from "@/db/useDb"
+import useHabits from "@/hooks/useHabits"
 import HabitsCalendar from '@/components/HabitsCalendar'
 
 export default function Home() {
-  const { getOption } = useDb()
+  const { setup } = useHabits()
 
   const [setupCompleted, setSetupCompleted] = useState<boolean>(false)
   useEffect(() => {
-    getOption('setup_completed').then(value => {
+    setup(true).then(value => {
       setSetupCompleted(!!value)
     })
   }, [])

@@ -64,16 +64,14 @@ export default function HabitsSetup({ onSetup }: Props) {
 		return `${operation} ${formHabitsValues?.type ?? ''} habit`
 	}, [formHabitsValues])
 
-	// --- Setup ---
-	const { createMonthlySlots } = useHabits()
-	const { createOption } = useDb()
+	// --- Complete ---
+	const { setup } = useHabits()
 	const [loadingSetup, setLoadingSetup] = useState<boolean>(false)
-	async function setup() {
+	async function complete() {
 		if(!habits.length) { return undefined }
 		setLoadingSetup(true)
 		try {
-			await createMonthlySlots(DateTime.now().toISO())
-			await createOption('setup_completed', true)
+			await setup()
 			if(onSetup) {
 				onSetup()
 			}
@@ -128,7 +126,7 @@ export default function HabitsSetup({ onSetup }: Props) {
 						Add at least an habit to continue
 					</div>
 				)}
-				<button type="button" className="ht-btn ht-btn--size-large ht-interaction bg-primary shadow-ht" disabled={!habits.length} onClick={() => { setup() }}>
+				<button type="button" className="ht-btn ht-btn--size-large ht-interaction bg-primary shadow-ht" disabled={!habits.length} onClick={() => { complete() }}>
 					<CalendarCheck />
 					Start monitoring
 				</button>

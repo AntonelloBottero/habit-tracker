@@ -2,6 +2,7 @@ import { DateTime } from "luxon"
 import { eventsModel, EventsSchema, habitsModel, HabitsSchema, slotsModel, SlotsSchema, DbResourceSchema } from "@/db/DbClass"
 import useDbCrud from '@/db/useDbCrud'
 import { SelectableHabit } from "@/app/types"
+import useDb from "@/db/useDb"
 
 export default function useHabits() {
   const habitsCrud = useDbCrud({ table: 'habits', model: habitsModel })
@@ -125,6 +126,18 @@ export default function useHabits() {
     await slotsCrud.update(slot.id, updatedSlot)
   }
 
+  // --- Setup ---
+  const { getOption, createOption } = useDb()
+  async function setup(force = false): Promise<boolean> {
+    const lastSetupAt = await getOption('last_setup_at')
+    if(!lastSetupAt && !force) { return false } // we cannot perform a setup if user didn't provide his habits
+    if((lastSetupAt || '') >= DateTime.now()) { return true } // last setup is still in active
+
+    await createMonthlySlots(DateTime.now().toISO())
+    await createOption('last_setup_at', DateTime.now().endOf('month').toISO()) // the setup will last for the whole month
+    return true
+  }
+
   return {
     calculateMonthlySlots,
     fetchManageableHabits,
@@ -132,6 +145,7 @@ export default function useHabits() {
     fetchActiveSlots,
     fetchEvents,
     fetchSelectableHabits,
-    saveEvent
+    saveEvent,
+    setup
   }
 }

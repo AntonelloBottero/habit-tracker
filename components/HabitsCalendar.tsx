@@ -88,9 +88,9 @@ export default function HabitsCalendar() {
     }
   }
 
-  function handleDateClick(args: DateClickArg) {
+  function addEvent() {
     setFormEventsValues({
-      datetime: DateTime.fromJSDate(args.date).toISO() || ''
+      datetime: DateTime.now().toISO()
     })
     formEventsModal.current?.show()
   }
@@ -113,17 +113,16 @@ export default function HabitsCalendar() {
               addEvent: {
                 text: 'Add event',
                 click: function() {
-                  alert('clicked the custom button!');
+                  addEvent()
                 },
               },
             }}
-            header={{
-              left: 'title today',
-              right: 'prev,next addEvent',
+            headerToolbar={{
+              left: 'title',
+              right: 'today prev,next addEvent',
             }}
             events={formattedEvents}
             datesSet={handleDatesSet}
-            dateClick={handleDateClick}
           />
         </div>
         <Sidebar initialValue={true} width="320px" align="right" title="Your Schedule">
