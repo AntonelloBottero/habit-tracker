@@ -34,7 +34,7 @@ export default function useHabits() {
 
   // --- calculateMonthlySlots ---
   // Calculate monthly slots based on habit and date
-  function calculateMonthlySlots(habit: DbResourceSchema<HabitsSchema> & { id: number }, date: string): SlotsSchema[] {
+  function calculateMonthlySlots(habit: DbResourceSchema<HabitsSchema>, date: string): SlotsSchema[] {
     if(!habit || !date) { return [] }
 
     const from = DateTime.fromISO(date).startOf('month')
@@ -42,7 +42,7 @@ export default function useHabits() {
     const granularityDaysCount = {
       daily: 1,
       weekly: 7,
-      monthly: to.diff(from, ['days']).days,
+      monthly: Math.ceil(to.diff(from, ['days']).days), // diff returns float numbers
       yearly: 366
     } as Record<string, number>
     const daysCount = granularityDaysCount[habit.granularity] || 1
@@ -110,7 +110,7 @@ export default function useHabits() {
       habits.map(async habit => {
         const slots = await slotsCrud.index(item => {
           return item.habit_id === habit.id
-            && slotIsInRange(item, habit, internalNow.toISO())
+            && slotIsInRange(item, habit, internalNow.toISO() as string)
             && slotIsInRange(item, habit, datetime)
             && item.completion < item.count
         }, { field: 'active_to', reverse: false }) // fetches slots not expired and not yet completed, sorted by active_to

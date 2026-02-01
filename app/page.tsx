@@ -10,6 +10,7 @@ export default function Home() {
 
   const [setupCompleted, setSetupCompleted] = useState<boolean>(false)
   useEffect(() => {
+    console.log('setup')
     setup(true).then(value => {
       setSetupCompleted(!!value)
     })
