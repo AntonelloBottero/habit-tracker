@@ -64,7 +64,7 @@ export default function useForm<T extends object>({ defaultValues, rules, onSubm
   const [errorMessages, setErrorMessages] = useState<ErrorMessages>({})
   function validate(key?: string, value?: T | unknown): boolean {
     const keys = !key ? Object.keys(rules || {}) : [key] // which fields we should check
-    setErrorMessages({
+    const updatedErroMessages = {
       ...errorMessages,
       ...keys.reduce((r, key) => ({
         ...r,
@@ -72,8 +72,9 @@ export default function useForm<T extends object>({ defaultValues, rules, onSubm
           .map(rule =>rule(typeof value !== 'undefined' ? value : (model as never)[key])) // we check the rule with model value or new local value that is still not in the state
           .filter(message => typeof message === 'string')
       }), {})
-    })
-    return Object.values(errorMessages).reduce((r, messages) => !r || messages?.length ? false : true, true)
+    } as ErrorMessages
+    setErrorMessages(updatedErroMessages)
+    return Object.values(updatedErroMessages).reduce((r, messages) => !r || messages?.length ? false : true, true)
   }
 
   // --- Update single field and check field rules ---

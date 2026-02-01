@@ -15,7 +15,7 @@ export default function SlotsCard({ habit, className = '' }: Props) {
   }, [habit])
 
   const count = useMemo(() => {
-    return slots.reduce((r, slot) => r += slot.count, 0)
+    return slots.reduce((r, slot) => r += Number(slot.count), 0)
   }, [slots])
   const completion = useMemo(() => {
     return slots.reduce((r, slot) => r += slot.completion, 0)
