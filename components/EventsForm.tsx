@@ -28,7 +28,7 @@ type SelectableHabit = DbResourceSchema<HabitsSchema> & {
 const rules: Rules = {
   habit_id: [validators.required],
   datetime: [validators.required],
-  completed: [validators.required, validators.numeric]
+  completed: [validators.numeric]
 }
 
 export default function FormEvents({ values, onSave, onDelete }: Props) {
