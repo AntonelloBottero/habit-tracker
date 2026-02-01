@@ -9,6 +9,29 @@ export default function useHabits() {
   const slotsCrud = useDbCrud({ table: 'slots', model: slotsModel })
   const eventsCrud = useDbCrud({ table: 'events', model: eventsModel })
 
+  // --- Utils ---
+  function calculateSlotMaxDate(granularity: string, datetime: string): string | null {
+    const date = DateTime.fromISO(datetime)
+    if(!granularity || !date) { return null }
+
+    switch(granularity) {
+    case 'yearly':
+      return date.endOf('year').toISO()
+    case 'monthly':
+      return date.endOf('month').toISO()
+    case 'weekly':
+      return date.endOf('week').toISO()
+    default:
+      return date.endOf('day').toISO()
+    }
+  }
+
+  function slotIsInRange(slot: DbResourceSchema<SlotsSchema>, habit: DbResourceSchema<HabitsSchema>, datetime: string) {
+    const slotMaxDate = calculateSlotMaxDate(habit?.granularity, datetime)
+    if(!slot?.active_to || !slotMaxDate) { return false }
+    return slot.active_to >= datetime && slot.active_to <= slotMaxDate
+  }
+
   // --- calculateMonthlySlots ---
   // Calculate monthly slots based on habit and date
   function calculateMonthlySlots(habit: DbResourceSchema<HabitsSchema> & { id: number }, date: string): SlotsSchema[] {
@@ -87,9 +110,8 @@ export default function useHabits() {
       habits.map(async habit => {
         const slots = await slotsCrud.index(item => {
           return item.habit_id === habit.id
-            && item.active_to >= datetime
-            && item.active_to >= internalNow.toISO()
-            // && item.active_to <= internalNow.endOf('month').toISO()
+            && slotIsInRange(item, habit, internalNow.toISO())
+            && slotIsInRange(item, habit, datetime)
             && item.completion < item.count
         }, { field: 'active_to', reverse: false }) // fetches slots not expired and not yet completed, sorted by active_to
         const slot = slots[0]

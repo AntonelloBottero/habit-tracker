@@ -88,6 +88,13 @@ export default function HabitsCalendar() {
     }
   }
 
+  function handleDateClick(args: DateClickArg) {
+    setFormEventsValues({
+      datetime: args.dateStr
+    })
+    formEventsModal.current?.show()
+  }
+
   function addEvent() {
     setFormEventsValues({
       datetime: DateTime.now().toISO()
