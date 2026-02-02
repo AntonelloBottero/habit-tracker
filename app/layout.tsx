@@ -1,5 +1,3 @@
-'use client'
-
 import { DbProvider } from '@/db/useDb'
 import { Monda } from "next/font/google"
 import "./globals.css"

@@ -71,7 +71,7 @@ export default function HabitsSetup({ onSetup }: Props) {
 		if(!habits.length) { return undefined }
 		setLoadingSetup(true)
 		try {
-			await setup()
+			await setup(true)
 			if(onSetup) {
 				onSetup()
 			}

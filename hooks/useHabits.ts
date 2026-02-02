@@ -153,7 +153,9 @@ export default function useHabits() {
   async function setup(force = false): Promise<boolean> {
     const lastSetupAt = await getOption('last_setup_at')
     if(!lastSetupAt && !force) { return false } // we cannot perform a setup if user didn't provide his habits
-    if((lastSetupAt || '') >= DateTime.now()) { return true } // last setup is still in active
+    if((lastSetupAt || '') >= DateTime.now()) { // last setup is still in active
+      return true
+    }
 
     await createMonthlySlots(DateTime.now().toISO())
     await createOption('last_setup_at', DateTime.now().endOf('month').toISO()) // the setup will last for the whole month
