@@ -64,7 +64,7 @@ export default function useForm<T extends object>({ defaultValues, rules, onSubm
   const [errorMessages, setErrorMessages] = useState<ErrorMessages>({})
   function validate(key?: string, value?: T | unknown): boolean {
     const keys = !key ? Object.keys(rules || {}) : [key] // which fields we should check
-    const updatedErroMessages = {
+    const updatedErrorMessages = {
       ...errorMessages,
       ...keys.reduce((r, key) => ({
         ...r,
@@ -73,8 +73,8 @@ export default function useForm<T extends object>({ defaultValues, rules, onSubm
           .filter(message => typeof message === 'string')
       }), {})
     } as ErrorMessages
-    setErrorMessages(updatedErroMessages)
-    return Object.values(updatedErroMessages).reduce((r, messages) => !r || messages?.length ? false : true, true)
+    setErrorMessages(updatedErrorMessages)
+    return Object.values(updatedErrorMessages).reduce((r, messages) => !r || messages?.length ? false : true, true)
   }
 
   // --- Update single field and check field rules ---

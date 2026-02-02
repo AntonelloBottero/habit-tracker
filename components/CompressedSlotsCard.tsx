@@ -23,6 +23,9 @@ export default function SlotsCard({ habit, className = '' }: Props) {
   const completion = useMemo(() => {
     return slots.reduce((r, slot) => r += slot.completion, 0)
   }, [habit])
+  const activeTo = useMemo(() => {
+    return slots.sort((a, b) => a.active_to > b.active_to ? 1 : -1)[0]?.active_to
+  }, [slots])
 
   const modalRef = useRef<ModalRef>(null)
   const { calculateMonthlySlots } = useHabits()
@@ -45,7 +48,7 @@ export default function SlotsCard({ habit, className = '' }: Props) {
           </div>
           {slots.length === 1 && (
             <div className="flex items-center gap-1 ml-auto">
-              <SlotsCompletionChip completion={completion} count={count} />
+              <SlotsCompletionChip completion={completion} count={count} active_to={activeTo} />
             </div>
           )}
         </div>
@@ -57,7 +60,7 @@ export default function SlotsCard({ habit, className = '' }: Props) {
                 {slots.length} slots
               </div>
               <div className="flex items-center gap-1 ml-auto">
-              <SlotsCompletionChip completion={completion} count={count} />
+              <SlotsCompletionChip completion={completion} count={count} active_to={activeTo} />
               </div>
             </div>
           </>
@@ -82,9 +85,11 @@ export default function SlotsCard({ habit, className = '' }: Props) {
               Progress details
             </div>
             {slots.map(slot => (
-              <div key={slot.id} className="text-sm">
-                {slot.active_to.substring(0, 10)}<br />
-                {slot.completion}/{slot.count}
+              <div key={slot.id} className="text-sm flex items-center gap-4 py-2 px-4 rounded-lg outline-1 outline-offset-1 outline-stone-200">
+                <div className="grow">
+                {DateTime.fromISO(slot.active_to).toFormat('dd/MM/yyyy')}
+                </div>
+                <SlotsCompletionChip count={slot.count} completion={slot.completion} active_to={slot.active_to} />
               </div>
             ))}
           </div>

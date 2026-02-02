@@ -22,7 +22,7 @@ const rules: Rules = {
   color: [validators.required],
   granularity: [validators.required],
   include_weekends: [],
-  granularity_times: [validators.required, validators.numeric],
+  granularity_times: [validators.numeric],
   enough_amount: []
 }
 
@@ -78,6 +78,7 @@ export default function FormHabits({ values, onSave, onDelete }: Props) {
     setLoading(true)
     const fullModel = {
       ...model,
+      granularity_times: Number(model.granularity_times || 1),
       manage_from: ''
     }
     try {

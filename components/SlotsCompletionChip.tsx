@@ -1,15 +1,23 @@
+import { DateTime } from "luxon"
 import { useMemo } from "react"
 
 interface Props {
 	completion: number,
-	count: number
-	expired?: boolean
+	count: number,
+  active_to: string
 }
 
-export default function SlotsSelectionChip({ completion, count, expired = false }: Props) {
+export default function SlotsCompletionChip({ completion, count, active_to }: Props) {
+  const now = DateTime.now().toISO()
+  const expired = useMemo(() => {
+    return active_to < now
+  }, [active_to])
+
   const bgColor = useMemo(() => {
-    if(expired) { return 'bg-red-200' }
-    return completion < count ? 'bg-neutral-200' : 'bg-green-200'
+    if(completion >= count) {
+      return 'bg-green-200'
+    }
+    return !expired ? 'bg-neutral-200' : 'bg-red-200'
   }, [completion, count, expired])
 
   return (
