@@ -48,7 +48,6 @@ export default function useDbCrud<T extends object>({ table: storeName, model }:
       if(sortBy.reverse) { query = query.reverse() }
       return query.sortBy(sortBy.field)
     } else {
-      query = query.reverse()
       return query.sortBy('created_at')
     }
   }
