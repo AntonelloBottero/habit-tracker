@@ -62,7 +62,8 @@ export default function useHabits() {
       if(habit.granularity === 'weekly') {
         activeTo = activeTo.endOf('week')
       }
-    } while(activeTo.minus({ days: daysCount }).toFormat('yyyy-MM-dd') >= from.toFormat('yyyy-MM-dd')) // temporarily removing a day/week/month/year simulates an active_from field (we won't add a new slot if the active period spans across two months)
+      console.log('check activeTo', )
+    } while(activeTo.toFormat('yyyy-MM-dd') >= from.toFormat('yyyy-MM-dd')) // temporarily removing a day/week/month/year simulates an active_from field (we won't add a new slot if the active period spans across two months)
     return slots as SlotsSchema[]
   }
 
