@@ -77,7 +77,8 @@ export default function HabitsCalendar() {
 
   const eventsCrud = useDbCrud({ table: 'events', model: eventsModel })
 
-  async function handleDatesSet(args: DatesSetArg) {
+  const [dateArgs, setDateArgs] = useState<DatesSetArg | null>(null)
+  async function fetchResources(args: DatesSetArg) {
     try {
       await fetchActiveSlots(args.startStr, args.endStr).then(setSlots)
       await eventsCrud.index(item => item.datetime >= args.startStr && item.datetime <= args.endStr).then(setEvents)
@@ -86,6 +87,7 @@ export default function HabitsCalendar() {
       setSlots([])
       setEvents([])
     }
+    setDateArgs(args)
   }
 
   function handleDateClick(args: DateClickArg) {
@@ -103,8 +105,10 @@ export default function HabitsCalendar() {
   }
 
   function handleEventsFormSave() {
-    calendarRef.current?.getApi()?.refetchEvents()
     formEventsModal.current?.hide()
+    if(dateArgs) {
+      fetchResources(dateArgs)
+    }
   }
 
   return (
@@ -129,7 +133,7 @@ export default function HabitsCalendar() {
               right: 'today prev,next addEvent',
             }}
             events={formattedEvents}
-            datesSet={handleDatesSet}
+            datesSet={fetchResources}
           />
         </div>
         <Sidebar initialValue={true} width="320px" align="right" title="Your Schedule">
