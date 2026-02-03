@@ -62,7 +62,6 @@ export default function useHabits() {
       if(habit.granularity === 'weekly') {
         activeTo = activeTo.endOf('week')
       }
-      console.log('check activeTo', )
     } while(activeTo.toFormat('yyyy-MM-dd') >= from.toFormat('yyyy-MM-dd')) // temporarily removing a day/week/month/year simulates an active_from field (we won't add a new slot if the active period spans across two months)
     return slots as SlotsSchema[]
   }
@@ -97,7 +96,7 @@ export default function useHabits() {
     if(!from || !to) { return [] }
     return await slotsCrud.index(item => {
       return item.active_to >= from && item.active_to <= to // regardless of the time range (month, week, day), every slots still active will be included
-    })
+    }, { field: 'created_at', reverse: true })
   }
 
   // --- fetchSelectableHabits ---

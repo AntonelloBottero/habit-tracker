@@ -24,7 +24,7 @@ export default function SlotsCard({ habit, className = '' }: Props) {
     return slots.reduce((r, slot) => r += slot.completion, 0)
   }, [habit])
   const activeTo = useMemo(() => {
-    return slots.sort((a, b) => a.active_to > b.active_to ? 1 : -1)[0]?.active_to
+    return slots[slots.length - 1]?.active_to
   }, [slots])
 
   const modalRef = useRef<ModalRef>(null)
