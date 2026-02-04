@@ -31,7 +31,7 @@ export default function SlotsCard({ slot, habit, className = '' }: Props) {
             </span>
           </div>
           <div className="flex items-center gap-1 ml-auto">
-            <SlotsCompletionChip completion={slot.completion} count={slot.count} />
+            <SlotsCompletionChip completion={slot.completion} count={slot.count} active_to={slot.active_to} />
           </div>
         </div>
       </div>

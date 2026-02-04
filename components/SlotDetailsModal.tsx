@@ -8,7 +8,7 @@ import { ModalRef } from "@/app/types"
 import useDbCrud from "@/db/useDbCrud"
 
 interface Props {
-  slot: DbResourceSchema<SlotsSchema>
+  slot?: DbResourceSchema<SlotsSchema>
   habit: DbResourceSchema<HabitsSchema>
   className?: string
 }
@@ -20,6 +20,7 @@ const SlotDetailsModal = forwardRef<ModalRef, Props>(({ slot, habit }: Props, re
   const eventsCrud = useDbCrud({ table: 'events', model: eventsModel })
   const [events, setEvents] = useState<DbResourceSchema<EventsSchema>[]>([])
   async function fetchEvents() {
+    if(!slot) { return undefined }
     try {
       const e = await eventsCrud.index(item => slot.event_ids.includes(item.id))
       setEvents(e)
@@ -62,12 +63,14 @@ const SlotDetailsModal = forwardRef<ModalRef, Props>(({ slot, habit }: Props, re
           )}
         </div>
       </div>
-      <div className="w-full border-t-1 border-stone-200" />
+      {slot && (
+        <>
+        <div className="w-full border-t-1 border-stone-200" />
       <div className="flex items-center gap-2">
         <div className="grow font-bold mr-2">
           Slot details
         </div>
-        <SlotsCompletionChip completion={slot.completion} count={slot.count} />
+        <SlotsCompletionChip completion={slot.completion} count={slot.count} active_to={slot.active_to} />
       </div>
       {events.length ? (
         <div className="flex flex-col gap-4">
@@ -79,6 +82,8 @@ const SlotDetailsModal = forwardRef<ModalRef, Props>(({ slot, habit }: Props, re
           No events found
         </div>
       )}
+      </>
+    )}
     </Modal>
   ) : null
 })

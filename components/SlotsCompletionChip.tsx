@@ -17,7 +17,7 @@ export default function SlotsCompletionChip({ completion, count, active_to }: Pr
     if(completion >= count) {
       return 'bg-green-200'
     }
-    return !expired ? 'bg-neutral-200' : 'bg-red-200'
+    return !expired ? 'bg-neutral-200' : 'bg-red-300'
   }, [completion, count, expired])
 
   return (

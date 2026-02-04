@@ -77,8 +77,12 @@ export default function HabitsCalendar() {
 
   const eventsCrud = useDbCrud({ table: 'events', model: eventsModel })
 
-  const [dateArgs, setDateArgs] = useState<DatesSetArg | null>(null)
-  async function fetchResources(args: DatesSetArg) {
+  const [dateArgs, setDateArgs] = useState<DatesSetArg | null>(null) // since fullcalendar has no api to refresh current date, we have to trigger it manually using the last calendar args
+
+  async function fetchResources(calendarArgs?: DatesSetArg) {
+    const args = calendarArgs || dateArgs
+    if(!args) { return undefined }
+
     try {
       await fetchActiveSlots(args.startStr, args.endStr).then(setSlots)
       await eventsCrud.index(item => item.datetime >= args.startStr && item.datetime <= args.endStr).then(setEvents)
@@ -105,10 +109,8 @@ export default function HabitsCalendar() {
   }
 
   function handleEventsFormSave() {
-    formEventsModal.current?.hide()
-    if(dateArgs) {
-      fetchResources(dateArgs)
-    }
+    formEventsModal.current?.show()
+    fetchResources()
   }
 
   return (

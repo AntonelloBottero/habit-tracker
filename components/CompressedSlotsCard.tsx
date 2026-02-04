@@ -2,10 +2,12 @@ import { DateTime } from "luxon"
 import HabitsCardHeader from "@/components/HabitsCardHeader"
 import SlotsCompletionChip from "@/components/SlotsCompletionChip"
 import { HabitWithSlots, ModalRef } from "@/app/types"
-import { useMemo, useRef } from "react"
+import { useState, useMemo, useRef } from "react"
 import { CalendarToday } from "@project-lary/react-material-symbols-700-rounded"
-import Modal from "./Modal"
+import Modal from "@/components/Modal"
+import SlotDetailsModal from "@/components/SlotDetailsModal"
 import useHabits from "@/hooks/useHabits"
+import { DbResourceSchema, SlotsSchema } from "@/db/DbClass"
 
 interface Props {
   habit: HabitWithSlots
@@ -32,6 +34,15 @@ export default function SlotsCard({ habit, className = '' }: Props) {
   function handleCardClick() {
     modalRef.current?.show()
     calculateMonthlySlots(habit, DateTime.now().toISO())
+  }
+
+  // --- Selected slot (SlotDetailModal)
+  const selectedSlotModalRef = useRef<ModalRef>(null)
+  const [selectedSlot, setSelectedSlot] = useState<DbResourceSchema<SlotsSchema> | null>(null)
+
+  function showSlotDetail(slot: DbResourceSchema<SlotsSchema>) {
+    setSelectedSlot(slot)
+    selectedSlotModalRef.current?.show()
   }
 
   return habit ? (
@@ -79,13 +90,13 @@ export default function SlotsCard({ habit, className = '' }: Props) {
               </span>
             </div>
           </div>
-          <div className="w-full border-t-1 border-stone-200" />
+          <div className="w-full border-t-1 border-stone-200 my-2" />
           <div className="flex flex-wrap items-center gap-4">
             <div className="grow w-full font-bold">
               Progress details
             </div>
             {slots.map(slot => (
-              <div key={slot.id} className="text-sm flex items-center gap-4 py-2 px-4 rounded-lg outline-1 outline-offset-1 outline-stone-200">
+              <div key={slot.id} className="text-sm flex items-center gap-4 py-2 px-4 rounded-lg outline-1 outline-offset-1 outline-stone-200 ht-interaction" onClick={() => { showSlotDetail(slot) }}>
                 <div className="grow">
                 {DateTime.fromISO(slot.active_to).toFormat('dd/MM/yyyy')}
                 </div>
@@ -95,6 +106,8 @@ export default function SlotsCard({ habit, className = '' }: Props) {
           </div>
         </div>
       </Modal>
+
+      <SlotDetailsModal ref={selectedSlotModalRef} habit={habit} slot={selectedSlot} />
     </>
   ) : null
 }
