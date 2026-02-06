@@ -119,7 +119,7 @@ export default function FormEvents({ values, onSave, onDelete }: Props) {
               items={selectableHabits}
               content={(item) => (
                 <>
-                  <HabitsCardHeader habit={item} dense={true} />
+                  <HabitsCardHeader habit={item} />
                   <div className="flex items-center flex-wrap gap-2">
                     <div className="flex items-center gap-1 text-sm mr-1">
                       <CalendarToday />
@@ -129,7 +129,7 @@ export default function FormEvents({ values, onSave, onDelete }: Props) {
                       </span>
                     </div>
                     <div className="flex items-center gap-1 ml-auto">
-                      <SlotsCompletionChip completion={item.slot.completion} count={item.slot.count} />
+                      <SlotsCompletionChip completion={item.slot.completion} count={item.slot.count} active_to={item.slot.active_to} />
                     </div>
                   </div>
                 </>

@@ -8,7 +8,7 @@ import { ModalRef } from "@/app/types"
 import useDbCrud from "@/db/useDbCrud"
 
 interface Props {
-  slot?: DbResourceSchema<SlotsSchema>
+  slot: DbResourceSchema<SlotsSchema> | null
   habit: DbResourceSchema<HabitsSchema>
   className?: string
 }

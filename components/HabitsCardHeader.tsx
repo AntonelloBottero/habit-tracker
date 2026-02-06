@@ -10,14 +10,14 @@ interface Props {
 
 export default function HabitsCardHeader({ habit, className = '', dense = false }: Props) {
   const icon = habit.type !== 'bad' ? (
-    <NorthEast className="text-xl" />
+    <NorthEast className="text-base" />
   ) : (
-    <SouthEast className="text-xl" />
+    <SouthEast className="text-base" />
   )
 
   return habit ? (
     <div className={`${className} flex items-center gap-2`}>
-      <div className={`${!dense ? 'text-base' : 'text-sm'} grow font-bold mr-2`}>
+      <div className={`${!dense ? 'text-sm' : 'text-sm'} grow font-bold mr-2`}>
         {habit.name}
       </div>
       {!dense ? (

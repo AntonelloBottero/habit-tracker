@@ -47,7 +47,7 @@ export default function SlotsCard({ habit, className = '' }: Props) {
 
   return habit ? (
     <>
-      <div className={`${className} ht-interaction pt-2 pb-3 px-4 rounded-lg bg-green-50 outline-1 outline-offset-1 outline-green-200 flex flex-col gap-2`} onClick={handleCardClick}>
+      <div className={`${className} ht-interaction pt-2 pb-2 px-3 rounded-lg bg-green-50 outline-1 outline-offset-1 outline-green-200 flex flex-col gap-1`} onClick={handleCardClick}>
         <HabitsCardHeader habit={habit} />
         <div className="flex items-center flex-wrap gap-2">
           <div className="flex items-center gap-1 text-sm mr-1">
@@ -65,7 +65,7 @@ export default function SlotsCard({ habit, className = '' }: Props) {
         </div>
         {slots.length > 1 && (
           <>
-            <div className="w-full border-t-1 border-green-200" />
+            <div className="w-full border-t-1 border-green-200 my-0.5" />
             <div className="flex items-center flex-wrap gap-2">
               <div className="flex items-center gap-1 text-sm mr-1">
                 {slots.length} slots
