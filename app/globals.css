@@ -42,11 +42,13 @@ body {
   box-shadow: rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(194, 234, 189, .5) -2px 4px 6px -1px, rgba(194, 234, 189, 0.5) -2px 2px 4px -2px;
 }
 
-.ht-interaction {
+.ht-interaction,
+.habits-calendar .fc .fc-button.fc-addEvent-button {
   position:relative;
   cursor:pointer;
 }
-.ht-interaction::before {
+.ht-interaction::before,
+.habits-calendar .fc .fc-button.fc-addEvent-button::before {
     content:"";
     position:absolute;
     top:0;
@@ -58,10 +60,13 @@ body {
     opacity:0;
     transition:opacity .2s ease-out;
 }
-.ht-interaction:hover::before {
+.ht-interaction:hover::before,
+.habits-calendar .fc .fc-button.fc-addEvent-button:hover::before {
   opacity:.08;
 }
-.ht-interaction:active::before, .ht-interaction.ht-interaction--active::before {
+.ht-interaction:active::before,
+.ht-interaction.ht-interaction--active::before,
+.habits-calendar .fc .fc-button.fc-addEvent-button:active::before {
   opacity:.16;
 }
 .ht-interaction:disabled::before {

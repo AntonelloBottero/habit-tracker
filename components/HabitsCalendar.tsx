@@ -65,7 +65,8 @@ export default function HabitsCalendar() {
           habit,
           // fullcalendar compliant params
           title: habit.name,
-          date: event.datetime,
+          start: event.datetime,
+          end: DateTime.fromISO(event.datetime).plus({ minutes: 1 }).toISO(),
           color: habit.color
         }
       })

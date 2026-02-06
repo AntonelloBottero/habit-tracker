@@ -30,3 +30,24 @@
   line-height: var(--tw-leading, var(--text-2xl--line-height));
   font-weight: var(--font-weight-bold);
 }
+
+.habits-calendar .fc .fc-daygrid-day.fc-day-today {
+  background-color:var(--color-green-50);
+}
+
+.habits-calendar .fc .fc-button {
+  border-radius:8px;
+  padding:0 16px;
+  height:38px;
+  display:inline-flex;
+  justify-content:center;
+  align-items:center;
+  gap:8px;
+  font-size:1rem;
+}
+
+.habits-calendar .fc .fc-button.fc-addEvent-button {
+  background-color:var(--color-green-200);
+  border-color:var(--color-green-200);
+  color:black;
+}
