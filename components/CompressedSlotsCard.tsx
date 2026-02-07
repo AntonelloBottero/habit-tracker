@@ -3,7 +3,7 @@ import HabitsCardHeader from "@/components/HabitsCardHeader"
 import SlotsCompletionChip from "@/components/SlotsCompletionChip"
 import { HabitWithSlots, ModalRef } from "@/app/types"
 import { useState, useMemo, useRef } from "react"
-import { CalendarToday } from "@project-lary/react-material-symbols-700-rounded"
+import { CalendarToday, CheckCircle } from "@project-lary/react-material-symbols-700-rounded"
 import Modal from "@/components/Modal"
 import SlotDetailsModal from "@/components/SlotDetailsModal"
 import useHabits from "@/hooks/useHabits"
@@ -42,7 +42,9 @@ export default function SlotsCard({ habit, className = '' }: Props) {
 
   function showSlotDetail(slot: DbResourceSchema<SlotsSchema>) {
     setSelectedSlot(slot)
-    selectedSlotModalRef.current?.show()
+    setTimeout(() => {
+      selectedSlotModalRef.current?.show()
+    })
   }
 
   return habit ? (
@@ -57,6 +59,14 @@ export default function SlotsCard({ habit, className = '' }: Props) {
               {habit.granularity_times > 1 && ` (${habit.granularity_times} times)`}
             </span>
           </div>
+          {habit.enough_amount && (
+            <div className="flex items-center gap-1 text-sm mr-1">
+              <CheckCircle />
+              <span>
+                {habit.enough_amount}
+              </span>
+            </div>
+          )}
           {slots.length === 1 && (
             <div className="flex items-center gap-1 ml-auto">
               <SlotsCompletionChip completion={completion} count={count} active_to={activeTo} />

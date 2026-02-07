@@ -4,7 +4,7 @@ import { useState, useEffect, useMemo, useRef } from 'react'
 import FullCalendar from '@fullcalendar/react'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import interactionPlugin, { DateClickArg } from '@fullcalendar/interaction'
-import { type DatesSetArg } from '@fullcalendar/core/index.js'
+import { EventClickArg, type DatesSetArg } from '@fullcalendar/core/index.js'
 import { DbResourceSchema, eventsModel, EventsSchema, habitsModel, HabitsSchema, SlotsSchema } from '@/db/DbClass'
 import Sidebar from '@/components/Sidebar'
 import useDbCrud from '@/db/useDbCrud'
@@ -109,6 +109,10 @@ export default function HabitsCalendar() {
     formEventsModal.current?.show()
   }
 
+  function handleEventClick(eventInfo: EventClickArg) {
+    console.log('handleEventClick', eventInfo)
+  }
+
   function handleEventsFormSave() {
     formEventsModal.current?.show()
     fetchResources()
@@ -137,6 +141,7 @@ export default function HabitsCalendar() {
             }}
             events={formattedEvents}
             datesSet={fetchResources}
+            eventClick={handleEventClick}
           />
         </div>
         <Sidebar initialValue={true} width="320px" align="right" title="Your Schedule">
