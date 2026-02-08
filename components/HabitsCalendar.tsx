@@ -128,27 +128,29 @@ export default function HabitsCalendar() {
     <>
       <div className="w-full min-h-full habits-calendar flex items-stretch">
         <div className="flex-grow bg-white p-6 lg:px-10">
-          <FullCalendar
-            ref={calendarRef}
-            plugins={[ dayGridPlugin, interactionPlugin ]}
-            initialView="dayGridMonth"
-            editable={true}
-            customButtons={{
-              addEvent: {
-                text: 'Add event',
-                click: function() {
-                  addEvent()
+          <div style={{maxWidth: '115vh'}} className="mx-auto">
+            <FullCalendar
+              ref={calendarRef}
+              plugins={[ dayGridPlugin, interactionPlugin ]}
+              initialView="dayGridMonth"
+              editable={true}
+              customButtons={{
+                addEvent: {
+                  text: 'Add event',
+                  click: function() {
+                    addEvent()
+                  },
                 },
-              },
-            }}
-            headerToolbar={{
-              left: 'title',
-              right: 'today prev,next addEvent',
-            }}
-            events={formattedEvents}
-            datesSet={fetchResources}
-            eventClick={handleEventClick}
-          />
+              }}
+              headerToolbar={{
+                left: 'title',
+                right: 'today prev,next addEvent',
+              }}
+              events={formattedEvents}
+              datesSet={fetchResources}
+              eventClick={handleEventClick}
+            />
+          </div>
         </div>
         <Sidebar initialValue={true} width="320px" align="right" title="Your Schedule">
           {formattedHabits.map(habit => (

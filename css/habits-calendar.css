@@ -10,13 +10,14 @@
 }
 
 .habits-calendar .fc .fc-toolbar.fc-header-toolbar {
-  margin-bottom:24px;
+  margin-top:-4px;
+  margin-bottom:20px;
 }
 
 .habits-calendar .fc-theme-standard .fc-scrollgrid {
   border-radius: var(--radius-lg);
   overflow:hidden;
-  box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--ht-shadow);
+  /* box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--ht-shadow); */
 }
 
 .habits-calendar .fc .fc-daygrid-day-number {
@@ -50,6 +51,7 @@
   background-color:var(--color-green-200);
   border-color:var(--color-green-200);
   color:black;
+  box-shadow:var(--ht-shadow);
 }
 
 .habits-calendar .fc-direction-ltr .fc-button-group > .fc-button {
