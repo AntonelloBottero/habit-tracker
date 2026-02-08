@@ -1,7 +1,6 @@
-import { useEffect, useState, useMemo } from "react"
+import { useEffect, useState, useMemo, useRef } from "react"
 import { CalendarCheck } from '@project-lary/react-material-symbols-700-rounded'
-import { DbResourceSchema, eventsModel, EventsSchema, habitsModel, HabitsSchema, slotsModel, SlotsSchema } from "@/db/DbClass"
-import useDbCrud from "@/db/useDbCrud"
+import { DbResourceSchema, eventsModel, EventsSchema, HabitsSchema, SlotsSchema } from "@/db/DbClass"
 import useForm, { Rules, validators } from "@/hooks/useForm"
 import CardsInput from "@/components/CardsInput"
 import HabitsCardHeader from "@/components/HabitsCardHeader"
@@ -12,6 +11,7 @@ import CheckboxBtn from "@/components/CheckboxBtn"
 import ConfirmModal from '@/components/ConfirmModal'
 import { DateTime } from "luxon"
 import useHabits from "@/hooks/useHabits"
+import { ConfirmModalRef } from '@/app/types'
 
 type Values = Partial<DbResourceSchema<EventsSchema>>
 
@@ -32,7 +32,7 @@ const rules: Rules = {
 }
 
 export default function FormEvents({ values, onSave, onDelete }: Props) {
-  const { fetchSelectableHabits, saveEvent } = useHabits()
+  const { fetchSelectableHabits, saveEvent, deleteEvent: _deleteEvent } = useHabits()
 
   // --- useForm ---
   const { model, changeField, init, errorMessages, handleFormSubmit } = useForm({ defaultValues: eventsModel, rules, onSubmit })
@@ -78,20 +78,41 @@ export default function FormEvents({ values, onSave, onDelete }: Props) {
     return selectedHabit?.slot?.id
   }, [selectedHabit])
   const [loading, setLoading] = useState(false)
-    async function onSubmit() {
-      if(!isNew || loading || (enoughAmount && !model.completed)) { return undefined }
-      setLoading(true)
-      try {
-        await saveEvent(model, slot_id as number)
-        if(onSave) {
-          onSave()
-        }
-      } catch(error) {
-        console.error(error)
-        // TODO: notify error to user
+  async function onSubmit() {
+    if(!isNew || loading || (enoughAmount && !model.completed)) { return undefined }
+    setLoading(true)
+    try {
+      await saveEvent(model, slot_id as number)
+      if(onSave) {
+        onSave()
       }
-      setLoading(false)
+    } catch(error) {
+      console.error(error)
+      // TODO: notify error to user
     }
+    setLoading(false)
+  }
+
+  // --- Delete ---
+  const confirmDeleteModalRef = useRef<ConfirmModalRef>(null)
+  const [loadingDelete, setLoadingDelete] = useState<boolean>(false)
+  async function deleteEvent() {
+    if(loadingDelete || isNew) { return undefined }
+    const confirmed = await confirmDeleteModalRef.current?.confirm()
+    if(!confirmed) { return undefined }
+
+    setLoadingDelete(true)
+    try{
+      await deleteItem(id as number)
+      if(onDelete) {
+        onDelete()
+      }
+    } catch(error) {
+      console.error(error)
+      // TODO: notify error to user
+    }
+    setLoadingDelete(false)
+  }
 
   return (
     <form onSubmit={handleFormSubmit} className="grid grid-cols-1 gap-x-3">
@@ -172,7 +193,7 @@ export default function FormEvents({ values, onSave, onDelete }: Props) {
           </>
         ) : (
           <>
-            <button type="button" className="ht-btn ht-interaction rounded-lg bg-red-50 text-red-500 py-2 px-5 mr-2" onClick={deleteHabit}>
+            <button type="button" className="ht-btn ht-interaction rounded-lg bg-red-50 text-red-500 py-2 px-5 mr-2" onClick={deleteEvent}>
               Delete
             </button>
             <ConfirmModal ref={confirmDeleteModalRef} />

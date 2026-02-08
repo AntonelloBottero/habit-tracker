@@ -109,8 +109,14 @@ export default function HabitsCalendar() {
     formEventsModal.current?.show()
   }
 
-  function handleEventClick(eventInfo: EventClickArg) {
-    console.log('handleEventClick', eventInfo)
+  async function handleEventClick(eventInfo: EventClickArg) {
+    try {
+      const values = await eventsCrud.show(Number(eventInfo.event.id))
+      setFormEventsValues(values)
+      formEventsModal.current?.show()
+    } catch(error) {
+
+    }
   }
 
   function handleEventsFormSave() {

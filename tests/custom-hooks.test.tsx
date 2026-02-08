@@ -86,14 +86,15 @@ interface HabitTestValues {
   fetchSelectableHabits: (datetime: string, now?: string | null) => Promise<SelectableHabit[]>
   fetchEvents: (from: string, to: string) => Promise<EventsSchema[]>
   saveEvent: (model: EventsSchema, slot_id: number, now?: string) => Promise<void>
+  deleteEvent: (id: number) => Promise<void>
 }
 
 const testDb = new DbClass('TestDatabase')
 function TestHabitConsumer({ onHookReady }: { onHookReady: (values: HabitTestValues) => void }) {
-  const { calculateMonthlySlots, fetchManageableHabits, createMonthlySlots, fetchActiveSlots, fetchSelectableHabits, fetchEvents, saveEvent } = useHabits()
+  const { calculateMonthlySlots, fetchManageableHabits, createMonthlySlots, fetchActiveSlots, fetchSelectableHabits, fetchEvents, saveEvent, deleteEvent } = useHabits()
 
   // callback that exposes methods to test
-  onHookReady({ calculateMonthlySlots, fetchManageableHabits, createMonthlySlots, fetchActiveSlots, fetchSelectableHabits, fetchEvents, saveEvent })
+  onHookReady({ calculateMonthlySlots, fetchManageableHabits, createMonthlySlots, fetchActiveSlots, fetchSelectableHabits, fetchEvents, saveEvent, deleteEvent })
 
   return null
 }
@@ -372,7 +373,7 @@ describe('useHabits', () => {
     })
   })
 
-  test('saveEvent', async () => {
+  test('saveEvent/deleteEvent', async () => {
     const testHabit1 = {
       type: 'good',
       name: 'Test habit 1',
@@ -411,13 +412,24 @@ describe('useHabits', () => {
     const slot_id = selectableHabits[0].slot.id
     await hookValues.saveEvent(event, slot_id, date.toISO())
     const events = await testDb.events.toArray()
+    const storedEvent = events[0]
     const slot = await testDb.slots.filter(item => item.id === slot_id).first()
     await waitFor(() => {
       expect(events.length).toBe(1)
-      expect(events[0].datetime).toBe(date.toISO())
+      expect(storedEvent.datetime).toBe(date.toISO())
       expect(slot?.event_ids.length).toBe(1)
-      expect(slot?.event_ids[0]).toBe(events[0].id)
+      expect(slot?.event_ids[0]).toBe(storedEvent.id)
       expect(slot?.completion).toBe(1)
+    })
+
+    // Delete Event
+    await hookValues.deleteEvent(storedEvent.id)
+    const dEvents = await testDb.events.toArray()
+    const dSlot = await testDb.slots.filter(item => item.id === slot_id).first()
+    await waitFor(() => {
+      expect(dEvents.length).toBe(0)
+      expect(dSlot?.event_ids.length).toBe(0)
+      expect(slot?.completion).toBe(0)
     })
   })
 })
