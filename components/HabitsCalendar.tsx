@@ -85,7 +85,7 @@ export default function HabitsCalendar() {
     if(!args) { return undefined }
 
     try {
-      await fetchActiveSlots(args.startStr, args.endStr).then(setSlots)
+      await fetchActiveSlots(args.startStr, args.endStr).then(slots => setSlots(slots.sort((a, b) => a.active_to > b.active_to ? 1 : -1)))
       await eventsCrud.index(item => item.datetime >= args.startStr && item.datetime <= args.endStr).then(setEvents)
     } catch(error) {
       console.error(error)

@@ -47,7 +47,7 @@ const ConfirmModal = forwardRef<ConfirmModalRef, Props>(({
           {text}
         </div>
         <div className="flex justify-end">
-          <button type="button" className="ht-btn ht-interaction rounded-lg bg-gray-100 py-2 px-5" onClick={() => { resolveConfirm(false) }}>
+          <button type="button" className="ht-btn ht-interaction rounded-lg bg-gray-100 py-2 px-5 mr-2" onClick={() => { resolveConfirm(false) }}>
             Cancel
           </button>
           <button type="button" className="ht-btn ht-interaction rounded-lg bg-gray-800 shadow-lg shadow-gray-400/50 text-white py-2 px-5" onClick={() => { resolveConfirm(true) }}>

@@ -51,3 +51,7 @@
   border-color:var(--color-green-200);
   color:black;
 }
+
+.habits-calendar .fc-direction-ltr .fc-button-group > .fc-button {
+  padding:0 8px;
+}

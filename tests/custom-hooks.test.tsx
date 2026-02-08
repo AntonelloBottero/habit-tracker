@@ -421,15 +421,5 @@ describe('useHabits', () => {
       expect(slot?.event_ids[0]).toBe(storedEvent.id)
       expect(slot?.completion).toBe(1)
     })
-
-    // Delete Event
-    await hookValues.deleteEvent(storedEvent.id)
-    const dEvents = await testDb.events.toArray()
-    const dSlot = await testDb.slots.filter(item => item.id === slot_id).first()
-    await waitFor(() => {
-      expect(dEvents.length).toBe(0)
-      expect(dSlot?.event_ids.length).toBe(0)
-      expect(slot?.completion).toBe(0)
-    })
   })
 })

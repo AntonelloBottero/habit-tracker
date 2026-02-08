@@ -96,7 +96,7 @@ export default function useHabits() {
     if(!from || !to) { return [] }
     return await slotsCrud.index(item => {
       return item.active_to >= from && item.active_to <= to // regardless of the time range (month, week, day), every slots still active will be included
-    }, { field: 'created_at', reverse: true })
+    }, { field: 'created_at', reverse: false })
   }
 
   // --- fetchSelectableHabits ---
@@ -148,6 +148,21 @@ export default function useHabits() {
     await slotsCrud.update(slot.id, updatedSlot)
   }
 
+  // --- Delete event ---
+  async function deleteEvent(id: number): Promise<void> {
+    const slots = await slotsCrud.index(item => item.event_ids.includes(id))
+    const slot = slots[0]
+    if(slot) {
+      await slotsCrud.update(slot.id, {
+        ...slot,
+        id: undefined, // dexie throws error if the model contains id
+        event_ids: slot.event_ids.splice(slot.event_ids.indexOf(id), 1),
+        completion: slot.completion--
+      })
+    }
+    await eventsCrud.deleteItem(id)
+  }
+
   // --- Setup ---
   const { getOption, createOption } = useDb()
   async function setup(force = false): Promise<boolean> {
@@ -170,6 +185,7 @@ export default function useHabits() {
     fetchEvents,
     fetchSelectableHabits,
     saveEvent,
+    deleteEvent,
     setup
   }
 }
