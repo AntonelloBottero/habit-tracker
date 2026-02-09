@@ -16,6 +16,7 @@ import "@/css/habits-calendar.css"
 import { HabitWithSlots, ModalRef } from '@/app/types'
 import { DateTime } from 'luxon'
 import Modal from './Modal'
+import EventDetailsModal from './EventDetailsModal'
 
 export default function HabitsCalendar() {
   // --- Active slots ---
@@ -102,6 +103,7 @@ export default function HabitsCalendar() {
     formEventsModal.current?.show()
   }
 
+  // --- Add event ---
   function addEvent() {
     setFormEventsValues({
       datetime: DateTime.now().toISO()
@@ -109,19 +111,21 @@ export default function HabitsCalendar() {
     formEventsModal.current?.show()
   }
 
-  async function handleEventClick(eventInfo: EventClickArg) {
-    try {
-      const values = await eventsCrud.show(Number(eventInfo.event.id))
-      setFormEventsValues(values)
-      formEventsModal.current?.show()
-    } catch(error) {
-
-    }
+  function handleEventsFormSave() {
+    formEventsModal.current?.hide()
+    fetchResources()
   }
 
-  function handleEventsFormSave() {
-    formEventsModal.current?.show()
-    fetchResources()
+  // --- Manage existing event ---
+  const eventDetailsModal = useRef<ModalRef>(null)
+  const [selectedEvent, setSelectedEvent] = useState<DbResourceSchema<EventsSchema> | undefined>(undefined)
+  async function handleEventClick(eventInfo: EventClickArg) {
+    try {
+      await eventsCrud.show(Number(eventInfo.event.id)).then(setSelectedEvent)
+      eventDetailsModal.current?.show()
+    } catch(error) {
+      console.error(error)
+    }
   }
 
   return (
@@ -164,6 +168,8 @@ export default function HabitsCalendar() {
       <Modal ref={formEventsModal} title="Add event" size="max-w-md">
         <EventsForm values={formEventsValues} onSave={handleEventsFormSave} />
       </Modal>
+
+      <EventDetailsModal ref={eventDetailsModal} event={selectedEvent} />
     </>
   )
 }

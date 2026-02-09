@@ -103,7 +103,7 @@ export default function FormEvents({ values, onSave, onDelete }: Props) {
 
     setLoadingDelete(true)
     try{
-      await deleteItem(id as number)
+      await _deleteEvent(id as number)
       if(onDelete) {
         onDelete()
       }

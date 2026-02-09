@@ -11,7 +11,6 @@ import EventsCard from "./EventsCard"
 interface Props {
   slot: DbResourceSchema<SlotsSchema> | null
   habit: DbResourceSchema<HabitsSchema>
-  className?: string
 }
 
 const SlotDetailsModal = forwardRef<ModalRef, Props>(({ slot, habit }: Props, ref) => {

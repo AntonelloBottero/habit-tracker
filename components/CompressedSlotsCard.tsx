@@ -99,6 +99,14 @@ export default function SlotsCard({ habit, className = '' }: Props) {
                 {habit.granularity_times > 1 && ` (${habit.granularity_times} times)`}
               </span>
             </div>
+            {habit.enough_amount && (
+              <div className="flex items-center gap-1 text-sm mr-1">
+                <CheckCircle />
+                <span>
+                  {habit.enough_amount}
+                </span>
+              </div>
+            )}
           </div>
           <div className="w-full border-t-1 border-stone-200 my-2" />
           <div className="flex flex-wrap items-center gap-4">
