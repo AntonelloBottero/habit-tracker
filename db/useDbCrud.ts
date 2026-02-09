@@ -89,7 +89,7 @@ export default function useDbCrud<T extends object>({ table: storeName, model }:
   }
 
   // --- Update ---
-  async function update(id: number, values: Partial<DbResourceSchema<T>>): Promise<void> {
+  async function update(id: number, values: Partial<DbResourceSchema<T>>): Promise<DbResourceSchema<T>> {
     if(!objectIsCompliant(schema as object, values)) {
       throw new TypeError('Values are not fully compliant with schema')
     }
@@ -97,11 +97,12 @@ export default function useDbCrud<T extends object>({ table: storeName, model }:
     if(!item) {
       throw new ReferenceError('Resource could not be found')
     }
-    await (table as Table).put({
+    const res = await (table as Table).put({
       ...item,
       ...values,
       updated_at: DateTime.now().toISO()
     })
+    return await show(id) as DbResourceSchema<T>
   }
 
   async function bulkUpdate(values: Partial<DbResourceSchema<T>>[]): Promise<DbResourceSchema<T>[] | false> {

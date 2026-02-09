@@ -138,7 +138,7 @@ interface DbTestCrudValues<T> {
   show: (id: number) => Promise<T | undefined>
   store: (values: Partial<T>) => Promise<DbResourceSchema<T>>
   bulkStore: (values: Partial<T>[]) => Promise<false | DbResourceSchema<T>[]>
-  update: (id: number, values: Partial<T>) => Promise<void>
+  update: (id: number, values: Partial<T>) => Promise<DbResourceSchema<T>>
   bulkUpdate: (values: Partial<DbResourceSchema<T>>[]) => Promise<false | DbResourceSchema<T>[]>
   deleteItem: (id: number) => Promise<void>
   bulkDelete: (ids: number[]) => Promise<void>

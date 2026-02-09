@@ -153,12 +153,9 @@ export default function useHabits() {
     const slots = await slotsCrud.index(item => item.event_ids.includes(id))
     const slot = slots[0]
     if(slot) {
-      await slotsCrud.update(slot.id, {
-        ...slot,
-        id: undefined, // dexie throws error if the model contains id
-        event_ids: slot.event_ids.splice(slot.event_ids.indexOf(id), 1),
-        completion: slot.completion--
-      })
+      slot.event_ids.splice(slot.event_ids.indexOf(id), 1)
+      slot.completion--
+      await slotsCrud.update(slot.id, slot)
     }
     await eventsCrud.deleteItem(id)
   }
