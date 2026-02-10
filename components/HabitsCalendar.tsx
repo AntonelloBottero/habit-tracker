@@ -122,7 +122,9 @@ export default function HabitsCalendar() {
   async function handleEventClick(eventInfo: EventClickArg) {
     try {
       await eventsCrud.show(Number(eventInfo.event.id)).then(setSelectedEvent)
-      eventDetailsModal.current?.show()
+      setTimeout(() => {
+        eventDetailsModal.current?.show()
+      })
     } catch(error) {
       console.error(error)
     }

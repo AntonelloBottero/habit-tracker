@@ -4,15 +4,22 @@ import { ModalRef } from "@/app/types"
 import { DbResourceSchema, EventsSchema, habitsModel, HabitsSchema } from '@/db/DbClass'
 import useDbCrud from "@/db/useDbCrud"
 import { DateTime } from 'luxon'
-import HabitsCard from './HabitsCard'
+import HabitsCard from '@/components/HabitsCard'
+import CheckboxBtn from "@/components/CheckboxBtn"
+import ConfirmModal from '@/components/ConfirmModal'
+import { ConfirmModalRef } from '@/app/types'
+import useHabits from "@/hooks/useHabits"
 
 interface Props {
-	event: DbResourceSchema<EventsSchema> | undefined
+	event: DbResourceSchema<EventsSchema> | undefined,
+  onDelete?: () => never | void
 }
 
-const EventDetailsModal = forwardRef<ModalRef, Props>(({ event }: Props, ref) => {
+const EventDetailsModal = forwardRef<ModalRef, Props>(({ event, onDelete }: Props, ref) => {
+  const { deleteEvent: _deleteEvent } = useHabits()
+
   // --- Habit ---
-  const habitsCrud = useDbCrud({ table: 'events', model: habitsModel })
+  const habitsCrud = useDbCrud({ table: 'habits', model: habitsModel })
   const [habit, setHabit] = useState<DbResourceSchema<HabitsSchema> | undefined>(undefined)
   async function fetchHabit() {
     if(!event) { return undefined }
@@ -35,6 +42,27 @@ const EventDetailsModal = forwardRef<ModalRef, Props>(({ event }: Props, ref) =>
     hide: () => { modalRef.current?.hide() }
   }))
 
+  // --- Delete ---
+  const confirmDeleteModalRef = useRef<ConfirmModalRef>(null)
+  const [loadingDelete, setLoadingDelete] = useState<boolean>(false)
+  async function deleteEvent() {
+    if(loadingDelete || !event) { return undefined }
+    const confirmed = await confirmDeleteModalRef.current?.confirm()
+    if(!confirmed) { return undefined }
+
+    setLoadingDelete(true)
+    try{
+      await _deleteEvent(event.id)
+      if(onDelete) {
+        onDelete()
+      }
+    } catch(error) {
+      console.error(error)
+      // TODO: notify error to user
+    }
+    setLoadingDelete(false)
+  }
+
   return event ? (
     <Modal ref={modalRef} title="Your event" size="max-w-md" role="event-details-modal">
       <div className="grid grid-cols-1 gap-3">
@@ -46,14 +74,35 @@ const EventDetailsModal = forwardRef<ModalRef, Props>(({ event }: Props, ref) =>
             {DateTime.fromISO(event.datetime).toFormat('dd/MM/yyyy HH:ii')}
           </div>
         </div>
-				{habit && (
-					<>
-						<div className="text-sm font-medium">
-							Habit
-						</div>
-						<HabitsCard habit={habit} />
-					</>
-				)}
+        {habit && (
+          <>
+            <div>
+              <div className="text-sm font-medium mb-1">
+                Habit
+              </div>
+              <HabitsCard habit={habit} />
+            </div>
+            {habit.enough_amount && (
+              <div className="flex items-center gap-2">
+                <CheckboxBtn
+                  id="completed"
+                  name="completed"
+                  defaultChecked={!!event.completed}
+                />
+                <div className="text-sm">
+                  {habit.enough_amount}
+                </div>
+              </div>
+            )}
+          </>
+        )}
+
+        <div className="flex justify-end items-center">
+          <button type="button" className="ht-btn ht-interaction rounded-lg bg-red-50 text-red-500 py-2 px-5" onClick={deleteEvent}>
+            Delete
+          </button>
+          <ConfirmModal ref={confirmDeleteModalRef} />
+        </div>
       </div>
     </Modal>
   ) : null

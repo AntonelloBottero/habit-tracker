@@ -27,6 +27,7 @@ export default function CheckboxBtn(props: Props) {
 
   // --- onClick - toggle defaultChecked ---
   function handleOnClick() {
+    if(!onChange) { return undefined }
     onChange({
       target: {
         checked: !defaultChecked
