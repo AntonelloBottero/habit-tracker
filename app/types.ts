@@ -28,7 +28,7 @@ export interface FormFieldProps {
 	defaultChecked? : boolean
 	placeholder?: string
 	className?: string
-	onChange: (e: ChangeEvent<HTMLInputElement>) => void
+	onChange?: (e: ChangeEvent<HTMLInputElement>) => void
 }
 
 export type SlotWithHabit = DbResourceSchema<SlotsSchema> & {

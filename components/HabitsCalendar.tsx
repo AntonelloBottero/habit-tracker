@@ -130,6 +130,11 @@ export default function HabitsCalendar() {
     }
   }
 
+  function handleEventDelete() {
+    eventDetailsModal.current?.hide()
+    fetchResources()
+  }
+
   return (
     <>
       <div className="w-full min-h-full habits-calendar flex items-stretch">
@@ -171,7 +176,7 @@ export default function HabitsCalendar() {
         <EventsForm values={formEventsValues} onSave={handleEventsFormSave} />
       </Modal>
 
-      <EventDetailsModal ref={eventDetailsModal} event={selectedEvent} />
+      <EventDetailsModal ref={eventDetailsModal} event={selectedEvent} onDelete={handleEventDelete} />
     </>
   )
 }
