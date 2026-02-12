@@ -4,7 +4,7 @@ import { ModalRef } from '@/app/types'
 import useDb from '@/db/useDb'
 import useDbCrud from '@/db/useDbCrud'
 import Modal from '@/components/Modal'
-import FormHabits from '@/components/FormHabits'
+import HabitsForm from '@/components/HabitsForm'
 import HabitsCard from '@/components/HabitsCard'
 import { CalendarCheck } from '@project-lary/react-material-symbols-700-rounded';
 import useHabits from '@/hooks/useHabits';
@@ -133,7 +133,7 @@ export default function HabitsSetup({ onSetup }: Props) {
 			</div>
 
 			<Modal ref={formModalRef} title={formModalTitle}>
-				<FormHabits values={formHabitsValues} onSave={handleFormSave} onDelete={handleFormSave} />
+				<HabitsForm values={formHabitsValues} onSave={handleFormSave} onDelete={handleFormSave} />
 			</Modal>
 		</>
 	)

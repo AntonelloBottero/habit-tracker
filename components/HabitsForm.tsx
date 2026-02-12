@@ -4,10 +4,12 @@ import ColorPicker from '@/components/ColorPicker'
 import CheckboxBtn from '@/components/CheckboxBtn'
 import { habitsModel, type HabitsSchema, type DbResourceSchema } from '@/db/DbClass'
 import useForm, {Rules, validators} from '@/hooks/useForm'
+import useDb from "@/db/useDb"
 import useDbCrud from '@/db/useDbCrud'
-import ConfirmModal from './ConfirmModal'
+import ConfirmModal from '@/components/ConfirmModal'
 import { ConfirmModalRef } from '@/app/types'
 import { CheckCircle } from '@project-lary/react-material-symbols-700-rounded'
+import { DateTime } from 'luxon'
 
 type Values = Partial<DbResourceSchema<HabitsSchema>>
 
@@ -29,6 +31,16 @@ const rules: Rules = {
 const granularities: string[] = ['daily', 'weekly', 'monthly', 'yearly']
 
 export default function FormHabits({ values, onSave, onDelete }: Props) {
+  const { dbIsOpen, getOption } = useDb()
+  const [setupDone, setSetupDone] = useState<boolean>(false)
+  useEffect(() => {
+    if(dbIsOpen) {
+      getOption('last_setup_at').then(value => {
+        setSetupDone((value || '') > DateTime.now().toISO())
+      })
+    }
+  }, [dbIsOpen])
+
   // --- useForm ---
   const { model, changeField, init, errorMessages, handleFormSubmit } = useForm({ defaultValues: habitsModel, rules, onSubmit })
   useEffect(() => {
@@ -38,6 +50,10 @@ export default function FormHabits({ values, onSave, onDelete }: Props) {
   const isNew = useMemo(() => {
     return !values?.id
   }, [values])
+
+  const showNextSetupAlert = useMemo(() => {
+    return !isNew && setupDone
+  }, [isNew, setupDone])
 
   // --- granularity times ---
   const granularityTimes = useMemo(() => {
@@ -209,6 +225,22 @@ export default function FormHabits({ values, onSave, onDelete }: Props) {
             />
           )}/>
         </div>
+
+        {showNextSetupAlert && (
+          <div className="col-span-2 my-4">
+            <div className="flex items-start sm:items-start p-4 text-sm text-heading rounded-base bg-amber-50 border-1 border-amber-200 text-amber-800 rounded-lg" role="alert">
+              <svg className="w-4 h-4 me-2 shrink-0 mt-0.5 sm:mt-0" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 11h2v5m-2 0h4m-2.592-8.5h.01M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>
+              <div>
+              <p className="text-base">
+                Updates to this habit won't be applied until next month
+              </p>
+              <p className="text-sm">
+                Enjoy your habits
+              </p>
+              </div>
+            </div>
+          </div>
+        )}
 
         <div className="col-span-2 flex justify-end items-center">
           {!isNew && (
