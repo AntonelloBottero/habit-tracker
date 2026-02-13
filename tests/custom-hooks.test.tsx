@@ -87,14 +87,15 @@ interface HabitTestValues {
   fetchEvents: (from: string, to: string) => Promise<EventsSchema[]>
   saveEvent: (model: EventsSchema, slot_id: number, now?: string) => Promise<void>
   deleteEvent: (id: number) => Promise<void>
+  deleteHabit: (id: number) => Promise<void>
 }
 
 const testDb = new DbClass('TestDatabase')
 function TestHabitConsumer({ onHookReady }: { onHookReady: (values: HabitTestValues) => void }) {
-  const { calculateMonthlySlots, fetchManageableHabits, createMonthlySlots, fetchActiveSlots, fetchSelectableHabits, fetchEvents, saveEvent, deleteEvent } = useHabits()
+  const { calculateMonthlySlots, fetchManageableHabits, createMonthlySlots, fetchActiveSlots, fetchSelectableHabits, fetchEvents, saveEvent, deleteEvent, deleteHabit } = useHabits()
 
   // callback that exposes methods to test
-  onHookReady({ calculateMonthlySlots, fetchManageableHabits, createMonthlySlots, fetchActiveSlots, fetchSelectableHabits, fetchEvents, saveEvent, deleteEvent })
+  onHookReady({ calculateMonthlySlots, fetchManageableHabits, createMonthlySlots, fetchActiveSlots, fetchSelectableHabits, fetchEvents, saveEvent, deleteEvent, deleteHabit })
 
   return null
 }
@@ -432,6 +433,72 @@ describe('useHabits', () => {
     await waitFor(() => {
       expect(dSlot?.event_ids.length).toBe(0)
       expect(dSlot?.completion).toBe(0)
+    })
+  })
+
+  test('saveEvent/deleteEvent', async () => {
+    const testHabit1 = {
+      type: 'good',
+      name: 'Test habit 1',
+      color: '#E6AF2E',
+      granularity: 'daily',
+      include_weekends: true,
+      granularity_times: 1,
+      enough_amount: '',
+      manage_from: '',
+      created_at: '',
+      updated_at: '',
+      deleted_at: ''
+    } as DbResourceSchema<HabitsSchema>
+    const testHabit2 = {
+      type: 'good',
+      name: 'Test habit 2',
+      color: '#E6AF2E',
+      granularity: 'monthly',
+      include_weekends: true,
+      granularity_times: 1,
+      enough_amount: '',
+      manage_from: '',
+      created_at: '',
+      updated_at: '',
+      deleted_at: ''
+    } as DbResourceSchema<HabitsSchema>
+    const date = DateTime.now().set({ day: 15 })
+
+    let hookValues!: HabitTestValues
+    render(
+      <DbProvider externalDb={testDb}>
+        <TestHabitConsumer onHookReady={(values) => { hookValues = values }} />
+      </DbProvider>
+    )
+    await waitFor(() => {
+      expect(hookValues).toBeDefined()
+      expect(testDb.isOpen()).toBe(true)
+    })
+
+    await testDb.habits.bulkAdd([testHabit1, testHabit2])
+    await hookValues.createMonthlySlots(date.toISO())
+    const selectableHabits = await hookValues.fetchSelectableHabits(date.toISO(), date.toISO())
+    const event = {
+      habit_id: selectableHabits[0].id,
+      datetime: date.toISO(),
+      completed: 1
+    } as EventsSchema
+    const slot_id = selectableHabits[0].slot.id
+    await hookValues.saveEvent(event, slot_id, date.toISO())
+    const events = await testDb.events.toArray()
+    await waitFor(() => {
+      expect(events.length).toBe(1)
+    })
+
+    await hookValues.deleteHabit(selectableHabits[0].id)
+    const storedHabits = await testDb.habits.toArray()
+    const storedSlots = await testDb.slots.toArray()
+    const storedEvents = await testDb.events.toArray()
+    await waitFor(() => {
+      expect(storedHabits.length).toBe(1)
+      expect(storedSlots.length).toBe(1) // monthly slot's habit
+      expect(storedEvents.length).toBe(0)
     })
   })
 })
