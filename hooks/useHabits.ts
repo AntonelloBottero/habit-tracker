@@ -160,6 +160,19 @@ export default function useHabits() {
     await eventsCrud.deleteItem(id)
   }
 
+  // --- Delete habit ---
+  async function deleteHabit(id: number): Promise<void> {
+    await habitsCrud.deleteItem(id)
+    const slots = await slotsCrud.index(item => item.habit_id === id)
+    if(slots.length) {
+      await slotsCrud.bulkDelete(slots.map(slot => slot.id))
+    }
+    const events = await eventsCrud.index(item => item.habit_id === id)
+    if(events.length) {
+      await eventsCrud.bulkDelete(events.map(event => event.habit_id) as number[])
+    }
+  }
+
   // --- Setup ---
   const { getOption, createOption } = useDb()
   async function setup(force = false): Promise<boolean> {
@@ -183,6 +196,7 @@ export default function useHabits() {
     fetchSelectableHabits,
     saveEvent,
     deleteEvent,
+    deleteHabit,
     setup
   }
 }

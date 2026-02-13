@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useMemo } from 'react';
+import { useState, useRef, useEffect, useMemo } from 'react'
 import { habitsModel, type HabitsSchema, type DbResourceSchema } from '@/db/DbClass'
 import { ModalRef } from '@/app/types'
 import useDb from '@/db/useDb'
@@ -6,9 +6,10 @@ import useDbCrud from '@/db/useDbCrud'
 import Modal from '@/components/Modal'
 import HabitsForm from '@/components/HabitsForm'
 import HabitsCard from '@/components/HabitsCard'
-import { CalendarCheck } from '@project-lary/react-material-symbols-700-rounded';
-import useHabits from '@/hooks/useHabits';
-import { DateTime } from 'luxon';
+import { CalendarCheck } from '@project-lary/react-material-symbols-700-rounded'
+import useHabits from '@/hooks/useHabits'
+import { DateTime } from 'luxon'
+import Link from "next/link"
 
 interface Props {
 	onSetup?: () => never | void
@@ -64,6 +65,17 @@ export default function HabitsSetup({ onSetup }: Props) {
 		return `${operation} ${formHabitsValues?.type ?? ''} habit`
 	}, [formHabitsValues])
 
+	// --- Check setup is already done ---
+	const { dbIsOpen, getOption } = useDb()
+	const [setupDone, setSetupDone] = useState<boolean>(false)
+	useEffect(() => {
+	if(dbIsOpen) {
+		getOption('last_setup_at').then(value => {
+		setSetupDone((value || '') > DateTime.now().toISO())
+		})
+	}
+	}, [dbIsOpen])
+
 	// --- Complete ---
 	const { setup } = useHabits()
 	const [loadingSetup, setLoadingSetup] = useState<boolean>(false)
@@ -83,7 +95,7 @@ export default function HabitsSetup({ onSetup }: Props) {
 
 	return (
 		<>
-			<div className="flex gap-3 w-full p-6 bg-white outline-1 outline-offset-1 outline-green-100 rounded-lg shadow-ht dark:bg-gray-800 dark:border-gray-700">
+			<div className="flex gap-3 w-full p-6 bg-white outline-1 outline-offset-1 outline-neutral-200 rounded-lg shadow-ht dark:bg-gray-800 dark:border-gray-700">
 				<div className="grow basis-1/2">
 					<p>
 						Flex you good intentions.<br/>
@@ -120,17 +132,26 @@ export default function HabitsSetup({ onSetup }: Props) {
 					))}
 				</div>
 			</div>
-			<div className="mt-4 flex justify-end items-center">
-				{!habits.length && (
-					<div className="text-sm text-gray-500 mr-4">
-						Add at least an habit to continue
-					</div>
-				)}
-				<button type="button" className="ht-btn ht-btn--size-large ht-interaction bg-primary shadow-ht" disabled={!habits.length} onClick={() => { complete() }}>
-					<CalendarCheck />
-					Start monitoring
-				</button>
-			</div>
+			{!setupDone ? (
+				<div className="mt-4 flex justify-end items-center">
+					{!habits.length && (
+						<div className="text-sm text-gray-500 mr-4">
+							Add at least an habit to continue
+						</div>
+					)}
+					<button type="button" className="ht-btn ht-btn--size-large ht-interaction bg-primary shadow-ht" disabled={!habits.length} onClick={() => { complete() }}>
+						<CalendarCheck />
+						Start monitoring
+					</button>
+				</div>
+			): (
+				<div className="mt-4 flex justify-end items-center">
+					<Link href="/" className="ht-btn ht-btn--size-large ht-interaction bg-primary shadow-ht">
+						<CalendarCheck />
+						Confirm
+					</Link>
+				</div>
+			)}
 
 			<Modal ref={formModalRef} title={formModalTitle}>
 				<HabitsForm values={formHabitsValues} onSave={handleFormSave} onDelete={handleFormSave} />

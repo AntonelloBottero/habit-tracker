@@ -8,7 +8,7 @@ import useDb from "@/db/useDb"
 import useDbCrud from '@/db/useDbCrud'
 import ConfirmModal from '@/components/ConfirmModal'
 import { ConfirmModalRef } from '@/app/types'
-import { CheckCircle } from '@project-lary/react-material-symbols-700-rounded'
+import { CheckCircle, Info } from '@project-lary/react-material-symbols-700-rounded'
 import { DateTime } from 'luxon'
 
 type Values = Partial<DbResourceSchema<HabitsSchema>>
@@ -51,8 +51,8 @@ export default function FormHabits({ values, onSave, onDelete }: Props) {
     return !values?.id
   }, [values])
 
-  const showNextSetupAlert = useMemo(() => {
-    return !isNew && setupDone
+  const canEdit = useMemo(() => {
+    return isNew || !setupDone
   }, [isNew, setupDone])
 
   // --- granularity times ---
@@ -90,7 +90,7 @@ export default function FormHabits({ values, onSave, onDelete }: Props) {
   }, [values])
   const [loading, setLoading] = useState(false)
   async function onSubmit() {
-    if(loading) { return undefined }
+    if(loading || !canEdit) { return undefined }
     setLoading(true)
     const fullModel = {
       ...model,
@@ -226,17 +226,19 @@ export default function FormHabits({ values, onSave, onDelete }: Props) {
           )}/>
         </div>
 
-        {showNextSetupAlert && (
+        {!canEdit && (
           <div className="col-span-2 my-4">
             <div className="flex items-start sm:items-start p-4 text-sm text-heading rounded-base bg-amber-50 border-1 border-amber-200 text-amber-800 rounded-lg" role="alert">
-              <svg className="w-4 h-4 me-2 shrink-0 mt-0.5 sm:mt-0" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 11h2v5m-2 0h4m-2.592-8.5h.01M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>
-              <div>
-              <p className="text-base">
-                Updates to this habit won't be applied until next month
-              </p>
-              <p className="text-sm">
-                Enjoy your habits
-              </p>
+              <div className="mr-3">
+                <Info className="text-lg" />
+              </div>
+              <div className="-mt-0.5">
+                <p className="text-sm font-bold">
+                  You can't update this habit
+                </p>
+                <p className="text-sm">
+                  Once you start monitoring, settings of existing habits can't be changed. if you need to change an habit, you have to delete it first.
+                </p>
               </div>
             </div>
           </div>
@@ -248,13 +250,15 @@ export default function FormHabits({ values, onSave, onDelete }: Props) {
               <button type="button" className="ht-btn ht-interaction rounded-lg bg-red-50 text-red-500 py-2 px-5 mr-2" onClick={deleteHabit}>
                 Delete
               </button>
-              <ConfirmModal ref={confirmDeleteModalRef} />
+              <ConfirmModal text={setupDone ? 'Deleting this habit will delete every attached event and slot.' : undefined} ref={confirmDeleteModalRef} />
             </>
           )}
-          <button type="submit" className="ht-btn ht-interaction rounded-lg bg-primary shadow-ht py-2 px-5 outline-glass">
-            <CheckCircle className="size-5" />
-            Confirm
-          </button>
+          {canEdit && (
+            <button type="submit" className="ht-btn ht-interaction rounded-lg bg-primary shadow-ht py-2 px-5 outline-glass">
+              <CheckCircle className="size-5" />
+              Confirm
+            </button>
+          )}
         </div>
       </div>
     </form>
