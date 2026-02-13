@@ -6,6 +6,7 @@ import { habitsModel, type HabitsSchema, type DbResourceSchema } from '@/db/DbCl
 import useForm, {Rules, validators} from '@/hooks/useForm'
 import useDb from "@/db/useDb"
 import useDbCrud from '@/db/useDbCrud'
+import useHabits from '@/hooks/useHabits'
 import ConfirmModal from '@/components/ConfirmModal'
 import { ConfirmModalRef } from '@/app/types'
 import { CheckCircle, Info } from '@project-lary/react-material-symbols-700-rounded'
@@ -114,6 +115,7 @@ export default function FormHabits({ values, onSave, onDelete }: Props) {
   }
 
   // --- Delete ---
+  const { deleteHabit: _deleteHabit } = useHabits()
   const confirmDeleteModalRef = useRef<ConfirmModalRef>(null)
   const [loadingDelete, setLoadingDelete] = useState<boolean>(false)
   async function deleteHabit() {
@@ -123,7 +125,7 @@ export default function FormHabits({ values, onSave, onDelete }: Props) {
 
     setLoadingDelete(true)
     try{
-      await deleteItem(id as number)
+      await _deleteHabit(id as number)
       if(onDelete) {
         onDelete()
       }
