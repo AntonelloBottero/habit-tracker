@@ -17,6 +17,7 @@ import { HabitWithSlots, ModalRef } from '@/app/types'
 import { DateTime } from 'luxon'
 import Modal from './Modal'
 import EventDetailsModal from './EventDetailsModal'
+import CalendarToolbar from './CalendarToolbar'
 
 export default function HabitsCalendar() {
   // --- Active slots ---
@@ -140,6 +141,7 @@ export default function HabitsCalendar() {
       <div className="w-full min-h-full habits-calendar flex items-stretch">
         <div className="flex-grow bg-white p-6 lg:px-10">
           <div style={{maxWidth: '115vh'}} className="mx-auto">
+            <CalendarToolbar ref={calendarRef} />
             <FullCalendar
               ref={calendarRef}
               plugins={[ dayGridPlugin, interactionPlugin ]}
@@ -153,10 +155,7 @@ export default function HabitsCalendar() {
                   },
                 },
               }}
-              headerToolbar={{
-                left: 'title',
-                right: 'today prev,next addEvent',
-              }}
+              headerToolbar={false}
               events={formattedEvents}
               datesSet={fetchResources}
               eventClick={handleEventClick}

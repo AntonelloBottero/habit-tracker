@@ -1,14 +1,15 @@
 
 import FullCalendar from '@fullcalendar/react'
+import { ChevronLeft, ChevronRight } from '@project-lary/react-material-symbols-700-rounded'
 import { DateTime } from 'luxon'
 import { useState, useEffect, useMemo, type ReactElement, RefObject } from 'react'
 
 interface Props {
-	ref: RefObject<FullCalendar>
+	ref: RefObject<FullCalendar | null>
 	actions?: ReactElement
 }
 
-export default function CalendarHeader({ ref, actions }: Props) {
+export default function CalendarToolbar({ ref, actions }: Props) {
   const today = DateTime.now().toISODate()
 
   const [view, setView] = useState<string | null>(null)
@@ -50,4 +51,18 @@ export default function CalendarHeader({ ref, actions }: Props) {
       return `From ${from.toFormat(fromFormat)} To ${to.toFormat('dd LLLL yyyy')}`
     }
   }, [date, from, to, view])
+
+  return (
+    <div className="flex items-center">
+      <button type="button" className="ht-btn ht-interaction py-2 px-2 mr-2 rounded-lg bg-neutral-800 text-white">
+        <ChevronLeft className="text-2xl" />
+      </button>
+      <button type="button" className="ht-btn ht-interaction py-2 px-2 mr-2 rounded-lg bg-neutral-800 text-white">
+        <ChevronRight className="text-2xl" />
+      </button>
+      <div className="text-2xl font-monda font-bold">
+        { rangeStr }
+      </div>
+    </div>
+  )
 }
