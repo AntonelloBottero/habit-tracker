@@ -101,7 +101,7 @@ export default function HabitsSetup({ onSetup }: Props) {
 						Flex you good intentions.<br/>
 						<button
 							type="button"
-							className="px-3 py-1 mt-1 text-sm font-medium text-center bg-primary shadow-ht rounded-lg ht-interaction w-full ht-btn"
+							className="px-3 py-1 mt-1 text-sm font-medium text-center bg-green-200 shadow-ht rounded-lg ht-interaction w-full ht-btn"
 							onClick={() => addHabit('good')}
 						>
 							<span>
@@ -119,7 +119,7 @@ export default function HabitsSetup({ onSetup }: Props) {
 						We are not made of just sugar.<br />
 						<button
 							type="button"
-							className="px-3 py-1 mt-1 text-sm font-medium text-center bg-primary shadow-ht rounded-lg ht-interaction w-full ht-btn"
+							className="px-3 py-1 mt-1 text-sm font-medium text-center bg-green-200 shadow-ht rounded-lg ht-interaction w-full ht-btn"
 							onClick={() => addHabit('bad')}
 						>
 							<span>
@@ -139,14 +139,14 @@ export default function HabitsSetup({ onSetup }: Props) {
 							Add at least an habit to continue
 						</div>
 					)}
-					<button type="button" className="ht-btn ht-btn--size-large ht-interaction bg-primary shadow-ht" disabled={!habits.length} onClick={() => { complete() }}>
+					<button type="button" className="ht-btn ht-btn--size-large ht-interaction bg-green-200 shadow-ht" disabled={!habits.length} onClick={() => { complete() }}>
 						<CalendarCheck />
 						Start monitoring
 					</button>
 				</div>
 			): (
 				<div className="mt-4 flex justify-end items-center">
-					<Link href="/" className="ht-btn ht-btn--size-large ht-interaction bg-primary shadow-ht">
+					<Link href="/" className="ht-btn ht-btn--size-large ht-interaction bg-green-200 shadow-ht">
 						<CalendarCheck />
 						Confirm
 					</Link>

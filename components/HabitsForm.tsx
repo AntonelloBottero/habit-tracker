@@ -256,7 +256,7 @@ export default function FormHabits({ values, onSave, onDelete }: Props) {
             </>
           )}
           {canEdit && (
-            <button type="submit" className="ht-btn ht-interaction rounded-lg bg-primary shadow-ht py-2 px-5 outline-glass">
+            <button type="submit" className="ht-btn ht-interaction rounded-lg bg-green-200 shadow-ht py-2 px-5 outline-glass">
               <CheckCircle className="size-5" />
               Confirm
             </button>

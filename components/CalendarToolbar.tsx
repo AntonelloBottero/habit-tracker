@@ -1,4 +1,5 @@
 
+import { CalendarApi } from '@fullcalendar/core/index.js'
 import FullCalendar from '@fullcalendar/react'
 import { ChevronLeft, ChevronRight } from '@project-lary/react-material-symbols-700-rounded'
 import { DateTime } from 'luxon'
@@ -6,28 +7,40 @@ import { useState, useEffect, useMemo, type ReactElement, RefObject } from 'reac
 
 interface Props {
 	ref: RefObject<FullCalendar | null>
-	actions?: ReactElement
+  className?: string
+	children?: ReactElement
 }
 
-export default function CalendarToolbar({ ref, actions }: Props) {
+export default function CalendarToolbar({ ref, className = '', children }: Props) {
   const today = DateTime.now().toISODate()
 
-  const [view, setView] = useState<string | null>(null)
-  const [date, setDate] = useState<DateTime | null>(null)
-  const [from, setFrom] = useState<DateTime | null>(null)
-  const [to, setTo] = useState<DateTime | null>(null)
+  const [view, setView] = useState<string | undefined>(undefined)
+  const [date, setDate] = useState<DateTime | undefined>(undefined)
+  const [from, setFrom] = useState<DateTime | undefined>(undefined)
+  const [to, setTo] = useState<DateTime | undefined>(undefined)
+
+  function calendarApi(): CalendarApi | undefined {
+    return ref.current?.getApi()
+  }
 
   useEffect(() => {
     setParams()
   }, [ref])
 
   function setParams() {
-    const calendarApi = ref?.current?.getApi()
-    if(!calendarApi) { return undefined }
-    setView(calendarApi.view.type)
-    setDate(DateTime.fromJSDate(calendarApi.getDate()))
-    setFrom(DateTime.fromJSDate(calendarApi.view.activeStart))
-    setTo(DateTime.fromJSDate(calendarApi.view.activeEnd))
+    const _calendarApi = calendarApi()
+    if(!_calendarApi) { return undefined }
+
+    setView(_calendarApi?.view.type)
+    setDate(DateTime.fromJSDate(_calendarApi.getDate()))
+    setFrom(DateTime.fromJSDate(_calendarApi.view.activeStart))
+    setTo(DateTime.fromJSDate(_calendarApi.view.activeEnd))
+  }
+
+  function calendarAction(action?: () => void) {
+    if(!action) { return undefined }
+    action()
+    setParams()
   }
 
   const todayIsInRange = useMemo(() => {
@@ -52,17 +65,21 @@ export default function CalendarToolbar({ ref, actions }: Props) {
     }
   }, [date, from, to, view])
 
-  return (
-    <div className="flex items-center">
-      <button type="button" className="ht-btn ht-interaction py-2 px-2 mr-2 rounded-lg bg-neutral-800 text-white">
+  return calendarApi() ? (
+    <div className={`${className} flex items-center`}>
+      <button type="button" className="ht-btn ht-interaction py-1.5 px-1.5 -my-1 mr-2 rounded-lg bg-neutral-800 text-white" onClick={() => calendarAction(() => calendarApi()?.prev())}>
         <ChevronLeft className="text-2xl" />
       </button>
-      <button type="button" className="ht-btn ht-interaction py-2 px-2 mr-2 rounded-lg bg-neutral-800 text-white">
+      <button type="button" className="ht-btn ht-interaction py-1.5 px-1.5 -my-1 mr-2 rounded-lg bg-neutral-800 text-white" onClick={() => calendarAction(() => calendarApi()?.next())}>
         <ChevronRight className="text-2xl" />
       </button>
-      <div className="text-2xl font-monda font-bold">
+      <div className="text-xl font-monda font-bold ml-2 mr-auto">
         { rangeStr }
       </div>
+
+      <div className="-my-2">
+        {children}
+      </div>
     </div>
-  )
+  ) : null
 }

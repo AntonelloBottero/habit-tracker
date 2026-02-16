@@ -186,7 +186,7 @@ export default function FormEvents({ values, onSave, onDelete }: Props) {
               You have to do more...
             </div>
           )}
-          <button type="submit" className="ht-btn ht-btn--size-large ht-interaction bg-primary shadow-ht" disabled={!!enoughAmount && !model.completed}>
+          <button type="submit" className="ht-btn ht-btn--size-large ht-interaction bg-green-200 shadow-ht" disabled={!!enoughAmount && !model.completed}>
             <CalendarCheck />
             Add event
           </button>

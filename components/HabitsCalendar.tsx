@@ -12,6 +12,7 @@ import useHabits from '@/hooks/useHabits'
 import CompressedSlotsCard from '@/components/CompressedSlotsCard'
 import SlotsCard from '@/components/SlotsCard'
 import EventsForm from '@/components/EventsForm'
+import { CalendarToday } from "@project-lary/react-material-symbols-700-rounded"
 import "@/css/habits-calendar.css"
 import { HabitWithSlots, ModalRef } from '@/app/types'
 import { DateTime } from 'luxon'
@@ -141,7 +142,12 @@ export default function HabitsCalendar() {
       <div className="w-full min-h-full habits-calendar flex items-stretch">
         <div className="flex-grow bg-white p-6 lg:px-10">
           <div style={{maxWidth: '115vh'}} className="mx-auto">
-            <CalendarToolbar ref={calendarRef} />
+            <CalendarToolbar ref={calendarRef} className="mb-6">
+              <button type="button" className="ht-btn ht-btn--size-large shadow-ht ht-interaction bg-green-200" onClick={() => addEvent()}>
+                <CalendarToday />
+                Add event
+              </button>
+            </CalendarToolbar>
             <FullCalendar
               ref={calendarRef}
               plugins={[ dayGridPlugin, interactionPlugin ]}
