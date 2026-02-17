@@ -147,7 +147,7 @@ export default function HabitsCalendar() {
                 <CalendarToday />
                 Add event
               </button>
-              <button type="button" className="ht-btn ht-interaction py-1.5 px-1.5 rounded-lg text-black bg-green-100" onClick={() => }>
+              <button type="button" className="ht-btn ht-interaction py-1.5 px-1.5 rounded-lg text-black bg-green-100">
                 <RightPanelCloseFilled className="text-2xl" />
               </button>
             </CalendarToolbar>
