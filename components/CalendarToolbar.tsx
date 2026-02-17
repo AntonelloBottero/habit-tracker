@@ -66,18 +66,18 @@ export default function CalendarToolbar({ ref, className = '', children }: Props
   }, [date, from, to, view])
 
   return calendarApi() ? (
-    <div className={`${className} flex items-center`}>
-      <button type="button" className="ht-btn ht-interaction py-1.5 px-1.5 -my-1 mr-2 rounded-lg bg-neutral-800 text-white" onClick={() => calendarAction(() => calendarApi()?.prev())}>
+    <div className={`${className} flex items-center gap-2`}>
+      <button type="button" className="ht-btn ht-interaction py-1.5 px-1.5 -my-1 rounded-lg bg-neutral-800 text-white" onClick={() => calendarAction(() => calendarApi()?.prev())}>
         <ChevronLeft className="text-2xl" />
       </button>
-      <button type="button" className="ht-btn ht-interaction py-1.5 px-1.5 -my-1 mr-2 rounded-lg bg-neutral-800 text-white" onClick={() => calendarAction(() => calendarApi()?.next())}>
+      <button type="button" className="ht-btn ht-interaction py-1.5 px-1.5 -my-1 rounded-lg bg-neutral-800 text-white" onClick={() => calendarAction(() => calendarApi()?.next())}>
         <ChevronRight className="text-2xl" />
       </button>
       <div className="text-xl font-monda font-bold ml-2 mr-auto">
         { rangeStr }
       </div>
 
-      <div className="-my-2">
+      <div className="flex items-center gap-2">
         {children}
       </div>
     </div>
