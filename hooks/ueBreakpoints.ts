@@ -15,7 +15,7 @@ const values = {
 export default function useBreakpointsFacade() { // Facade for react-use
   const { isGreaterOrEqual } = useBreakpoints(values)
 
-  const [breakpoints, setBreakpoints] = useState<Breakpoints>({})
+  const [breakpoints, setBreakpoints] = useState<Breakpoints | undefined>(undefined)
   function updateBreakpoints(): void {
     setBreakpoints(Object.keys(values).reduce((r, k) => ({
       ...r,

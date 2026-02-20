@@ -1,9 +1,10 @@
-import { useState, useEffect, forwardRef, useImperativeHandle, type ReactNode, useMemo } from 'react'
-import useBreakpoints from '@/hooks/ueBreakpoints'
-import { SidebarRef } from '@/app/types'
+import { useState, useEffect, useMemo, type ReactNode, type ChangeEvent } from 'react'
+import useBreakpoints, { type BreakpointKey } from '@/hooks/ueBreakpoints'
 
 interface Props {
-    breakpoint?: 'sm' | 'md' | 'lg' | 'xl' | 'xxl'
+    value: boolean
+    onChange?: (e: ChangeEvent<HTMLInputElement>) => void
+    breakpoint?: BreakpointKey
     width?: string // 300px, 70%, ecc
     align?: 'left' | 'right'
     bordered?: boolean
@@ -11,19 +12,17 @@ interface Props {
     children?: ReactNode
 }
 
-const Sidebar = forwardRef<SidebarRef, Props>(({ breakpoint = 'md', width = '256px', align = 'left', bordered = true, title, children }, ref) => {
-  const { breakpoints, currents } = useBreakpoints()
+export default function Sidebar({ value, onChange, breakpoint = 'md', width = '256px', align = 'left', bordered = true, title, children }: Props) {
+  const { breakpoints } = useBreakpoints()
 
-  const [value, setValue] = useState<boolean>(false)
-  function toggle(show: boolean) {
-    setValue(show)
-  }
-  useImperativeHandle(ref, () => ({
-    toggle,
-  }))
   useEffect(() => {
-    console.log('breakpoints', breakpoints)
-    setValue(breakpoints[breakpoint])
+    if(onChange) {
+      onChange({
+        target: {
+          value: breakpoints ? breakpoints[breakpoint] : false
+        }
+      } as unknown as ChangeEvent<HTMLInputElement>)
+    }
   }, [breakpoint, breakpoints])
 
   const className = useMemo(() => {
@@ -46,6 +45,4 @@ const Sidebar = forwardRef<SidebarRef, Props>(({ breakpoint = 'md', width = '256
       </div>
     </aside>
   ) : null
-})
-
-export default Sidebar
+}

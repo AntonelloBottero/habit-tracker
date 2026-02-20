@@ -1,5 +1,3 @@
-'use client'
-
 import { useState, useEffect, useMemo, useRef } from 'react'
 import FullCalendar from '@fullcalendar/react'
 import dayGridPlugin from '@fullcalendar/daygrid'
@@ -137,6 +135,9 @@ export default function HabitsCalendar() {
     fetchResources()
   }
 
+  //--- Sidebar ---
+  const [sidebar, setSidebar] = useState<boolean>(true)
+
   return (
     <>
       <div className="w-full min-h-full habits-calendar flex items-stretch">
@@ -148,8 +149,8 @@ export default function HabitsCalendar() {
                   <CalendarToday />
                   Add event
                 </button>
-                <button type="button" className="ht-btn ht-interaction py-2 px-2 rounded-lg text-white bg-neutral-800">
-                  <RightPanelClose className="text-xl" />
+                <button type="button" className="ht-btn ht-interaction py-2 px-2 rounded-lg text-white bg-neutral-800" onClick={() => setSidebar(!sidebar)}>
+                  {sidebar ? <RightPanelClose className="text-xl" /> : <RightPanelOpen className="text-xl" />}
                 </button>
               </>
             </CalendarToolbar>
@@ -174,7 +175,7 @@ export default function HabitsCalendar() {
             />
           </div>
         </div>
-        <Sidebar initialValue={true} width="320px" align="right" title="Your Schedule">
+        <Sidebar value={sidebar} width="320px" align="right" title="Your Schedule" onChange={e => setSidebar(e.target.value)}>
           {formattedHabits.map(habit => (
             <div key={habit.id}>
               {habit.slots.length === 1 ? <SlotsCard habit={habit} slot={habit.slots[0]} /> : <CompressedSlotsCard habit={habit} key={habit.id} />}
