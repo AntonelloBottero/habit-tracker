@@ -18,6 +18,7 @@
     "@fullcalendar/react": "^6.1.20",
     "@heroicons/react": "^2.2.0",
     "@project-lary/react-material-symbols-700-rounded": "^0.35.0",
+    "@shined/react-use": "^1.13.1",
     "dexie": "^4.2.0",
     "dexie-react-hooks": "^4.2.0",
     "luxon": "^3.7.2",
