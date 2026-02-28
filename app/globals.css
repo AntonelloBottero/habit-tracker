@@ -10,6 +10,8 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-primary: var(--primary);
+  --animate-sidebar-view: padding ease-out .5s;
+  --animate-sidebar-aside: left right ease-out .5s;
 }
 
 @media (prefers-color-scheme: dark) {

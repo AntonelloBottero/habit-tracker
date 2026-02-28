@@ -4,7 +4,7 @@ import dayGridPlugin from '@fullcalendar/daygrid'
 import interactionPlugin, { DateClickArg } from '@fullcalendar/interaction'
 import { EventClickArg, type DatesSetArg } from '@fullcalendar/core/index.js'
 import { DbResourceSchema, eventsModel, EventsSchema, habitsModel, HabitsSchema, SlotsSchema } from '@/db/DbClass'
-import Sidebar from '@/components/Sidebar'
+import SidebarView from '@/components/SidebarView'
 import useDbCrud from '@/db/useDbCrud'
 import useHabits from '@/hooks/useHabits'
 import CompressedSlotsCard from '@/components/CompressedSlotsCard'
@@ -140,48 +140,57 @@ export default function HabitsCalendar() {
 
   return (
     <>
-      <div className="w-full min-h-full habits-calendar flex items-stretch">
-        <div className="flex-grow bg-white p-6 lg:px-10">
-          <div style={{maxWidth: '115vh'}} className="mx-auto">
-            <CalendarToolbar ref={calendarRef} className="mb-6">
-              <>
-                <button type="button" className="ht-btn py-1.5 px-4 rounded-lg shadow-ht ht-interaction bg-green-200" onClick={() => addEvent()}>
-                  <CalendarToday />
-                  Add event
-                </button>
-                <button type="button" className="ht-btn ht-interaction py-2 px-2 rounded-lg text-white bg-neutral-800" onClick={() => setSidebar(!sidebar)}>
-                  {sidebar ? <RightPanelClose className="text-xl" /> : <RightPanelOpen className="text-xl" />}
-                </button>
-              </>
-            </CalendarToolbar>
+      <div className="w-full h-[100vh] ">
+        <SidebarView
+          value={sidebar}
+          width="320px" align="right"
+          title="Your Schedule"
+          content={(
+            <>
+              {formattedHabits.map(habit => (
+                <div key={habit.id}>
+                  {habit.slots.length === 1 ? <SlotsCard habit={habit} slot={habit.slots[0]} /> : <CompressedSlotsCard habit={habit} key={habit.id} />}
+                </div>
+              ))}
+            </>
+          )}
+          onChange={e => setSidebar(e.target.value)}
+        >
+          <div className="flex-grow p-6 lg:px-10">
+            <div style={{maxWidth: '115vh'}} className="mx-auto habits-calendar">
+              <CalendarToolbar ref={calendarRef} className="mb-6">
+                <>
+                  <button type="button" className="ht-btn py-1.5 px-4 rounded-lg shadow-ht ht-interaction bg-green-200" onClick={() => addEvent()}>
+                    <CalendarToday />
+                    Add event
+                  </button>
+                  <button type="button" className="ht-btn ht-interaction py-2 px-2 rounded-lg text-white bg-neutral-800" onClick={() => setSidebar(!sidebar)}>
+                    {sidebar ? <RightPanelClose className="text-xl" /> : <RightPanelOpen className="text-xl" />}
+                  </button>
+                </>
+              </CalendarToolbar>
 
-            <FullCalendar
-              ref={calendarRef}
-              plugins={[ dayGridPlugin, interactionPlugin ]}
-              initialView="dayGridMonth"
-              editable={true}
-              customButtons={{
-                addEvent: {
-                  text: 'Add event',
-                  click: function() {
-                    addEvent()
+              <FullCalendar
+                ref={calendarRef}
+                plugins={[ dayGridPlugin, interactionPlugin ]}
+                initialView="dayGridMonth"
+                editable={true}
+                customButtons={{
+                  addEvent: {
+                    text: 'Add event',
+                    click: function() {
+                      addEvent()
+                    },
                   },
-                },
-              }}
-              headerToolbar={false}
-              events={formattedEvents}
-              datesSet={fetchResources}
-              eventClick={handleEventClick}
-            />
-          </div>
-        </div>
-        <Sidebar value={sidebar} width="320px" align="right" title="Your Schedule" onChange={e => setSidebar(e.target.value)}>
-          {formattedHabits.map(habit => (
-            <div key={habit.id}>
-              {habit.slots.length === 1 ? <SlotsCard habit={habit} slot={habit.slots[0]} /> : <CompressedSlotsCard habit={habit} key={habit.id} />}
+                }}
+                headerToolbar={false}
+                events={formattedEvents}
+                datesSet={fetchResources}
+                eventClick={handleEventClick}
+              />
             </div>
-          ))}
-        </Sidebar>
+          </div>
+        </SidebarView>
       </div>
 
       <Modal ref={formEventsModal} title="Add event" size="max-w-md">
