@@ -41,7 +41,7 @@ export default function SidebarView({ value, onChange, breakpoint = 'md', width 
     }
   }, [value, align, width, hasBreakpoint])
 
-  const contentAttrs = useMemo(() => {
+  const childrenWrapperAttrs = useMemo(() => {
     return {
       className: [
         { class: `transition-${align}`, value: true },
@@ -71,7 +71,7 @@ export default function SidebarView({ value, onChange, breakpoint = 'md', width 
 
   return (
     <div {...wrapperAttrs} className="w-full h-full relative overflow-hidden transition-padding duration-500 ease-in-out">
-      <div {...contentAttrs}>
+      <div {...childrenWrapperAttrs}>
         {children}
       </div>
 
