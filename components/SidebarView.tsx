@@ -35,11 +35,23 @@ export default function SidebarView({ value, onChange, breakpoint = 'md', width 
   const wrapperAttrs = useMemo(() => {
     return {
       style: {
-        paddingLeft: value && align === 'left' ? width : '0px',
-        paddingRight: value && align === 'right' ? width : '0px'
+        paddingLeft: value && hasBreakpoint && align === 'left' ? width : '0px',
+        paddingRight: value && hasBreakpoint && align === 'right' ? width : '0px'
       }
     }
   }, [value, align, width, hasBreakpoint])
+
+  const contentAttrs = useMemo(() => {
+    return {
+      className: [
+        { class: `transition-${align}`, value: true },
+        { class: 'min-w-full max-h-full overflow-y-auto relative duration-500 ease-in-out', value: true }
+      ].filter(cn => cn.value).map(cn => cn.class).join(' '),
+      style: {
+        [align]: value && !hasBreakpoint ? width : '0px'
+      }
+    }
+  }, [value, hasBreakpoint, width, align])
 
   const asideAttrs = useMemo(() => {
     return {
@@ -47,8 +59,9 @@ export default function SidebarView({ value, onChange, breakpoint = 'md', width 
         { class: 'border-r-1', value: bordered && align === 'left' },
         { class: 'border-l-1', value: bordered && align === 'right' },
         { class: 'border-stone-200', value: bordered },
-        { class: `transition-${align}`, value: true }
-      ].filter(cn => cn.value).map(cn => cn.class).join(' ') + ' absolute top-0 h-full overflow-y-auto bg-white duration-500 ease-in-out',
+        { class: `transition-${align}`, value: true },
+        { class: 'absolute top-0 h-full overflow-y-auto bg-white duration-500 ease-in-out', value: true, }
+      ].filter(cn => cn.value).map(cn => cn.class).join(' '),
       style: {
         width,
         [align]: !value ? `-${width}` : '0px'
@@ -58,7 +71,7 @@ export default function SidebarView({ value, onChange, breakpoint = 'md', width 
 
   return (
     <div {...wrapperAttrs} className="w-full h-full relative overflow-hidden transition-padding duration-500 ease-in-out">
-      <div className="min-w-full max-h-full overflow-y-auto">
+      <div {...contentAttrs}>
         {children}
       </div>
 
