@@ -32,6 +32,8 @@ export default function SidebarView({ value, onChange, breakpoint = 'md', width 
   }, [hasBreakpoint])
 
   // --- JSX attrs ---
+  const transitionClassName = 'duration-500 ease-in-out'
+
   const wrapperAttrs = useMemo(() => {
     return {
       style: {
@@ -45,10 +47,11 @@ export default function SidebarView({ value, onChange, breakpoint = 'md', width 
     return {
       className: [
         { class: `transition-${align}`, value: true },
-        { class: 'min-w-full max-h-full overflow-y-auto relative duration-500 ease-in-out', value: true }
+        { class: transitionClassName, value: !hasBreakpoint },
+        { class: 'min-w-full max-h-full overflow-y-auto relative z-2', value: true }
       ].filter(cn => cn.value).map(cn => cn.class).join(' '),
       style: {
-        [align]: value && !hasBreakpoint ? width : '0px'
+        [align]: value && !hasBreakpoint ? width : '0px',
       }
     }
   }, [value, hasBreakpoint, width, align])
@@ -60,7 +63,7 @@ export default function SidebarView({ value, onChange, breakpoint = 'md', width 
         { class: 'border-l-1', value: bordered && align === 'right' },
         { class: 'border-stone-200', value: bordered },
         { class: `transition-${align}`, value: true },
-        { class: 'absolute top-0 h-full overflow-y-auto bg-white duration-500 ease-in-out', value: true, }
+        { class: `absolute top-0 h-full overflow-y-auto bg-white ${transitionClassName}`, value: true, }
       ].filter(cn => cn.value).map(cn => cn.class).join(' '),
       style: {
         width,
@@ -70,9 +73,13 @@ export default function SidebarView({ value, onChange, breakpoint = 'md', width 
   }, [value, width, bordered, align])
 
   return (
-    <div {...wrapperAttrs} className="w-full h-full relative overflow-hidden transition-padding duration-500 ease-in-out">
+    <div {...wrapperAttrs} className={`w-full h-full min-h-full relative overflow-hidden transition-padding ${transitionClassName}`}>
       <div {...childrenWrapperAttrs}>
         {children}
+        {value && !hasBreakpoint && (
+          <div className="absolute top-0 left-0 w-full h-full bg-white opacity-90 z-3">
+          </div>
+        )}
       </div>
 
       <aside {...asideAttrs}>
