@@ -1,5 +1,6 @@
 import { useEffect, useMemo, type ReactNode, type ChangeEvent } from 'react'
 import useBreakpoints, { type BreakpointKey } from '@/hooks/useBreakpoints'
+import { RightPanelClose } from '@project-lary/react-material-symbols-700-rounded'
 
 interface Props {
     value: boolean
@@ -13,6 +14,16 @@ interface Props {
 }
 
 export default function SidebarView({ value, onChange, breakpoint = 'md', width = 256, align = 'left', bordered = true, content, children }: Props) {
+  function change(value: boolean): void {
+    if(onChange) {
+      onChange({
+        target: {
+          value
+        }
+      } as unknown as ChangeEvent<HTMLInputElement>)
+    }
+  }
+
   // --- Manage breakpoint ---
   const { windowWidth, breakpoints } = useBreakpoints()
 
@@ -21,13 +32,7 @@ export default function SidebarView({ value, onChange, breakpoint = 'md', width 
   }, [breakpoint, breakpoints])
 
   useEffect(() => {
-    if(onChange) {
-      onChange({
-        target: {
-          value: hasBreakpoint
-        }
-      } as unknown as ChangeEvent<HTMLInputElement>)
-    }
+    change(hasBreakpoint)
   }, [hasBreakpoint])
 
   // --- JSX attrs ---
@@ -51,7 +56,7 @@ export default function SidebarView({ value, onChange, breakpoint = 'md', width 
       className: [
         { class: `transition-${align}`, value: true },
         { class: transitionClassName, value: !hasBreakpoint },
-        { class: 'min-w-full max-h-full overflow-y-auto relative z-2', value: true }
+        { class: 'min-w-full h-full max-h-full overflow-y-auto relative z-2', value: true }
       ].filter(cn => cn.value).map(cn => cn.class).join(' '),
       style: {
         [align]: value && !hasBreakpoint ? safeWidth : '0px',
@@ -80,8 +85,16 @@ export default function SidebarView({ value, onChange, breakpoint = 'md', width 
       <div {...childrenWrapperAttrs}>
         {children}
         {value && !hasBreakpoint && (
-          <div className="absolute top-0 left-0 w-full h-full bg-white opacity-90 z-3">
-          </div>
+          <>
+            <div className="absolute top-0 left-0 w-full h-full bg-neutral-800 opacity-90 z-3" />
+            {onChange && (
+              <div className="absolute top-0 right-0 z-4 mt-6 mr-1">
+                <button type="button" className=" ht-btn ht-interaction py-2 px-2 rounded-lg text-white" onClick={() => { change(!value) }}>
+                  <RightPanelClose className="text-2xl" />
+                </button>
+              </div>
+            )}
+          </>
         )}
       </div>
 
