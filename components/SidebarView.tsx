@@ -1,21 +1,20 @@
-import { useState, useEffect, useMemo, type ReactNode, type ChangeEvent } from 'react'
-import useBreakpoints, { type BreakpointKey } from '@/hooks/ueBreakpoints'
+import { useEffect, useMemo, type ReactNode, type ChangeEvent } from 'react'
+import useBreakpoints, { type BreakpointKey } from '@/hooks/useBreakpoints'
 
 interface Props {
     value: boolean
     onChange?: (e: ChangeEvent<HTMLInputElement>) => void
     breakpoint?: BreakpointKey
-    width?: string // 300px, 70%, ecc
+    width?: number
     align?: 'left' | 'right'
     bordered?: boolean
-    title?: string,
 		content: ReactNode | ReactNode[] // content of the sidebar
     children: ReactNode | ReactNode[] // view content
 }
 
-export default function SidebarView({ value, onChange, breakpoint = 'md', width = '256px', align = 'left', bordered = true, title, content, children }: Props) {
+export default function SidebarView({ value, onChange, breakpoint = 'md', width = 256, align = 'left', bordered = true, content, children }: Props) {
   // --- Manage breakpoint ---
-  const { breakpoints } = useBreakpoints()
+  const { windowWidth, breakpoints } = useBreakpoints()
 
   const hasBreakpoint = useMemo(() => {
     return breakpoints ? breakpoints[breakpoint] : false
@@ -34,14 +33,18 @@ export default function SidebarView({ value, onChange, breakpoint = 'md', width 
   // --- JSX attrs ---
   const transitionClassName = 'duration-500 ease-in-out'
 
+  const safeWidth = useMemo(() => {
+    return `${width <= (windowWidth - 40) ? width : (windowWidth - 40)}px`
+  }, [width, windowWidth])
+
   const wrapperAttrs = useMemo(() => {
     return {
       style: {
-        paddingLeft: value && hasBreakpoint && align === 'left' ? width : '0px',
-        paddingRight: value && hasBreakpoint && align === 'right' ? width : '0px'
+        paddingLeft: value && hasBreakpoint && align === 'left' ? safeWidth : '0px',
+        paddingRight: value && hasBreakpoint && align === 'right' ? safeWidth : '0px'
       }
     }
-  }, [value, align, width, hasBreakpoint])
+  }, [value, align, safeWidth, hasBreakpoint])
 
   const childrenWrapperAttrs = useMemo(() => {
     return {
@@ -51,10 +54,10 @@ export default function SidebarView({ value, onChange, breakpoint = 'md', width 
         { class: 'min-w-full max-h-full overflow-y-auto relative z-2', value: true }
       ].filter(cn => cn.value).map(cn => cn.class).join(' '),
       style: {
-        [align]: value && !hasBreakpoint ? width : '0px',
+        [align]: value && !hasBreakpoint ? safeWidth : '0px',
       }
     }
-  }, [value, hasBreakpoint, width, align])
+  }, [value, hasBreakpoint, safeWidth, align])
 
   const asideAttrs = useMemo(() => {
     return {
@@ -66,11 +69,11 @@ export default function SidebarView({ value, onChange, breakpoint = 'md', width 
         { class: `absolute top-0 h-full overflow-y-auto bg-white ${transitionClassName}`, value: true, }
       ].filter(cn => cn.value).map(cn => cn.class).join(' '),
       style: {
-        width,
-        [align]: !value ? `-${width}` : '0px'
+        width: safeWidth,
+        [align]: !value ? `-${safeWidth}` : '0px'
       }
     }
-  }, [value, width, bordered, align])
+  }, [value, safeWidth, bordered, align])
 
   return (
     <div {...wrapperAttrs} className={`w-full h-full min-h-full relative overflow-hidden transition-padding ${transitionClassName}`}>
@@ -84,11 +87,6 @@ export default function SidebarView({ value, onChange, breakpoint = 'md', width 
 
       <aside {...asideAttrs}>
         <div className="py-4 px-4 flex flex-col gap-4">
-          {title && (
-            <div className="text-xl font-monda font-bold my-2">
-              {title}
-            </div>
-          )}
           {content}
         </div>
       </aside>

@@ -4,13 +4,14 @@ import dayGridPlugin from '@fullcalendar/daygrid'
 import interactionPlugin, { DateClickArg } from '@fullcalendar/interaction'
 import { EventClickArg, type DatesSetArg } from '@fullcalendar/core/index.js'
 import { DbResourceSchema, eventsModel, EventsSchema, habitsModel, HabitsSchema, SlotsSchema } from '@/db/DbClass'
+import Link from "next/link"
 import SidebarView from '@/components/SidebarView'
 import useDbCrud from '@/db/useDbCrud'
 import useHabits from '@/hooks/useHabits'
 import CompressedSlotsCard from '@/components/CompressedSlotsCard'
 import SlotsCard from '@/components/SlotsCard'
 import EventsForm from '@/components/EventsForm'
-import { CalendarToday, RightPanelClose, RightPanelOpen } from "@project-lary/react-material-symbols-700-rounded"
+import { CalendarToday, RightPanelClose, RightPanelOpen, Settings } from "@project-lary/react-material-symbols-700-rounded"
 import "@/css/habits-calendar.css"
 import { HabitWithSlots, ModalRef } from '@/app/types'
 import { DateTime } from 'luxon'
@@ -143,10 +144,18 @@ export default function HabitsCalendar() {
       <div className="w-full h-[100vh] ">
         <SidebarView
           value={sidebar}
-          width="320px" align="right"
-          title="Your Schedule"
+          width={320}
+          align="right"
           content={(
             <>
+              <div className="flex items-center my-2">
+                <div className="text-xl font-monda font-bold grow-1">
+                  Your Schedule
+                </div>
+                <Link href="/setup" className="ht-btn ht-interaction py-2 px-2 rounded-lg text-white bg-neutral-800">
+                  <Settings className="text-xl" />
+                </Link>
+              </div>
               {formattedHabits.map(habit => (
                 <div key={habit.id}>
                   {habit.slots.length === 1 ? <SlotsCard habit={habit} slot={habit.slots[0]} /> : <CompressedSlotsCard habit={habit} key={habit.id} />}
