@@ -54,7 +54,7 @@ export default function FormEvents({ values, onSave, onDelete }: Props) {
       console.error(error)
       setSelectableHabits([])
     }
-    setSelectedHabit(selectableHabits.find(habit => habit.id === model.habit_id) || null)
+    setSelectedHabit(selectableHabits.find(habit => habit.id === values?.habit_id) || null)
   }, [values])
 
   function changeHabit(habit_id: number) {

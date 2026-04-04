@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useRef } from 'react'
+import { useState, useMemo, useRef } from 'react'
 import FullCalendar from '@fullcalendar/react'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import interactionPlugin, { DateClickArg } from '@fullcalendar/interaction'
@@ -26,7 +26,7 @@ export default function HabitsCalendar() {
 
   // --- Habits ---
   const habitsCrud = useDbCrud({table: 'habits', model: habitsModel })
-  const [habits, setHabits] = useState<DbResourceSchema<HabitsSchema>[]>([])
+  const [habits, setHabits] = useState<DbResourceSchema<HabitsSchema>[] | null>(null)
 
   async function fetchHabits() {
     let h: DbResourceSchema<HabitsSchema>[]
@@ -39,17 +39,8 @@ export default function HabitsCalendar() {
     setHabits(h)
   }
 
-  useEffect(() => {
-    fetchHabits()
-  }, [])
-
   const formattedHabits = useMemo<HabitWithSlots[]>(() => {
-    return habits
-      .map((habit) => ({
-        ...habit,
-        slots: slots.filter(slot => slot.habit_id === habit.id)
-      }))
-      .filter(habit => habit.slots.length)
+    return habits?.map((habit) => ({ ...habit, slots: slots.filter(slot => slot.habit_id === habit.id) })).filter(habit => habit.slots.length) ?? []
   }, [slots, habits])
 
   // --- Manage events ---
@@ -60,7 +51,7 @@ export default function HabitsCalendar() {
   const formattedEvents = useMemo(() => {
     return events
       .map(event => {
-        const habit = habits.find(habit => habit.id === event.habit_id)
+        const habit = habits?.find(habit => habit.id === event.habit_id)
         if(!habit) { return null }
         return {
           ...event,
@@ -87,8 +78,14 @@ export default function HabitsCalendar() {
     if(!args) { return undefined }
 
     try {
-      await fetchActiveSlots(args.startStr, args.endStr).then(slots => setSlots(slots.sort((a, b) => a.active_to > b.active_to ? 1 : -1)))
-      await eventsCrud.index(item => item.datetime >= args.startStr && item.datetime <= args.endStr).then(setEvents)
+      const resources = await Promise.all([ // we allow React to batch all resurces state updates by updating those states only after all promises have resolved
+        !habits ? habitsCrud.index() : null,
+        fetchActiveSlots(args.startStr, args.endStr),
+        eventsCrud.index(item => item.datetime >= args.startStr && item.datetime <= args.endStr)
+      ])
+      if(!habits) { setHabits(resources[0]) }
+      setSlots(resources[1].sort((a, b) => a.active_to > b.active_to ? 1 : -1))
+      setEvents(resources[2])
     } catch(error) {
       console.error(error)
       setSlots([])
@@ -206,7 +203,11 @@ export default function HabitsCalendar() {
         <EventsForm values={formEventsValues} onSave={handleEventsFormSave} />
       </Modal>
 
-      <EventDetailsModal ref={eventDetailsModal} event={selectedEvent} onDelete={handleEventDelete} />
+      <EventDetailsModal
+        ref={eventDetailsModal}
+        event={selectedEvent}
+        onDelete={handleEventDelete}
+      />
     </>
   )
 }

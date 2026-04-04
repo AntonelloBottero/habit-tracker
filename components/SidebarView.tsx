@@ -2,9 +2,15 @@ import { useEffect, useMemo, type ReactNode, type ChangeEvent } from 'react'
 import useBreakpoints, { type BreakpointKey } from '@/hooks/useBreakpoints'
 import { RightPanelClose } from '@project-lary/react-material-symbols-700-rounded'
 
+interface SidebarChangeEvent {
+  target: {
+    value: boolean
+  }
+}
+
 interface Props {
     value: boolean
-    onChange?: (e: ChangeEvent<HTMLInputElement>) => void
+    onChange?: (e: SidebarChangeEvent) => void
     breakpoint?: BreakpointKey
     width?: number
     align?: 'left' | 'right'
@@ -20,7 +26,7 @@ export default function SidebarView({ value, onChange, breakpoint = 'md', width 
         target: {
           value
         }
-      } as unknown as ChangeEvent<HTMLInputElement>)
+      })
     }
   }
 
