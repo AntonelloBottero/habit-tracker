@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo, useRef } from "react"
+import { useEffect, useState, useRef } from "react"
 import { CalendarCheck } from '@project-lary/react-material-symbols-700-rounded'
 import { DbResourceSchema, eventsModel, EventsSchema, HabitsSchema, SlotsSchema } from "@/db/DbClass"
 import useForm, { Rules, validators } from "@/hooks/useForm"
@@ -36,53 +36,39 @@ export default function FormEvents({ values, onSave, onDelete }: Props) {
 
   // --- useForm ---
   const { model, changeField, init, errorMessages, handleFormSubmit } = useForm({ defaultValues: eventsModel, rules, onSubmit })
-  useEffect(() => {
-    init(values)
-  }, [values])
 
-  const id = useMemo(()=> {
-    return values?.id
-  }, [values])
-  const isNew = useMemo(() => {
-    return !id
-  }, [values])
+  const id = values?.id
+  const isNew = !id
 
   // --- datetime ---
-  const datetimeFormatted = useMemo(() => {
-    if(!model?.datetime) { return '' }
-    return DateTime.fromISO(model.datetime).toFormat('dd/MM/yyyy HH:ii')
-  }, [model])
+  const datetimeFormatted = model?.datetime ? DateTime.fromISO(model.datetime).toFormat('dd/MM/yyyy HH:ii'): ''
 
   // --- Selectable habits ---
   const [selectableHabits, setSelectableHabits] = useState<SelectableHabit[]>([])
+  const [selectedHabit, setSelectedHabit] = useState<SelectableHabit | null>(null)
   useEffect(() => {
+    init(values)
     try {
       fetchSelectableHabits(values?.datetime ?? '').then(setSelectableHabits)
     } catch(error) {
       console.error(error)
       setSelectableHabits([])
     }
+    setSelectedHabit(selectableHabits.find(habit => habit.id === model.habit_id) || null)
   }, [values])
 
-  // --- Habit enough amount ---
-  const selectedHabit = useMemo(() => {
-    return selectableHabits.find(habit => habit.id === model.habit_id)
-  }, [selectableHabits, model])
-
-  const enoughAmount = useMemo(() => {
-    return selectedHabit?.enough_amount
-  }, [selectedHabit])
+  function changeHabit(habit_id: number) {
+    changeField('habit_id', habit_id)
+    setSelectedHabit(selectableHabits.find(habit => habit.id === habit_id) || null)
+  }
 
   // --- Save ---
-  const slot_id = useMemo(() => {
-    return selectedHabit?.slot?.id
-  }, [selectedHabit])
   const [loading, setLoading] = useState(false)
   async function onSubmit() {
-    if(!isNew || loading || (enoughAmount && !model.completed)) { return undefined }
+    if(!isNew || loading || (selectedHabit?.enough_amount && !model.completed)) { return undefined }
     setLoading(true)
     try {
-      await saveEvent(model, slot_id as number)
+      await saveEvent(model, selectedHabit?.slot?.id as number)
       if(onSave) {
         onSave()
       }
@@ -136,7 +122,7 @@ export default function FormEvents({ values, onSave, onDelete }: Props) {
           input={(
             <CardsInput
               value={model.habit_id}
-              onChange={e => changeField('habit_id', e.target.value)}
+              onChange={e => changeHabit(e.target.value as unknown as number)}
               items={selectableHabits}
               content={(item) => (
                 <>
@@ -160,7 +146,7 @@ export default function FormEvents({ values, onSave, onDelete }: Props) {
         />
       </div>
 
-      {enoughAmount && (
+      {selectedHabit?.enough_amount && (
         <div>
           <InputWrapper label="Did enough?" input={(
             <div className="w-full rounded-lg flex items-center outline-1 -outline-offset-1 outline-white gap-2">
@@ -171,7 +157,7 @@ export default function FormEvents({ values, onSave, onDelete }: Props) {
                 onChange={e => changeField('completed', e.target.checked ? 1 : 0)}
               />
               <div className="text-sm">
-                {enoughAmount}
+                {selectedHabit.enough_amount}
               </div>
             </div>
           )} />
@@ -181,12 +167,12 @@ export default function FormEvents({ values, onSave, onDelete }: Props) {
       <div className="flex justify-end items-center gap-4">
         {isNew ? (
           <>
-          {enoughAmount && !model.completed && (
+          {selectedHabit?.enough_amount && !model.completed && (
             <div className="text-sm text-gray-600">
               You have to do more...
             </div>
           )}
-          <button type="submit" className="ht-btn ht-btn--size-large ht-interaction bg-green-200 shadow-ht" disabled={!!enoughAmount && !model.completed}>
+          <button type="submit" className="ht-btn ht-btn--size-large ht-interaction bg-green-200 shadow-ht" disabled={!!selectedHabit?.enough_amount && !model.completed}>
             <CalendarCheck />
             Add event
           </button>

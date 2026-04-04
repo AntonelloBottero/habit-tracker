@@ -2,7 +2,7 @@ import { DateTime } from "luxon"
 import HabitsCardHeader from "@/components/HabitsCardHeader"
 import SlotsCompletionChip from "@/components/SlotsCompletionChip"
 import { HabitWithSlots, ModalRef } from "@/app/types"
-import { useState, useMemo, useRef } from "react"
+import { useState, useRef } from "react"
 import { CalendarToday, CheckCircle } from "@project-lary/react-material-symbols-700-rounded"
 import Modal from "@/components/Modal"
 import SlotDetailsModal from "@/components/SlotDetailsModal"
@@ -15,19 +15,11 @@ interface Props {
 }
 
 export default function SlotsCard({ habit, className = '' }: Props) {
-  const slots = useMemo(() => {
-    return habit?.slots ?? []
-  }, [habit])
+  const slots = habit?.slots ?? []
 
-  const count = useMemo(() => {
-    return slots.reduce((r, slot) => r += Number(slot.count), 0)
-  }, [slots])
-  const completion = useMemo(() => {
-    return slots.reduce((r, slot) => r += slot.completion, 0)
-  }, [habit])
-  const activeTo = useMemo(() => {
-    return slots[slots.length - 1]?.active_to
-  }, [slots])
+  const count = slots.reduce((r, slot) => r += Number(slot.count), 0)
+  const completion = slots.reduce((r, slot) => r += slot.completion, 0)
+  const activeTo = slots[slots.length - 1]?.active_to
 
   const modalRef = useRef<ModalRef>(null)
   const { calculateMonthlySlots } = useHabits()

@@ -3,7 +3,7 @@ import { CalendarApi } from '@fullcalendar/core/index.js'
 import FullCalendar from '@fullcalendar/react'
 import { ChevronLeft, ChevronRight } from '@project-lary/react-material-symbols-700-rounded'
 import { DateTime } from 'luxon'
-import { useState, useEffect, useMemo, type ReactElement, RefObject } from 'react'
+import { useState, useEffect, type ReactElement, RefObject } from 'react'
 
 interface Props {
 	ref: RefObject<FullCalendar | null>
@@ -12,8 +12,6 @@ interface Props {
 }
 
 export default function CalendarToolbar({ ref, className = '', children }: Props) {
-  const today = DateTime.now().toISODate()
-
   const [view, setView] = useState<string | undefined>(undefined)
   const [date, setDate] = useState<DateTime | undefined>(undefined)
   const [from, setFrom] = useState<DateTime | undefined>(undefined)
@@ -43,13 +41,7 @@ export default function CalendarToolbar({ ref, className = '', children }: Props
     setParams()
   }
 
-  const todayIsInRange = useMemo(() => {
-    if(!from || !to) { return false }
-
-    return today >= from.toISODate() && today <= to.toISODate()
-  }, [from, to])
-
-  const rangeStr = useMemo(() => {
+  const rangeStr = (() => { // even though this could be considered an expensive calculation, almost every dependency involved changes at the same time (batch), so caching the result with useMemo wouldn't give any kind of benefit
     if(!date || !from || !to) { return '' }
 
     switch(view) {
@@ -63,7 +55,7 @@ export default function CalendarToolbar({ ref, className = '', children }: Props
       if(from.toFormat('yyyy') !== to.toFormat('MM')) { fromFormat += ' yyyy' }
       return `From ${from.toFormat(fromFormat)} To ${to.toFormat('dd LLLL yyyy')}`
     }
-  }, [date, from, to, view])
+  })()
 
   return calendarApi() ? (
     <div className={`${className} flex items-center gap-2`}>
