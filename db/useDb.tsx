@@ -1,6 +1,6 @@
 'use client'
 
-import { createContext, useContext, useState, useEffect, useMemo, type ReactNode } from 'react'
+import { createContext, useContext, useState, useEffect, type ReactNode } from 'react'
 import { type Table } from 'dexie'
 import DbClass, { type OptionsSchema } from '@/db/DbClass'
 

@@ -1,7 +1,6 @@
 import useDb from '@/db/useDb'
 import { DateTime } from 'luxon'
 import { objectIsCompliant } from "@/utils/index"
-import { useMemo } from 'react'
 import { type Table } from 'dexie'
 import { type DbResourceSchema } from '@/db/DbClass'
 
@@ -13,9 +12,7 @@ interface Params<T> {
 export default function useDbCrud<T extends object>({ table: storeName, model }: Params<T>) {
   const { db, dbIsOpen } = useDb()
 
-  const table = useMemo<Table | null>(() => {
-    return db.table(storeName) || null
-  }, [name])
+  const table = db.table(storeName) || null
 
   function isCompliant() {
     if(dbIsOpen !== true) { return false }
@@ -23,14 +20,14 @@ export default function useDbCrud<T extends object>({ table: storeName, model }:
     return true
   }
 
-  const schema = useMemo<DbResourceSchema<T> | null>(() => {
+  const schema = (() => {
     if(!table?.schema?.indexes) { return null }
     const s = Object.values(table.schema.indexes).reduce((r, index) => ({
       ...r,
       [index.name]: true
     }),{ id: true }) as DbResourceSchema<T>
     return objectIsCompliant(s, model) ? s : null
-  }, [table])
+  })()
 
   // --- Fetch ---
   interface SortBy {

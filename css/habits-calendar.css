@@ -57,3 +57,7 @@
 .habits-calendar .fc-direction-ltr .fc-button-group > .fc-button {
   padding:0 8px;
 }
+
+.habits-calendar .fc-daygrid-event {
+  font-size:.8rem;
+}

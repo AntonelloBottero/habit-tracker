@@ -44,47 +44,39 @@ export default function SidebarView({ value, onChange, breakpoint = 'md', width 
   // --- JSX attrs ---
   const transitionClassName = 'duration-500 ease-in-out'
 
-  const safeWidth = useMemo(() => {
-    return `${width <= (windowWidth - 40) ? width : (windowWidth - 40)}px`
-  }, [width, windowWidth])
+  const safeWidth = `${width <= (windowWidth - 40) ? width : (windowWidth - 40)}px`
 
-  const wrapperAttrs = useMemo(() => {
-    return {
-      style: {
-        paddingLeft: value && hasBreakpoint && align === 'left' ? safeWidth : '0px',
-        paddingRight: value && hasBreakpoint && align === 'right' ? safeWidth : '0px'
-      }
+  const wrapperAttrs = {
+    style: {
+      paddingLeft: value && hasBreakpoint && align === 'left' ? safeWidth : '0px',
+      paddingRight: value && hasBreakpoint && align === 'right' ? safeWidth : '0px'
     }
-  }, [value, align, safeWidth, hasBreakpoint])
+  }
 
-  const childrenWrapperAttrs = useMemo(() => {
-    return {
-      className: [
-        { class: `transition-${align}`, value: true },
-        { class: transitionClassName, value: !hasBreakpoint },
-        { class: 'min-w-full h-full max-h-full overflow-y-auto relative z-2', value: true }
-      ].filter(cn => cn.value).map(cn => cn.class).join(' '),
-      style: {
-        [align]: value && !hasBreakpoint ? safeWidth : '0px',
-      }
+  const childrenWrapperAttrs = {
+    className: [
+      { class: `transition-${align}`, value: true },
+      { class: transitionClassName, value: !hasBreakpoint },
+      { class: 'min-w-full h-full max-h-full overflow-y-auto relative z-2', value: true }
+    ].filter(cn => cn.value).map(cn => cn.class).join(' '),
+    style: {
+      [align]: value && !hasBreakpoint ? safeWidth : '0px',
     }
-  }, [value, hasBreakpoint, safeWidth, align])
+  }
 
-  const asideAttrs = useMemo(() => {
-    return {
-      className: [
-        { class: 'border-r-1', value: bordered && align === 'left' },
-        { class: 'border-l-1', value: bordered && align === 'right' },
-        { class: 'border-stone-200', value: bordered },
-        { class: `transition-${align}`, value: true },
-        { class: `absolute top-0 h-full overflow-y-auto bg-white ${transitionClassName}`, value: true, }
-      ].filter(cn => cn.value).map(cn => cn.class).join(' '),
-      style: {
-        width: safeWidth,
-        [align]: !value ? `-${safeWidth}` : '0px'
-      }
+  const asideAttrs = {
+    className: [
+      { class: 'border-r-1', value: bordered && align === 'left' },
+      { class: 'border-l-1', value: bordered && align === 'right' },
+      { class: 'border-stone-200', value: bordered },
+      { class: `transition-${align}`, value: true },
+      { class: `absolute top-0 h-full overflow-y-auto bg-white ${transitionClassName}`, value: true, }
+    ].filter(cn => cn.value).map(cn => cn.class).join(' '),
+    style: {
+      width: safeWidth,
+      [align]: !value ? `-${safeWidth}` : '0px'
     }
-  }, [value, safeWidth, bordered, align])
+  }
 
   return (
     <div {...wrapperAttrs} className={`w-full h-full min-h-full relative overflow-hidden transition-padding ${transitionClassName}`}>
