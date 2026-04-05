@@ -9,17 +9,13 @@ import { useState, useEffect } from 'react'
 
 export default function Page() {
   const { getOption } = useDb()
-  const [name, setName] = useState<string>('')
   const [tab, setTab] = useState(0)
   async function getName() {
     const nameOption = await getOption('name') as string | undefined
-    setName(nameOption || '')
-  }
-  useEffect(() => {
-    if(name) {
+    if(nameOption) {
       setTab(1)
     }
-  }, [name])
+  }
   useEffect(() => {
     getName()
   }, [])

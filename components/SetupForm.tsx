@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import Form from 'next/form'
 import useDb from '@/db/useDb'
 import { ArrowRightIcon } from '@heroicons/react/24/outline'
@@ -13,19 +13,10 @@ interface Props {
 export default function SetupForm({ onSubmit }: Props) {
   const { createOption } = useDb()
   const [name, setName] = useState('')
-  const [canSubmit, setCanSubmit] = useState(false)
   const [loading, setLoading] = useState(false)
 
-  useEffect(() => {
-    if(!name) {
-      setCanSubmit(false)
-      return
-    }
-    setCanSubmit(true)
-  }, [name])
-
   async function submit() {
-    if(!canSubmit) { return }
+    if(!name) { return }
     setLoading(true)
     await createOption('name', name)
     setLoading(false)

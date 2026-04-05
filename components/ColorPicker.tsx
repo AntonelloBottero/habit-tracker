@@ -32,7 +32,7 @@ export default function ColorPicker(props: FormFieldProps) {
 
   const {value, onChange, ...inputProps } = props
 
-  useEffect(() => {
+  useEffect(() => { // TODO refactor after options API refactor
     getUserColors()
   }, [])
 

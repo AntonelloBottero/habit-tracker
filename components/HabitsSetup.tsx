@@ -16,7 +16,7 @@ interface Props {
 }
 
 export default function HabitsSetup({ onSetup }: Props) {
-	const { index, isCompliant } = useDbCrud({ table: 'habits', model: habitsModel })
+	const { index } = useDbCrud({ table: 'habits', model: habitsModel })
 
 	// --- Existing Habits ---
 	const [habits, setHabits] = useState<DbResourceSchema<HabitsSchema>[]>([])
@@ -32,9 +32,6 @@ export default function HabitsSetup({ onSetup }: Props) {
 			setHabits([])
 		}
 	}
-	useEffect(() => {
-		fetchHabits()
-	}, [isCompliant()])
 
 	// --- Manage form ad habits store/update ---
 	const formModalRef = useRef<ModalRef>(null)
@@ -62,15 +59,14 @@ export default function HabitsSetup({ onSetup }: Props) {
 	})()
 
 	// --- Check setup is already done ---
-	const { dbIsOpen, getOption } = useDb()
+	const { getOption } = useDb()
 	const [setupDone, setSetupDone] = useState<boolean>(false)
 	useEffect(() => {
-	if(dbIsOpen) {
 		getOption('last_setup_at').then(value => {
-		setSetupDone((value || '') > DateTime.now().toISO())
+			setSetupDone((value || '') > DateTime.now().toISO())
 		})
-	}
-	}, [dbIsOpen])
+		fetchHabits()
+	}, [])
 
 	// --- Complete ---
 	const { setup } = useHabits()
