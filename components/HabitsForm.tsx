@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, type ChangeEvent, useRef } from 'react'
+import { useState, useEffect, type ChangeEvent, useRef } from 'react'
 import InputWrapper from '@/components/InputWrapper'
 import ColorPicker from '@/components/ColorPicker'
 import CheckboxBtn from '@/components/CheckboxBtn'
@@ -48,16 +48,12 @@ export default function FormHabits({ values, onSave, onDelete }: Props) {
     init(values)
   }, [values])
 
-  const isNew = useMemo(() => {
-    return !values?.id
-  }, [values])
-
-  const canEdit = useMemo(() => {
-    return isNew || !setupDone
-  }, [isNew, setupDone])
+  const id = values?.id
+  const isNew = !id
+  const canEdit = isNew || !setupDone
 
   // --- granularity times ---
-  const granularityTimes = useMemo(() => {
+  const granularityTimes = (() => {
     let count = 1
     switch(model.granularity) {
     case 'weekly':
@@ -77,7 +73,7 @@ export default function FormHabits({ values, onSave, onDelete }: Props) {
         text: time === 1 ? '1 time' : `${time} times`
       }
     })
-  }, [model.granularity])
+  })()
   // changing granularity resets granularity_times
   const handleChangeGranularity = (e: ChangeEvent<HTMLSelectElement>): void => {
     changeField('granularity', e.target.value)
@@ -86,9 +82,6 @@ export default function FormHabits({ values, onSave, onDelete }: Props) {
 
   // --- Save data ---
   const { store, update, deleteItem } = useDbCrud({ table: 'habits', model: habitsModel })
-  const id = useMemo(()=> {
-    return values?.id
-  }, [values])
   const [loading, setLoading] = useState(false)
   async function onSubmit() {
     if(loading || !canEdit) { return undefined }

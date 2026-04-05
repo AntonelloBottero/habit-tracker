@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useMemo } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { habitsModel, type HabitsSchema, type DbResourceSchema } from '@/db/DbClass'
 import { ModalRef } from '@/app/types'
 import useDb from '@/db/useDb'
@@ -20,12 +20,8 @@ export default function HabitsSetup({ onSetup }: Props) {
 
 	// --- Existing Habits ---
 	const [habits, setHabits] = useState<DbResourceSchema<HabitsSchema>[]>([])
-	const goodHabits = useMemo(() => {
-		return habits.filter(habit => habit.type === 'good')
-	}, [habits])
-	const badHabits = useMemo(() => {
-		return habits.filter(habit => habit.type === 'bad')
-	}, [habits])
+	const goodHabits = habits.filter(habit => habit.type === 'good')
+	const badHabits = habits.filter(habit => habit.type === 'bad')
 
 	const fetchHabits = async () => {
 		try {
@@ -60,10 +56,10 @@ export default function HabitsSetup({ onSetup }: Props) {
 		fetchHabits()
 	}
 
-	const formModalTitle = useMemo(() => {
+	const formModalTitle = (() => {
 		const operation = !formHabitsValues?.id ? 'Your new' : 'Edit your'
 		return `${operation} ${formHabitsValues?.type ?? ''} habit`
-	}, [formHabitsValues])
+	})()
 
 	// --- Check setup is already done ---
 	const { dbIsOpen, getOption } = useDb()

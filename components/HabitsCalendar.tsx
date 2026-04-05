@@ -1,8 +1,8 @@
-import { useState, useMemo, useRef } from 'react'
+import { useState, useRef } from 'react'
 import FullCalendar from '@fullcalendar/react'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import interactionPlugin, { DateClickArg } from '@fullcalendar/interaction'
-import { EventClickArg, type DatesSetArg } from '@fullcalendar/core/index.js'
+import { EventClickArg, EventInput, type DatesSetArg } from '@fullcalendar/core/index.js'
 import { DbResourceSchema, eventsModel, EventsSchema, habitsModel, HabitsSchema, SlotsSchema } from '@/db/DbClass'
 import Link from "next/link"
 import SidebarView from '@/components/SidebarView'
@@ -28,43 +28,28 @@ export default function HabitsCalendar() {
   const habitsCrud = useDbCrud({table: 'habits', model: habitsModel })
   const [habits, setHabits] = useState<DbResourceSchema<HabitsSchema>[] | null>(null)
 
-  async function fetchHabits() {
-    let h: DbResourceSchema<HabitsSchema>[]
-    try {
-      h = await habitsCrud.index()
-    } catch(error) {
-      console.error(error)
-      h = []
-    }
-    setHabits(h)
-  }
-
-  const formattedHabits = useMemo<HabitWithSlots[]>(() => {
-    return habits?.map((habit) => ({ ...habit, slots: slots.filter(slot => slot.habit_id === habit.id) })).filter(habit => habit.slots.length) ?? []
-  }, [slots, habits])
+  const formattedHabits: HabitWithSlots[] = habits?.map((habit) => ({ ...habit, slots: slots.filter(slot => slot.habit_id === habit.id) })).filter(habit => habit.slots.length) ?? []
 
   // --- Manage events ---
   const formEventsModal = useRef<ModalRef>(null)
   const [formEventsValues, setFormEventsValues] = useState<Partial<DbResourceSchema<EventsSchema>> | undefined>(undefined)
   const [events, setEvents] = useState<DbResourceSchema<EventsSchema>[]>([])
 
-  const formattedEvents = useMemo(() => {
-    return events
-      .map(event => {
-        const habit = habits?.find(habit => habit.id === event.habit_id)
-        if(!habit) { return null }
-        return {
-          ...event,
-          habit,
-          // fullcalendar compliant params
-          title: habit.name,
-          start: event.datetime,
-          end: DateTime.fromISO(event.datetime).plus({ minutes: 1 }).toISO(),
-          color: habit.color
-        }
-      })
-      .filter(Boolean)
-  }, [events, habits])
+  const formattedEvents = events
+    .map(event => {
+      const habit = habits?.find(habit => habit.id === event.habit_id)
+      if(!habit) { return null }
+      return {
+        ...event,
+        habit,
+        // fullcalendar compliant params
+        title: habit.name,
+        start: event.datetime,
+        end: DateTime.fromISO(event.datetime).plus({ minutes: 1 }).toISO(),
+        color: habit.color
+      }
+    })
+    .filter(Boolean) as unknown as EventInput[]
 
   // --- Calendar ---
   const calendarRef = useRef<FullCalendar>(null)
@@ -77,20 +62,21 @@ export default function HabitsCalendar() {
     const args = calendarArgs || dateArgs
     if(!args) { return undefined }
 
-    try {
-      const resources = await Promise.all([ // we allow React to batch all resurces state updates by updating those states only after all promises have resolved
-        !habits ? habitsCrud.index() : null,
-        fetchActiveSlots(args.startStr, args.endStr),
-        eventsCrud.index(item => item.datetime >= args.startStr && item.datetime <= args.endStr)
-      ])
-      if(!habits) { setHabits(resources[0]) }
-      setSlots(resources[1].sort((a, b) => a.active_to > b.active_to ? 1 : -1))
-      setEvents(resources[2])
-    } catch(error) {
+    await Promise.all([ // we allow React to batch all resurces state updates by updating those states only after all promises have resolved
+      !habits ? habitsCrud.index() : null,
+      fetchActiveSlots(args.startStr, args.endStr),
+      eventsCrud.index(item => item.datetime >= args.startStr && item.datetime <= args.endStr)
+    ]).then(([h, as, e]) => {
+      if(h) { setHabits(h) }
+      setSlots(as.sort((a, b) => a.active_to > b.active_to ? 1 : -1))
+      setEvents(e)
+    }).catch(error => {
       console.error(error)
+      setHabits(null)
       setSlots([])
       setEvents([])
-    }
+    })
+
     setDateArgs(args)
   }
 
