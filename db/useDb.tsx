@@ -4,14 +4,13 @@ import { createContext, useContext, useState, useEffect, type ReactNode } from '
 import { type Table } from 'dexie'
 import DbClass, { type OptionsSchema } from '@/db/DbClass'
 
-interface AvailableOptionValues {
-  [key: string]: unknown
-}
+type AvailableOptionValues = Record<string, unknown>
 
 // --- Context Provider ---
 interface DbContextProvider {
   db: DbClass
   dbIsOpen: boolean | 'pending'
+  options: AvailableOptionValues
   createOption: (key: string, value?: string | number | boolean) => Promise<boolean>
   getOption: (key: string) => Promise<unknown>
   registerExternalOption: (key: string, value: never) => void
@@ -47,7 +46,7 @@ export function DbProvider({ children, externalDb }: ProviderProps) {
   }, [])
 
   // --- Manage options ---
-  const [availableOptionValues, setAvailableOptionValues] = useState<AvailableOptionValues>({}) // Options requested already in the current session
+  const [availableOptions, setAvailableOptions] = useState<AvailableOptionValues>({}) // Options requested already in the current session
 
   // get option
   async function showOption(key: string): Promise<OptionsSchema | undefined> {
@@ -78,30 +77,43 @@ export function DbProvider({ children, externalDb }: ProviderProps) {
 
   // retrieves an option
   async function getOption(key: string): Promise<unknown> {
-    const availableOption: unknown = availableOptionValues[key]
-    if(availableOption) { return availableOption }
-
+    const availableOption: unknown = availableOptions[key]
+    if(availableOption !== undefined) { return availableOption }
+    console.log('option still not available', key)
     // if option doesn't exist, we try to fetch it
     const fetchedOption = await showOption(key)
-    if(!fetchedOption) { return undefined }
     // if option exists, we add its value to the available option values, and return its value
-    setAvailableOptionValues({
-      ...availableOptionValues,
-      [key]: fetchedOption.value
-    })
-    return fetchedOption.value
+    setAvailableOptions(currentState => ({
+      ...currentState,
+      [key]: fetchedOption?.value ?? null
+    }))
+    return fetchedOption?.value
   }
 
   // register data that is not intended to fit in options table, but we want it provided inside context
   function registerExternalOption(key: string, value: never): void {
-    setAvailableOptionValues({
-      ...availableOptionValues,
+    setAvailableOptions(currentState => ({
+      ...currentState,
       [key]: value
-    })
+    }))
   }
 
+  const options = new Proxy(availableOptions, {
+    get(target, key: string) {
+      const value = target[key]
+      if(value === undefined) {
+        getOption(key)
+      }
+      return value
+    },
+    set(target, key: string, value) {
+      createOption(key, value)
+      return true
+    }
+  })
+
   return (
-    <DbContext.Provider value={ { db, dbIsOpen, createOption, getOption, registerExternalOption } }>
+    <DbContext.Provider value={ { db, dbIsOpen, options, createOption, getOption, registerExternalOption } }>
       {dbIsOpen === true && children}
     </DbContext.Provider>
   )

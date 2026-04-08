@@ -8,20 +8,11 @@ import HabitsSetup from "@/components/HabitsSetup"
 import { useState, useEffect } from 'react'
 
 export default function Page() {
-  const { getOption } = useDb()
+  const { options } = useDb()
   const [tab, setTab] = useState(0)
-  async function getName() {
-    const nameOption = await getOption('name') as string | undefined
-    if(nameOption) {
-      setTab(1)
-    }
-  }
   useEffect(() => {
-    getName()
-  }, [])
-  function handleSetupFormSubmit() {
-    getName()
-  }
+    if(options.name) { setTab(1) }
+  }, [options.name])
 
   const router = useRouter()
   function handleOnSetup() {
@@ -38,7 +29,7 @@ export default function Page() {
             <p>New in here? Start by inserting your name...<br />
                         ...or whatever you want us to call you</p>
             <div className="w-full mt-4">
-              <SetupForm onSubmit={handleSetupFormSubmit} />
+              <SetupForm />
             </div>
           </div>
           <div>
