@@ -59,14 +59,11 @@ export default function HabitsSetup({ onSetup }: Props) {
 	})()
 
 	// --- Check setup is already done ---
-	const { getOption } = useDb()
+	const { options } = useDb()
 	const [setupDone, setSetupDone] = useState<boolean>(false)
 	useEffect(() => {
-		getOption('last_setup_at').then(value => {
-			setSetupDone((value || '') > DateTime.now().toISO())
-		})
-		fetchHabits()
-	}, [])
+		setSetupDone((options.last_setup_at || '') > DateTime.now().toISO())
+	}, [options.last_setup_at])
 
 	// --- Complete ---
 	const { setup } = useHabits()

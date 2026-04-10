@@ -34,6 +34,7 @@ export function DbProvider({ children, externalDb }: ProviderProps) {
     setDbIsOpen('pending')
     try {
     await db.open()
+    await fetchOptions()
     setDbIsOpen(true)
     } catch(error) {
       console.log('error', error)
@@ -46,7 +47,17 @@ export function DbProvider({ children, externalDb }: ProviderProps) {
 
   // --- Manage options ---
   const [options, setOptions] = useState<Options>({}) // Options requested already in the current session
-  
+
+  async function fetchOptions() {
+    try {
+      const optionResources = await db.options.toArray()
+      setOptions(optionResources.reduce((r, or) => ({ ...r, [or.key]: or.value }), {}))
+    } catch(error) {
+      console.error(error)
+      setOptions({})
+    }
+  }
+
   // reducer to keep track of pending options - should save some api calls
   function pendingOptionsReducer(currentPendingOptions: string[], { type, key }: { type: 'add' | 'remove', key: string}) {
     switch(type) {

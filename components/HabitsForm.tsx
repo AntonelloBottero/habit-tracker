@@ -32,13 +32,11 @@ const rules: Rules = {
 const granularities: string[] = ['daily', 'weekly', 'monthly', 'yearly']
 
 export default function FormHabits({ values, onSave, onDelete }: Props) {
-  const { getOption } = useDb()
+  const { options } = useDb()
   const [setupDone, setSetupDone] = useState<boolean>(false)
   useEffect(() => {
-    getOption('last_setup_at').then(value => {
-      setSetupDone((value || '') > DateTime.now().toISO())
-    })
-  }, [])
+    setSetupDone((options.last_setup_at || '') > DateTime.now().toISO())
+  }, [options.last_setup_at])
 
   // --- useForm ---
   const { model, changeField, init, errorMessages, handleFormSubmit } = useForm({ defaultValues: habitsModel, rules, onSubmit })

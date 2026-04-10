@@ -6,7 +6,7 @@
  */
 import { defaultColors } from "@/utils/constants"
 
-import { useEffect, ChangeEvent } from "react"
+import { ChangeEvent } from "react"
 import useDb from "@/db/useDb"
 import { BookmarkIcon } from '@heroicons/react/24/solid'
 import { FormFieldProps } from "@/app/types"
@@ -17,10 +17,7 @@ export default function ColorPicker(props: FormFieldProps) {
   const {value, onChange, ...inputProps } = props
 
   // user colors are managed through db options
-  const { options, getOption } = useDb()
-  useEffect(() => {
-    getOption("user_colors")
-  }, [])
+  const { options } = useDb()
 
   // --- mixes default color with the ones chosen by the user in previous form entries ---
   const availableColors = [...((options.user_colors as string[] | null | undefined) || []), ...defaultColors]
