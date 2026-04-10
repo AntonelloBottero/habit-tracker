@@ -33,6 +33,10 @@ export default function HabitsSetup({ onSetup }: Props) {
 		}
 	}
 
+	useEffect(() => {
+		fetchHabits()
+	}, [])
+
 	// --- Manage form ad habits store/update ---
 	const formModalRef = useRef<ModalRef>(null)
 	const [formHabitsValues, setFormHabitsValues] = useState<Partial<DbResourceSchema<HabitsSchema>> | undefined>(undefined)
@@ -60,10 +64,7 @@ export default function HabitsSetup({ onSetup }: Props) {
 
 	// --- Check setup is already done ---
 	const { options } = useDb()
-	const [setupDone, setSetupDone] = useState<boolean>(false)
-	useEffect(() => {
-		setSetupDone((options.last_setup_at || '') > DateTime.now().toISO())
-	}, [options.last_setup_at])
+	const setupDone = (options.last_setup_at || '') > DateTime.now().toISO()
 
 	// --- Complete ---
 	const { setup } = useHabits()

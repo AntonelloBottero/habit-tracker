@@ -126,7 +126,7 @@ export function DbProvider({ children, externalDb }: ProviderProps) {
   }
 
   return (
-    <DbContext.Provider value={ { db, dbIsOpen, createOption, getOption } }>
+    <DbContext.Provider value={ { db, dbIsOpen, options, createOption, getOption } }>
       {dbIsOpen === true && children}
     </DbContext.Provider>
   )
