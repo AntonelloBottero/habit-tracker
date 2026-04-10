@@ -91,7 +91,7 @@ export function DbProvider({ children, externalDb }: ProviderProps) {
   async function getOption(key: string, force: boolean = false): Promise<unknown> {
     if(pendingOptions.includes(key)) { 
       console.log('pendingOptions are actually useful', key) // TODO remove
-      return null 
+      return null
     }
     const availableOption: unknown = options[key]
     if(availableOption !== undefined && !force) { return availableOption }

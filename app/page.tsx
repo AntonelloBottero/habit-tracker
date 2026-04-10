@@ -4,20 +4,16 @@ import { useState, useEffect } from "react"
 import Link from "next/link"
 import useHabits from "@/hooks/useHabits"
 import HabitsCalendar from '@/components/HabitsCalendar'
-import useDb from "@/db/useDb"
 
 export default function Home() {
-  const { dbIsOpen } = useDb()
   const { setup } = useHabits()
 
   const [setupCompleted, setSetupCompleted] = useState<boolean>(false)
   useEffect(() => {
-    if(dbIsOpen === true) {
-      setup().then(value => {
-        setSetupCompleted(value)
-      })
-    }
-  }, [dbIsOpen])
+    setup().then(value => {
+      setSetupCompleted(value)
+    })
+  }, [])
 
   return (
     <>

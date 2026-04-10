@@ -6,7 +6,7 @@
  */
 import { defaultColors } from "@/utils/constants"
 
-import { useState, useEffect, ChangeEvent } from "react"
+import { useEffect, ChangeEvent } from "react"
 import useDb from "@/db/useDb"
 import { BookmarkIcon } from '@heroicons/react/24/solid'
 import { FormFieldProps } from "@/app/types"
@@ -14,13 +14,17 @@ import { FormFieldProps } from "@/app/types"
 
 
 export default function ColorPicker(props: FormFieldProps) {
+  const {value, onChange, ...inputProps } = props
+
+  // user colors are managed through db options
+  const { options, getOption } = useDb()
+  useEffect(() => {
+    getOption("user_colors")
+  }, [])
+
   // --- mixes default color with the ones chosen by the user in previous form entries ---
-  const { getOption } = useDb() // user colors are managed through db options
-  const [availableColors, setAvailableColors] = useState<string[]>([])
-  async function getUserColors() {
-    const userColors = await getOption("user_colors") as string[] | undefined
-    setAvailableColors([...(userColors || []), ...defaultColors])
-  }
+  const availableColors = [...((options.user_colors as string[] | null | undefined) || []), ...defaultColors]
+
   function pickAvailableColor(value: string) {
     if(!onChange) { return undefined }
     onChange({
@@ -29,12 +33,6 @@ export default function ColorPicker(props: FormFieldProps) {
       }
     } as ChangeEvent<HTMLInputElement>)
   }
-
-  const {value, onChange, ...inputProps } = props
-
-  useEffect(() => { // TODO refactor after options API refactor
-    getUserColors()
-  }, [])
 
   return (
     <div role="color-picker" className="flex gap-2 flex-wrap center">
