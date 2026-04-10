@@ -1,20 +1,18 @@
 'use client'
 
-import { createContext, useContext, useState, useEffect, type ReactNode } from 'react'
+import { createContext, useContext, useState, useEffect, type ReactNode, useReducer } from 'react'
 import { type Table } from 'dexie'
 import DbClass, { type OptionsSchema } from '@/db/DbClass'
 
-interface AvailableOptionValues {
-  [key: string]: unknown
-}
+type Options = Record<string, unknown>
 
 // --- Context Provider ---
 interface DbContextProvider {
   db: DbClass
   dbIsOpen: boolean | 'pending'
+  options: Options
   createOption: (key: string, value?: string | number | boolean) => Promise<boolean>
   getOption: (key: string) => Promise<unknown>
-  registerExternalOption: (key: string, value: never) => void
 }
 
 type ProviderProps = Readonly<{
@@ -47,7 +45,20 @@ export function DbProvider({ children, externalDb }: ProviderProps) {
   }, [])
 
   // --- Manage options ---
-  const [availableOptionValues, setAvailableOptionValues] = useState<AvailableOptionValues>({}) // Options requested already in the current session
+  const [options, setOptions] = useState<Options>({}) // Options requested already in the current session
+  
+  // reducer to keep track of pending options - should save some api calls
+  function pendingOptionsReducer(currentPendingOptions: string[], { type, key }: { type: 'add' | 'remove', key: string}) {
+    switch(type) {
+      case 'add':
+        return [...currentPendingOptions, key]
+      case 'remove':
+        return currentPendingOptions.filter(k => k !== key)
+      default:
+        throw new TypeError('Pending options reducer action not allowed')
+    }
+  }
+  const [pendingOptions, dispatchPendingOptions] = useReducer(pendingOptionsReducer, [])
 
   // get option
   async function showOption(key: string): Promise<OptionsSchema | undefined> {
@@ -77,31 +88,34 @@ export function DbProvider({ children, externalDb }: ProviderProps) {
   }
 
   // retrieves an option
-  async function getOption(key: string): Promise<unknown> {
-    const availableOption: unknown = availableOptionValues[key]
-    if(availableOption) { return availableOption }
+  async function getOption(key: string, force: boolean = false): Promise<unknown> {
+    if(pendingOptions.includes(key)) { 
+      console.log('pendingOptions are actually useful', key) // TODO remove
+      return null 
+    }
+    const availableOption: unknown = options[key]
+    if(availableOption !== undefined && !force) { return availableOption }
 
-    // if option doesn't exist, we try to fetch it
-    const fetchedOption = await showOption(key)
-    if(!fetchedOption) { return undefined }
-    // if option exists, we add its value to the available option values, and return its value
-    setAvailableOptionValues({
-      ...availableOptionValues,
-      [key]: fetchedOption.value
-    })
-    return fetchedOption.value
-  }
-
-  // register data that is not intended to fit in options table, but we want it provided inside context
-  function registerExternalOption(key: string, value: never): void {
-    setAvailableOptionValues({
-      ...availableOptionValues,
-      [key]: value
-    })
+    try {
+      dispatchPendingOptions({ type: 'add', key })
+      // if option doesn't exist, we try to fetch it
+      const fetchedOption = await showOption(key)
+      if(!fetchedOption) { return null }
+      // if option exists, we add its value to the available option values, and return its value
+      setOptions(currentOptions => ({
+        ...currentOptions,
+        [key]: fetchedOption.value
+      }))
+      dispatchPendingOptions({ type: 'remove', key })
+      return fetchedOption.value
+    } catch(error) {
+      console.error(error)
+      dispatchPendingOptions({ type: 'remove', key })
+    }
   }
 
   return (
-    <DbContext.Provider value={ { db, dbIsOpen, createOption, getOption, registerExternalOption } }>
+    <DbContext.Provider value={ { db, dbIsOpen, createOption, getOption } }>
       {dbIsOpen === true && children}
     </DbContext.Provider>
   )
