@@ -8,7 +8,7 @@ import useDb from "@/db/useDb"
 import useDbCrud from '@/db/useDbCrud'
 import useHabits from '@/hooks/useHabits'
 import ConfirmModal from '@/components/ConfirmModal'
-import { ConfirmModalRef } from '@/app/types'
+import { ColorPickerRef, ConfirmModalRef } from '@/app/types'
 import { CheckCircle, Info } from '@project-lary/react-material-symbols-700-rounded'
 import { DateTime } from 'luxon'
 
@@ -33,7 +33,7 @@ const granularities: string[] = ['daily', 'weekly', 'monthly', 'yearly']
 
 export default function FormHabits({ values, onSave, onDelete }: Props) {
   const { options } = useDb()
-  const setupDone = (options.last_setup_at || '') > DateTime.now().toISO()
+  const setupDone = (options.current.last_setup_at || '') > DateTime.now().toISO()
 
   // --- useForm ---
   const { model, changeField, init, errorMessages, handleFormSubmit } = useForm({ defaultValues: habitsModel, rules, onSubmit })
@@ -73,6 +73,9 @@ export default function FormHabits({ values, onSave, onDelete }: Props) {
     changeField('granularity_times', 1)
   }
 
+  // --- Color picker ref ---
+  const colorPickerRef = useRef<ColorPickerRef>(null)
+
   // --- Save data ---
   const { store, update, deleteItem } = useDbCrud({ table: 'habits', model: habitsModel })
   const [loading, setLoading] = useState(false)
@@ -90,6 +93,7 @@ export default function FormHabits({ values, onSave, onDelete }: Props) {
       } else {
         await update(id, fullModel)
       }
+      await colorPickerRef.current?.updateUserColorsOption(model.color)
       if(onSave) {
         onSave()
       }
@@ -141,6 +145,7 @@ export default function FormHabits({ values, onSave, onDelete }: Props) {
       <div className="col-span-2">
         <InputWrapper errorMessages={errorMessages.color} label="Color" input={(
           <ColorPicker
+            ref={colorPickerRef}
             id="color"
             name="color"
             className="ht-form-input !py-1"

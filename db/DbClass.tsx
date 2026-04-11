@@ -11,7 +11,7 @@ export type DbResourceSchema<T> = T & {
 // options schema
 export interface OptionsSchema {
     key: string,
-    value?: string | number
+    value?: unknown
 }
 
 // habits schema and model

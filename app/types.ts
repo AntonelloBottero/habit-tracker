@@ -14,6 +14,10 @@ export interface SidebarRef {
 	toggle: (show: boolean) => void
 }
 
+export interface ColorPickerRef {
+	updateUserColorsOption: (color: string) => Promise<void>
+}
+
 export interface FakeInputChangeEvent { // simulates a regular form input change event
 	target: {
 		value?: boolean

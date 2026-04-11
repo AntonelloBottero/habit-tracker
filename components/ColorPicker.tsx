@@ -6,21 +6,26 @@
  */
 import { defaultColors } from "@/utils/constants"
 
-import { ChangeEvent } from "react"
+import { ChangeEvent, forwardRef, useImperativeHandle } from "react"
 import useDb from "@/db/useDb"
 import { BookmarkIcon } from '@heroicons/react/24/solid'
-import { FormFieldProps } from "@/app/types"
+import { ColorPickerRef, FormFieldProps } from "@/app/types"
 
 
 
-export default function ColorPicker(props: FormFieldProps) {
+const ColorPicker = forwardRef<ColorPickerRef, FormFieldProps>((props: FormFieldProps, ref) => {
   const {value, onChange, ...inputProps } = props
 
+  // customizes the ref object the parent can access
+  useImperativeHandle(ref, () => ({
+    updateUserColorsOption,
+  }))
+
   // user colors are managed through db options
-  const { options } = useDb()
+  const { options, createOption, getOption } = useDb()
 
   // --- mixes default color with the ones chosen by the user in previous form entries ---
-  const availableColors = [...((options.user_colors as string[] | null | undefined) || []), ...defaultColors]
+  const availableColors = [...((options.current.user_colors as string[] | null | undefined) || []), ...defaultColors]
 
   function pickAvailableColor(value: string) {
     if(!onChange) { return undefined }
@@ -29,6 +34,12 @@ export default function ColorPicker(props: FormFieldProps) {
         value
       }
     } as ChangeEvent<HTMLInputElement>)
+  }
+
+  async function updateUserColorsOption(color: string): Promise<void> {
+    if(availableColors.includes(color)) { return undefined }
+    await createOption('user_colors', [...((options.current.user_colors as string[] | null | undefined) || []), color])
+    await getOption('user_colors', true)
   }
 
   return (
@@ -57,4 +68,6 @@ export default function ColorPicker(props: FormFieldProps) {
       ))}
     </div>
   )
-}
+})
+
+export default ColorPicker

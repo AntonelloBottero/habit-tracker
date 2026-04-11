@@ -64,7 +64,7 @@ export default function HabitsSetup({ onSetup }: Props) {
 
 	// --- Check setup is already done ---
 	const { options } = useDb()
-	const setupDone = (options.last_setup_at || '') > DateTime.now().toISO()
+	const setupDone = (options.current.last_setup_at || '') > DateTime.now().toISO()
 
 	// --- Complete ---
 	const { setup } = useHabits()

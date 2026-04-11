@@ -1,6 +1,6 @@
 'use client'
 
-import { createContext, useContext, useState, useEffect, type ReactNode, useReducer } from 'react'
+import { createContext, useContext, useState, useEffect, type ReactNode, useReducer, useRef } from 'react'
 import { type Table } from 'dexie'
 import DbClass, { type OptionsSchema } from '@/db/DbClass'
 
@@ -10,9 +10,9 @@ type Options = Record<string, unknown>
 interface DbContextProvider {
   db: DbClass
   dbIsOpen: boolean | 'pending'
-  options: Options
+  options: { current: Options }
   createOption: (key: string, value?: string | number | boolean) => Promise<boolean>
-  getOption: (key: string) => Promise<unknown>
+  getOption: (key: string, force?: boolean) => Promise<unknown>
 }
 
 type ProviderProps = Readonly<{
@@ -46,15 +46,15 @@ export function DbProvider({ children, externalDb }: ProviderProps) {
   }, [])
 
   // --- Manage options ---
-  const [options, setOptions] = useState<Options>({}) // Options requested already in the current session
+  const options = useRef<Options>({}) // Options requested already in the current session
 
   async function fetchOptions() {
     try {
       const optionResources = await db.options.toArray()
-      setOptions(optionResources.reduce((r, or) => ({ ...r, [or.key]: or.value }), {}))
+      options.current = optionResources.reduce((r, or) => ({ ...r, [or.key]: or.value }), {})
     } catch(error) {
       console.error(error)
-      setOptions({})
+      options.current = {}
     }
   }
 
@@ -83,7 +83,7 @@ export function DbProvider({ children, externalDb }: ProviderProps) {
   }
 
   // insert new option, or update it if the key exists already
-  async function createOption(key: string, value?: string | number): Promise<boolean> {
+  async function createOption(key: string, value?: unknown): Promise<boolean> {
     if(!key) { return false }
     const formattedKey = key.toLocaleLowerCase()
     const option = await showOption(key)
@@ -104,7 +104,7 @@ export function DbProvider({ children, externalDb }: ProviderProps) {
       console.log('pendingOptions are actually useful', key) // TODO remove
       return null
     }
-    const availableOption: unknown = options[key]
+    const availableOption: unknown = options.current[key]
     if(availableOption !== undefined && !force) { return availableOption }
 
     try {
@@ -113,10 +113,10 @@ export function DbProvider({ children, externalDb }: ProviderProps) {
       const fetchedOption = await showOption(key)
       if(!fetchedOption) { return null }
       // if option exists, we add its value to the available option values, and return its value
-      setOptions(currentOptions => ({
-        ...currentOptions,
+      options.current = {
+        ...options.current,
         [key]: fetchedOption.value
-      }))
+      }
       dispatchPendingOptions({ type: 'remove', key })
       return fetchedOption.value
     } catch(error) {
