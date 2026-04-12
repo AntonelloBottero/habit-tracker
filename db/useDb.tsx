@@ -58,18 +58,8 @@ export function DbProvider({ children, externalDb }: ProviderProps) {
     }
   }
 
-  // reducer to keep track of pending options - should save some api calls
-  function pendingOptionsReducer(currentPendingOptions: string[], { type, key }: { type: 'add' | 'remove', key: string}) {
-    switch(type) {
-      case 'add':
-        return [...currentPendingOptions, key]
-      case 'remove':
-        return currentPendingOptions.filter(k => k !== key)
-      default:
-        throw new TypeError('Pending options reducer action not allowed')
-    }
-  }
-  const [pendingOptions, dispatchPendingOptions] = useReducer(pendingOptionsReducer, [])
+  // ref to keep track of pending options - should save some api calls
+  const pendingOptions = useRef<string[]>([])
 
   // get option
   async function showOption(key: string): Promise<OptionsSchema | undefined> {
@@ -100,7 +90,7 @@ export function DbProvider({ children, externalDb }: ProviderProps) {
 
   // retrieves an option
   async function getOption(key: string, force: boolean = false): Promise<unknown> {
-    if(pendingOptions.includes(key)) { 
+    if(pendingOptions.current.includes(key)) {
       console.log('pendingOptions are actually useful', key) // TODO remove
       return null
     }
@@ -108,7 +98,7 @@ export function DbProvider({ children, externalDb }: ProviderProps) {
     if(availableOption !== undefined && !force) { return availableOption }
 
     try {
-      dispatchPendingOptions({ type: 'add', key })
+      pendingOptions.current.push(key)
       // if option doesn't exist, we try to fetch it
       const fetchedOption = await showOption(key)
       if(!fetchedOption) { return null }
@@ -117,11 +107,11 @@ export function DbProvider({ children, externalDb }: ProviderProps) {
         ...options.current,
         [key]: fetchedOption.value
       }
-      dispatchPendingOptions({ type: 'remove', key })
+      pendingOptions.current = [...pendingOptions.current.filter(po => po !== key)]
       return fetchedOption.value
     } catch(error) {
       console.error(error)
-      dispatchPendingOptions({ type: 'remove', key })
+      pendingOptions.current = [...pendingOptions.current.filter(po => po !== key)]
     }
   }
 

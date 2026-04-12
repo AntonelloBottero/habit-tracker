@@ -8,6 +8,7 @@ import HabitsSetup from "@/components/HabitsSetup"
 import { useState, useEffect } from 'react'
 
 export default function Page() {
+  console.log('page rendering')
   const { getOption } = useDb()
   const [tab, setTab] = useState(0)
   async function getName() {
