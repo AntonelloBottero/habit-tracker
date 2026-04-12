@@ -4,12 +4,7 @@ import { objectIsCompliant } from "@/utils/index"
 import { type Table } from 'dexie'
 import { type DbResourceSchema } from '@/db/DbClass'
 
-interface Params<T> {
-  table: string
-  model: T
-}
-
-export default function useDbCrud<T extends object>({ table: storeName, model }: Params<T>) {
+export default function useDbCrud<T extends object>(storeName: string, model: T) {
   const { db, dbIsOpen } = useDb()
 
   const table = db.table(storeName) || null

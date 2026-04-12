@@ -25,7 +25,7 @@ export default function HabitsCalendar() {
   const [slots, setSlots] = useState<DbResourceSchema<SlotsSchema>[]>([])
 
   // --- Habits ---
-  const habitsCrud = useDbCrud({table: 'habits', model: habitsModel })
+  const habitsCrud = useDbCrud('habits', habitsModel)
   const [habits, setHabits] = useState<DbResourceSchema<HabitsSchema>[] | null>(null)
 
   const formattedHabits: HabitWithSlots[] = habits?.map((habit) => ({ ...habit, slots: slots.filter(slot => slot.habit_id === habit.id) })).filter(habit => habit.slots.length) ?? []
@@ -54,7 +54,7 @@ export default function HabitsCalendar() {
   // --- Calendar ---
   const calendarRef = useRef<FullCalendar>(null)
 
-  const eventsCrud = useDbCrud({ table: 'events', model: eventsModel })
+  const eventsCrud = useDbCrud('events', eventsModel)
 
   const [dateArgs, setDateArgs] = useState<DatesSetArg | null>(null) // since fullcalendar has no api to refresh current date, we have to trigger it manually using the last calendar args
 

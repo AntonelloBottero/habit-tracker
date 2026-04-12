@@ -5,9 +5,9 @@ import { SelectableHabit } from "@/app/types"
 import useDb from "@/db/useDb"
 
 export default function useHabits() {
-  const habitsCrud = useDbCrud({ table: 'habits', model: habitsModel })
-  const slotsCrud = useDbCrud({ table: 'slots', model: slotsModel })
-  const eventsCrud = useDbCrud({ table: 'events', model: eventsModel })
+  const habitsCrud = useDbCrud('habits', habitsModel)
+  const slotsCrud = useDbCrud('slots', slotsModel)
+  const eventsCrud = useDbCrud('events', eventsModel)
 
   // --- Utils ---
   function calculateSlotMaxDate(granularity: string, datetime: string): string | null {

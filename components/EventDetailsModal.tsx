@@ -19,7 +19,7 @@ const EventDetailsModal = forwardRef<ModalRef, Props>(({ event, onDelete }: Prop
   const { deleteEvent: _deleteEvent } = useHabits()
 
   // --- Habit ---
-  const habitsCrud = useDbCrud({ table: 'habits', model: habitsModel })
+  const habitsCrud = useDbCrud('habits', habitsModel)
   const [habit, setHabit] = useState<DbResourceSchema<HabitsSchema> | undefined>(undefined)
   async function fetchHabit() {
     if(!event) { return undefined }
