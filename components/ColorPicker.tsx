@@ -43,29 +43,33 @@ const ColorPicker = forwardRef<ColorPickerRef, FormFieldProps>((props: FormField
   }
 
   return (
-    <div role="color-picker" className="flex gap-2 flex-wrap center">
-      <input
-        placeholder="#123456"
-        {...inputProps}
-        value={value}
-        onChange={onChange}
-      />
-      {availableColors.map(color => (
-        <button
-          role="color-picker-available-color"
-          key={color}
-          type="button"
-          className="ht-btn ht-interaction w-7 h-7 rounded-full flex justify-center items-center text-white"
-          style={{backgroundColor: color}}
-          onClick={() => pickAvailableColor(color)}
-        >
-          {value === color && (
-            <span role="available-color-active">
-              <BookmarkIcon className="size-3"  />
-            </span>
-          )}
-        </button>
-      ))}
+    <div role="color-picker" className="flex gap-2 center">
+      <div>
+        <input
+          placeholder="#123456"
+          {...inputProps}
+          value={value}
+          onChange={onChange}
+        />
+      </div>
+      <div className="flex flex-wrap gap-1">
+        {availableColors.map(color => (
+          <button
+            role="color-picker-available-color"
+            key={color}
+            type="button"
+            className="ht-btn ht-interaction w-7 h-7 rounded-full flex justify-center items-center text-white"
+            style={{backgroundColor: color}}
+            onClick={() => pickAvailableColor(color)}
+          >
+            {value === color && (
+              <span role="available-color-active">
+                <BookmarkIcon className="size-3"  />
+              </span>
+            )}
+          </button>
+        ))}
+      </div>
     </div>
   )
 })

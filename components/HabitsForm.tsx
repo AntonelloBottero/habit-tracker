@@ -22,7 +22,7 @@ interface Props {
 
 const rules: Rules = {
   name: [validators.required],
-  color: [validators.required],
+  color: [validators.required, validators.hex],
   granularity: [validators.required],
   include_weekends: [],
   granularity_times: [validators.numeric],

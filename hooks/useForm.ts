@@ -2,9 +2,8 @@ import { useState, useReducer, type FormEvent } from 'react'
 
 // validators
 type Validator = (value: unknown) => true | string
-type Validators = {
-    [key: string]: Validator
-}
+type Validators = Record<string, Validator>
+
 export const validators: Validators = {
   required: (value) => {
     return !!value || 'This field is required'
@@ -12,6 +11,9 @@ export const validators: Validators = {
   numeric: (value) => {
     const n = Number(value)
     return !value || !isNaN(n) || 'Insert a numeric value'
+  },
+  hex: (value) => {
+    return !value || !!String(value).match(/^#([A-Fa-f0-9]{3}|[A-Fa-f0-9]{6})$/) || 'Insert a hexadecimal value'
   }
 }
 
