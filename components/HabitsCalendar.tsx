@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useTransition } from 'react'
 import FullCalendar from '@fullcalendar/react'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import interactionPlugin, { DateClickArg } from '@fullcalendar/interaction'
@@ -34,6 +34,7 @@ export default function HabitsCalendar() {
   const formEventsModal = useRef<ModalRef>(null)
   const [formEventsValues, setFormEventsValues] = useState<Partial<DbResourceSchema<EventsSchema>> | undefined>(undefined)
   const [events, setEvents] = useState<DbResourceSchema<EventsSchema>[]>([])
+  const [isResourcesTransitionPending, startResourcesTransition] = useTransition()
 
   const formattedEvents = events
     .map(event => {
@@ -67,14 +68,18 @@ export default function HabitsCalendar() {
       fetchActiveSlots(args.startStr, args.endStr),
       eventsCrud.index(item => item.datetime >= args.startStr && item.datetime <= args.endStr)
     ]).then(([h, as, e]) => {
-      if(h) { setHabits(h) }
-      setSlots(as.sort((a, b) => a.active_to > b.active_to ? 1 : -1))
-      setEvents(e)
+      startResourcesTransition(() => {
+        if(h) { setHabits(h) }
+        setSlots(as.sort((a, b) => a.active_to > b.active_to ? 1 : -1))
+        setEvents(e)
+      })
     }).catch(error => {
       console.error(error)
-      setHabits(null)
-      setSlots([])
-      setEvents([])
+      startResourcesTransition(() => {
+        setHabits(null)
+        setSlots([])
+        setEvents([])
+      })
     })
 
     setDateArgs(args)
@@ -161,7 +166,7 @@ export default function HabitsCalendar() {
                   </button>
                 </>
               </CalendarToolbar>
-
+               {String(isResourcesTransitionPending)}
               <FullCalendar
                 ref={calendarRef}
                 plugins={[ dayGridPlugin, interactionPlugin ]}

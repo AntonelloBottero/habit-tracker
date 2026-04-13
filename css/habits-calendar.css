@@ -17,6 +17,7 @@
 .habits-calendar .fc-theme-standard .fc-scrollgrid {
   border-radius: var(--radius-lg);
   overflow:hidden;
+  background-color:#fff;
   /* box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--ht-shadow); */
 }
 
