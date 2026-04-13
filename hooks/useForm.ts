@@ -1,4 +1,4 @@
-import { useState, useReducer, type FormEvent } from 'react'
+import { useState, useReducer, type FormEvent, useTransition } from 'react'
 
 // validators
 type Validator = (value: unknown) => true | string
@@ -64,6 +64,7 @@ export default function useForm<T extends object>({ defaultValues, rules, onSubm
 
   // --- Error messages ---
   const [errorMessages, setErrorMessages] = useState<ErrorMessages>({})
+  const [isErrorMessagesTransitionPending, startErrorMessagesTransition] = useTransition()
   function validate(key?: string, value?: T | unknown): boolean {
     const keys = !key ? Object.keys(rules || {}) : [key] // which fields we should check
     const updatedErrorMessages = {
@@ -75,8 +76,10 @@ export default function useForm<T extends object>({ defaultValues, rules, onSubm
           .filter(message => typeof message === 'string')
       }), {})
     } as ErrorMessages
-    setErrorMessages(updatedErrorMessages)
-    return Object.values(updatedErrorMessages).reduce((r, messages) => !r || messages?.length ? false : true, true)
+    startErrorMessagesTransition(() => {
+      setErrorMessages(updatedErrorMessages)
+    })
+    return Object.values(updatedErrorMessages).reduce((r, messages) => !r || messages?.length ? false : true, true) // we return the status in case a preview of the state is needed before the deferred state update happens
   }
 
   // --- Update single field and check field rules ---
