@@ -17,7 +17,7 @@ const SlotDetailsModal = forwardRef<ModalRef, Props>(({ slot, habit }: Props, re
   const modalRef = useRef<ModalRef>(null)
 
   // --- Slot events ---
-  const eventsCrud = useDbCrud({ table: 'events', model: eventsModel })
+  const eventsCrud = useDbCrud('events', eventsModel)
   const [events, setEvents] = useState<DbResourceSchema<EventsSchema>[]>([])
   async function fetchEvents() {
     if(!slot) { return undefined }

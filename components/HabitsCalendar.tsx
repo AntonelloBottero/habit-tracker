@@ -146,7 +146,7 @@ export default function HabitsCalendar() {
               </div>
               {formattedHabits.map(habit => (
                 <div key={habit.id}>
-                  {habit.slots.length === 1 ? <SlotsCard habit={habit} slot={habit.slots[0]} /> : false ? <CompressedSlotsCard habit={habit} key={habit.id} /> : 'CompressedSlotsCard'}
+                  {habit.slots.length === 1 ? <SlotsCard habit={habit} slot={habit.slots[0]} /> : <CompressedSlotsCard habit={habit} key={habit.id} />}
                 </div>
               ))}
             </>
