@@ -32,6 +32,7 @@ const rules: Rules = {
 const granularities: string[] = ['daily', 'weekly', 'monthly', 'yearly']
 
 export default function FormHabits({ values, onSave, onDelete }: Props) {
+  console.log('FormHabits render')
   const { options } = useDb()
   const setupDone = (options.current.last_setup_at || '') > DateTime.now().toISO()
 
