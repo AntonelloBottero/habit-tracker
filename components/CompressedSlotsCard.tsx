@@ -105,21 +105,21 @@ export default function CompressedSlotsCard({ habit, className = '' }: Props) {
             <div className="grow w-full font-bold">
               Progress details
             </div>
-            <table className="w-full">
-              <thead>
+            <table className="w-full text-sm text-left rtl:text-right text-body">
+              <thead className="text-sm text-body bg-neutral-secondary-soft rounded-base">
                 <tr>
-                  <th>Date</th>
-                  <th>Progress</th>
+                  <th className="px-3 py-1.5 text-gray-500 font-bold">Date</th>
+                  <th className="px-3 py-1.5 text-right text-gray-500 font-bold" style={{ width: '90px', maxWidth: '90px' }}>Progress</th>
                 </tr>
               </thead>
               <tbody>
                 {slots.map(slot => (
-                  <tr key={slot.id} onClick={() => { showSlotDetail(slot) }}>
-                    <td className="text-sm">
+                  <tr key={slot.id} className="bg-neutral-primary border-t border-stone-200 cursor-pointer hover:bg-stone-100"  onClick={() => { showSlotDetail(slot) }}>
+                    <td className="px-3 py-1.5">
                       {DateTime.fromISO(slot.active_to).toFormat('dd/MM/yyyy')}
                     </td>
-                    <td>
-                    <SlotsCompletionChip count={slot.count} completion={slot.completion} active_to={slot.active_to} />
+                    <td className="px-3 py-1.5 text-right">
+                      <SlotsCompletionChip count={slot.count} completion={slot.completion} active_to={slot.active_to} />
                     </td>
                   </tr>
                 ))}
