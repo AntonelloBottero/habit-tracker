@@ -72,6 +72,7 @@ export default function HabitsCalendar() {
         if(h) { setHabits(h) }
         setSlots(as.sort((a, b) => a.active_to > b.active_to ? 1 : -1))
         setEvents(e)
+        setDateArgs(args)
       })
     }).catch(error => {
       console.error(error)
@@ -79,10 +80,9 @@ export default function HabitsCalendar() {
         setHabits(null)
         setSlots([])
         setEvents([])
+        setDateArgs(args)
       })
     })
-
-    setDateArgs(args)
   }
 
   function handleDateClick(args: DateClickArg) {
@@ -166,7 +166,6 @@ export default function HabitsCalendar() {
                   </button>
                 </>
               </CalendarToolbar>
-               {String(isResourcesTransitionPending)}
               <FullCalendar
                 ref={calendarRef}
                 plugins={[ dayGridPlugin, interactionPlugin ]}

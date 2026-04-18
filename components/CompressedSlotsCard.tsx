@@ -14,7 +14,7 @@ interface Props {
   className?: string
 }
 
-export default function SlotsCard({ habit, className = '' }: Props) {
+export default function CompressedSlotsCard({ habit, className = '' }: Props) {
   const slots = habit?.slots ?? []
 
   const count = slots.reduce((r, slot) => r += Number(slot.count), 0)
@@ -80,7 +80,7 @@ export default function SlotsCard({ habit, className = '' }: Props) {
         )}
       </div>
 
-      <Modal ref={modalRef} title="Overall progress" size="max-w-xl" role="compressed-slots-modal">
+      <Modal ref={modalRef} title="Overall progress" size="max-w-lg" role="compressed-slots-modal">
         <div className="flex flex-col gap-2">
           <HabitsCardHeader habit={habit} />
           <div className="flex items-center flex-wrap gap-2">
@@ -101,18 +101,30 @@ export default function SlotsCard({ habit, className = '' }: Props) {
             )}
           </div>
           <div className="w-full border-t-1 border-stone-200 my-2" />
-          <div className="flex flex-wrap items-center gap-4">
+          <div className="flex flex-wrap items-center gap-3">
             <div className="grow w-full font-bold">
               Progress details
             </div>
-            {slots.map(slot => (
-              <div key={slot.id} className="text-sm flex items-center gap-4 py-2 px-4 rounded-lg outline-1 outline-offset-1 outline-stone-200 ht-interaction" onClick={() => { showSlotDetail(slot) }}>
-                <div className="grow">
-                {DateTime.fromISO(slot.active_to).toFormat('dd/MM/yyyy')}
-                </div>
-                <SlotsCompletionChip count={slot.count} completion={slot.completion} active_to={slot.active_to} />
-              </div>
-            ))}
+            <table className="w-full">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Progress</th>
+                </tr>
+              </thead>
+              <tbody>
+                {slots.map(slot => (
+                  <tr key={slot.id} onClick={() => { showSlotDetail(slot) }}>
+                    <td className="text-sm">
+                      {DateTime.fromISO(slot.active_to).toFormat('dd/MM/yyyy')}
+                    </td>
+                    <td>
+                    <SlotsCompletionChip count={slot.count} completion={slot.completion} active_to={slot.active_to} />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
       </Modal>

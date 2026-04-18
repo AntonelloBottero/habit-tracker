@@ -20,11 +20,11 @@ interface Props {
 }
 
 export default function SidebarView({ value, onChange, breakpoint = 'md', width = 256, align = 'left', bordered = true, content, children }: Props) {
-  function change(value: boolean): void {
-    if(onChange) {
+  function change(v: boolean): void {
+    if(onChange && value !== v) {
       onChange({
         target: {
-          value
+          value: v
         }
       })
     }
