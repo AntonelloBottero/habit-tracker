@@ -1,18 +1,27 @@
 'use client'
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, lazy, Suspense } from "react"
 import Link from "next/link"
 import useHabits from "@/hooks/useHabits"
-import HabitsCalendar from '@/components/HabitsCalendar'
+
+const HabitsCalendar = lazy(() => import('@/components/HabitsCalendar')) // HabitsCalendar is an heavy component and should be loaded only when user has finished setup
+
+let skipSetup = false // In strict mode we need to prevent useDb.setup() to be executed twice
 
 export default function Home() {
   const { setup } = useHabits()
 
   const [setupCompleted, setSetupCompleted] = useState<boolean>(false)
   useEffect(() => {
-    setup().then(value => {
-      setSetupCompleted(value)
-    })
+    if(!skipSetup) {
+      setup().then(value => {
+        setSetupCompleted(value)
+      })
+    }
+
+    return () => {
+      skipSetup = true
+    }
   }, [])
 
   return (
@@ -33,7 +42,9 @@ export default function Home() {
         </div>
       ) : (
         <main className="font-sans w-full h-[100vh]">
-          <HabitsCalendar />
+          <Suspense fallback={<p>Loading calendar...</p>}>
+            <HabitsCalendar />
+          </Suspense>
         </main>
       )}
     </>
