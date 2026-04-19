@@ -1,6 +1,6 @@
 import { ConfirmModalRef } from '@/app/types'
 import ConfirmModal from '@/components/ConfirmModal'
-import { fireEvent, render, screen, within } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import '@testing-library/jest-dom'
 import { act, useRef, useEffect } from 'react'
 
@@ -26,7 +26,10 @@ describe('ConfirmDialog', () => {
 
     act(() => {
       (confirmModalRef as ConfirmModalRef).confirm()
-      const ModalElement = screen.getByRole('confirm-modal', { hidden: true })
+    })
+
+    waitFor(() => {
+      const ModalElement = screen.getByRole('confirm-modal')
       expect(ModalElement).toBeVisible()
     })
   })

@@ -14,7 +14,8 @@ const config: Config = {
   // Add more setup options before each test is run
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/$1', // to allow Jest to find React components whose import path starts with "@/"
-  }
+  },
+  transformIgnorePatterns: []
 }
 
 // createJestConfig is exported this way to ensure that next/jest can load the Next.js config which is async

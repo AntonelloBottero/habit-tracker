@@ -9,7 +9,7 @@ type Options = Record<string, unknown>
 // --- Context Provider ---
 interface DbContextProvider {
   db: DbClass
-  dbIsOpen: boolean | 'pending'
+  dbIsOpen: boolean
   options: { current: Options }
   createOption: (key: string, value?: string | number | boolean) => Promise<boolean>
   getOption: (key: string, force?: boolean) => Promise<unknown>
@@ -28,10 +28,10 @@ export function DbProvider({ children, externalDb }: ProviderProps) {
   const db = externalDb || new DbClass(process.env.dbName as string) // we treat externalDb as non stateful -> if not provided after Provider setup won't be further considered
 
   // --- Open db ---
-  const [dbIsOpen, setDbIsOpen] = useState<boolean | 'pending'>(false)
+  const [dbIsOpen, setDbIsOpen] = useState<boolean>(false)
   async function open() {
     if(dbIsOpen !== false) { return undefined }
-    setDbIsOpen('pending')
+    setDbIsOpen(false)
     try {
     await db.open()
     await fetchOptions()

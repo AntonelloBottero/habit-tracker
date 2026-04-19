@@ -9,7 +9,7 @@ const testDb = new DbClass('TestDatabase')
 
 // --- Test consumer ---
 interface DbTestValues {
-    dbIsOpen: boolean | 'pending';
+    dbIsOpen: boolean;
     getOption: (key: string) => Promise<unknown>;
     createOption: (key: string, value?: string | number) => Promise<boolean>;
 }
@@ -33,24 +33,6 @@ describe('Db Provider', () => {
   })
   afterAll(() => {
     testDb.close()
-  })
-
-  test('pending db open state', async () => {
-    let hookValues: DbTestValues
-    render(
-      <DbProvider externalDb={testDb}>
-        <TestDbConsumer onHookReady={(values) => { hookValues = values }} />
-      </DbProvider>
-    )
-
-    await waitFor(() => {
-      expect(hookValues.dbIsOpen).toBe('pending')
-    })
-    const ConsumerTitle = screen.getByRole('heading', {level: 1})
-    waitFor(() => {
-      expect(ConsumerTitle).toBeNull()
-    })
-
   })
 
   test('true db open state', async () => {
