@@ -3,6 +3,11 @@ import {render, screen, within, act, waitFor, fireEvent} from '@testing-library/
 import '@testing-library/jest-dom' // for toBeInTheDocument() assertion
 import { DbProvider } from '@/db/useDb'
 
+// prevents Material Symbols ECMAScript file error ( SyntaxError: Unexpected token 'export')
+jest.mock('@project-lary/react-material-symbols-700-rounded', () => ({
+  MaterialSymbol: () => <div data-testid="icon-mock" />,
+}))
+
 // --- DbProvider mock ---
 function dbProviderMock({ children }: Readonly<{ children: ReactNode }>) {
   return (
@@ -81,13 +86,16 @@ describe('ColorPicker component', () => {
     act(() => {
       render(<ColorPicker name="Color" value={colorValue} onChange={() => {}} />, { wrapper: dbProviderMock })
     })
-    const PickerElement = screen.getByRole('color-picker')
-    const PickerContext = within(PickerElement)
-    const AvailableColorElements = PickerContext.getAllByRole('color-picker-available-color')
-    const AvailableColorElement = AvailableColorElements[AvailableColorElements.length - defaultColors.length + 1]
-    const AvailableColorContext = within(AvailableColorElement)
-    const AvailableColorActiveElement = await AvailableColorContext.findByRole('available-color-active')
-    waitFor(() => {
+
+
+    waitFor(async () => {
+      const PickerElement = screen.getByRole('color-picker')
+      expect(PickerElement).toBeDefined()
+      const PickerContext = within(PickerElement)
+      const AvailableColorElements = PickerContext.getAllByRole('color-picker-available-color')
+      const AvailableColorElement = AvailableColorElements[AvailableColorElements.length - defaultColors.length + 1]
+      const AvailableColorContext = within(AvailableColorElement)
+      const AvailableColorActiveElement = await AvailableColorContext.findByRole('available-color-active')
       expect(AvailableColorActiveElement).toBeInTheDocument()
     })
   })
@@ -97,10 +105,14 @@ describe('ColorPicker component', () => {
     act(() => {
       render(<ColorPicker name="Color" value={colorValue} onChange={() => {}} />, { wrapper: dbProviderMock })
     })
-    const PickerElement = screen.getByRole('color-picker')
-    const PickerContext = within(PickerElement)
-    const InputElement = PickerContext.getByDisplayValue(defaultColors[1])
-    expect(InputElement).toBeInTheDocument()
+
+    waitFor(() => {
+      const PickerElement = screen.getByRole('color-picker')
+      expect(PickerElement).toBeDefined()
+      const PickerContext = within(PickerElement)
+      const InputElement = PickerContext.getByDisplayValue(defaultColors[1])
+      expect(InputElement).toBeInTheDocument()
+    })
   })
 })
 
