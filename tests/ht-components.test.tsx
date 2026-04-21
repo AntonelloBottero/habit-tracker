@@ -56,7 +56,10 @@ describe('ConfirmDialog', () => {
         expect(confirmed).toBe(true)
       })
       const ModalContext = within(ModalElement)
-      const ConfirmBtnElement = ModalContext.getByText('Confirm')
+      console.log('ModalContext', ModalContext)
+      const ConfirmBtnElement = ModalContext.getByRole('button', {
+        name: /Confirm/i
+      })
       expect(ConfirmBtnElement).toBeDefined()
       fireEvent(
         ConfirmBtnElement,
