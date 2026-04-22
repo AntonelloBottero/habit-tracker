@@ -128,7 +128,7 @@ interface DbTestCrudValues<T> {
 }
 
 function TestDbCrudConsumer({ onHookReady }: { onHookReady: (values: DbTestCrudValues<HabitsSchema>) => void }) {
-  const { index, show, store, bulkStore, update, bulkUpdate, deleteItem, bulkDelete, isCompliant } = useDbCrud('habits', habitsModel)
+  const { index, show, store, bulkStore, update, bulkUpdate, deleteItem, bulkDelete, isCompliant } = useDbCrud('habits')
 
   // callback that exposes methods to test
   onHookReady({ index, show, store, bulkStore, update, bulkUpdate, deleteItem, bulkDelete, isCompliant })

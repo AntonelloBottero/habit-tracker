@@ -2,26 +2,26 @@ import useDb from '@/db/useDb'
 import { DateTime } from 'luxon'
 import { objectIsCompliant } from "@/utils/index"
 import { type Table } from 'dexie'
-import { type DbResourceSchema } from '@/db/DbClass'
+import { type Schemas, type DbResourceSchema } from '@/db/DbClass'
 
-export default function useDbCrud<T extends object>(storeName: string, model: T) {
+export default function useDbCrud<K extends keyof Schemas>(storeName: K) {
+  type T = Schemas[K]
+
   const { db, dbIsOpen } = useDb()
 
   const table = db.table(storeName) || null
 
   function isCompliant() {
     if(dbIsOpen !== true) { return false }
-    if(!schema) { return false}
     return true
   }
 
-  const schema = (() => {
+  const schema = <Record<keyof DbResourceSchema<T>, boolean>>(() => {
     if(!table?.schema?.indexes) { return null }
-    const s = Object.values(table.schema.indexes).reduce((r, index) => ({
+    return Object.values(table.schema.indexes).reduce((r, index) => ({
       ...r,
       [index.name]: true
-    }),{ id: true }) as DbResourceSchema<T>
-    return objectIsCompliant(s, model) ? s : null
+    }),{ id: true })
   })()
 
   // --- Fetch ---
@@ -53,7 +53,7 @@ export default function useDbCrud<T extends object>(storeName: string, model: T)
   // --- Store ---
   async function store(values: Partial<T>): Promise<DbResourceSchema<T> | false> {
     if(!isCompliant()) { return false }
-    if(!objectIsCompliant(schema as object, values)) {
+    if(!objectIsCompliant(schema, values)) {
       throw new TypeError('Values are not fully compliant with schema')
     }
     const newId = await (table as Table).add({
@@ -66,7 +66,7 @@ export default function useDbCrud<T extends object>(storeName: string, model: T)
 
   async function bulkStore(values: Partial<T>[]): Promise<DbResourceSchema<T>[] | false> {
     if(!isCompliant() || !Array.isArray(values) || !values.length) { return false }
-    const isAllCompliant = values.every((value) => objectIsCompliant(schema as DbResourceSchema<T>, value))
+    const isAllCompliant = values.every((value) => objectIsCompliant(schema, value))
     if(!isAllCompliant) {
       throw new TypeError('Values are not fully compliant with schema')
     }
@@ -82,7 +82,7 @@ export default function useDbCrud<T extends object>(storeName: string, model: T)
 
   // --- Update ---
   async function update(id: number, values: Partial<DbResourceSchema<T>>): Promise<DbResourceSchema<T>> {
-    if(!objectIsCompliant(schema as object, values)) {
+    if(!objectIsCompliant(schema, values)) {
       throw new TypeError('Values are not fully compliant with schema')
     }
     const item = await show(id)
@@ -102,7 +102,7 @@ export default function useDbCrud<T extends object>(storeName: string, model: T)
     const valueIds = values.map(v => v.id) as number[]
     const existingValues = await index(item => valueIds.includes(item.id)) // ensures that full resource will be updated, preventing potential data loss
     const isAllCompliant = values.every(value => {
-      return existingValues.find(ev => ev.id === value.id) && objectIsCompliant(schema as DbResourceSchema<T>, value)
+      return existingValues.find(ev => ev.id === value.id) && objectIsCompliant(schema, value)
     })
     if(!isAllCompliant) {
       throw new TypeError('Values are not fully compliant with schema 2')

@@ -1,13 +1,13 @@
 import { DateTime } from "luxon"
-import { eventsModel, EventsSchema, habitsModel, HabitsSchema, slotsModel, SlotsSchema, DbResourceSchema } from "@/db/DbClass"
+import { EventsSchema, HabitsSchema, SlotsSchema, DbResourceSchema } from "@/db/DbClass"
 import useDbCrud from '@/db/useDbCrud'
 import { SelectableHabit } from "@/app/types"
 import useDb from "@/db/useDb"
 
 export default function useHabits() {
-  const habitsCrud = useDbCrud('habits', habitsModel)
-  const slotsCrud = useDbCrud('slots', slotsModel)
-  const eventsCrud = useDbCrud('events', eventsModel)
+  const habitsCrud = useDbCrud('habits')
+  const slotsCrud = useDbCrud('slots')
+  const eventsCrud = useDbCrud('events')
 
   // --- Utils ---
   function calculateSlotMaxDate(granularity: string, datetime: string): string | null {

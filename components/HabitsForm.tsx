@@ -77,7 +77,7 @@ export default function FormHabits({ values, onSave, onDelete }: Props) {
   const colorPickerRef = useRef<ColorPickerRef>(null)
 
   // --- Save data ---
-  const { store, update } = useDbCrud('habits', habitsModel)
+  const { store, update } = useDbCrud('habits')
   const [loading, setLoading] = useState(false)
   async function onSubmit() {
     if(loading || !canEdit) { return undefined }

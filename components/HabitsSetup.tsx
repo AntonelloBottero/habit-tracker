@@ -16,7 +16,7 @@ interface Props {
 }
 
 export default function HabitsSetup({ onSetup }: Props) {
-	const { index } = useDbCrud('habits', habitsModel)
+	const { index } = useDbCrud('habits')
 
 	// --- Existing Habits ---
 	const [habits, setHabits] = useState<DbResourceSchema<HabitsSchema>[]>([])

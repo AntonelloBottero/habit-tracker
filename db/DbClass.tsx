@@ -66,6 +66,12 @@ export const slotsModel: SlotsSchema = {
   active_to: ''
 }
 
+export type Schemas = {
+  habits: HabitsSchema,
+  events: EventsSchema,
+  slots: SlotsSchema
+}
+
 export default class DbClass extends Dexie {
   options!: Table<DbResourceSchema<OptionsSchema>, 'id'>
   habits!: Table<DbResourceSchema<HabitsSchema>, 'id'>
