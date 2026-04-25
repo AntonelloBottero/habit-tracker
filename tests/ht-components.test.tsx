@@ -16,32 +16,11 @@ function TestConfirmModalConsumer({ onComponentReady, ...props }: { onComponentR
 }
 
 describe('ConfirmDialog', () => {
-  test('Modal visibility', async () => {
-    let confirmModalRef: ConfirmModalRef
+  async function init(props = {}): Promise<[ConfirmModalRef, HTMLElement]> {
+    let confirmModalRef!: ConfirmModalRef
     act(() => {
-      render(<TestConfirmModalConsumer onComponentReady={(values) => { confirmModalRef = values }} />)
+      render(<TestConfirmModalConsumer {...props} onComponentReady={(values) => { confirmModalRef = values }} />)
     })
-
-    await waitFor(() => {
-      expect(confirmModalRef).toBeDefined()
-    })
-
-    act(() => {
-      (confirmModalRef as ConfirmModalRef).confirm()
-    })
-
-    waitFor(() => {
-      const ModalElement = screen.getByRole('confirm-modal')
-      expect(ModalElement).toBeVisible()
-    })
-  })
-
-  test('confirm', async () => {
-    let confirmModalRef: ConfirmModalRef
-    await act(() => {
-      render(<TestConfirmModalConsumer onComponentReady={(values) => { confirmModalRef = values }} />)
-    })
-
     await waitFor(() => {
       expect(confirmModalRef).toBeDefined()
     })
@@ -50,6 +29,23 @@ describe('ConfirmDialog', () => {
     await waitFor(() => {
       expect(ModalElement).toBeDefined()
     })
+    return [confirmModalRef, ModalElement]
+  }
+
+  test('Modal visibility', async () => {
+    const [confirmModalRef, ModalElement] = await init()
+
+    act(() => {
+      (confirmModalRef as ConfirmModalRef).confirm()
+    })
+
+    waitFor(() => {
+      expect(ModalElement).toBeVisible()
+    })
+  })
+
+  test('confirm', async () => {
+    const [confirmModalRef, ModalElement] = await init()
 
     await act(() => {
       (confirmModalRef as ConfirmModalRef).confirm().then((confirmed) => {
@@ -73,20 +69,7 @@ describe('ConfirmDialog', () => {
   })
 
   test('cancel', async () => {
-    let confirmModalRef: ConfirmModalRef
-
-    await act(() => {
-      render(<TestConfirmModalConsumer onComponentReady={(values) => { confirmModalRef = values }} />)
-    })
-
-    await waitFor(() => {
-      expect(confirmModalRef).toBeDefined()
-    })
-
-    const ModalElement = screen.getByRole('confirm-modal', { hidden: true })
-    await waitFor(() => {
-      expect(ModalElement).toBeDefined()
-    })
+    const [confirmModalRef, ModalElement] = await init()
 
     await act(() => {
       (confirmModalRef as ConfirmModalRef).confirm().then((confirmed) => {
@@ -109,26 +92,26 @@ describe('ConfirmDialog', () => {
     })
   })
 
-  /* test('customization', async () => {
-    const title = 'Custom confirm title'
-    const text = 'Custom confirm text'
-    const confirmActionText = 'Custom confirm action'
-    let confirmModalRef: ConfirmModalRef
+  test('customization', async () => {
+    const props = {
+      title: 'Custom confirm title',
+      text: 'Custom confirm text',
+      confirmActionText: 'Custom confirm action'
+    }
+    const [confirmModalRef, ModalElement] = await init(props)
 
     await act(() => {
-      render(<TestConfirmModalConsumer onComponentReady={(values) => { confirmModalRef = values }} title={title} text={text} confirmActionText={confirmActionText} />)
-      expect(confirmModalRef).toBeDefined()
+      (confirmModalRef as ConfirmModalRef).confirm()
     })
 
-    act(() => {
-      const ModalElement = screen.getByRole('confirm-modal', { hidden: true })
+    await waitFor(() => {
       const ModalContext = within(ModalElement)
-      const TitleElement = ModalContext.getByText(title)
+      const TitleElement = ModalContext.getByText(props.title)
       expect(TitleElement).toBeDefined()
-      const TextElement = ModalContext.getByText(text)
+      const TextElement = ModalContext.getByText(props.text)
       expect(TextElement).toBeDefined()
-      const ConfirmActionElement = ModalContext.getByText(confirmActionText)
+      const ConfirmActionElement = ModalContext.getByText(props.confirmActionText)
       expect(ConfirmActionElement).toBeDefined()
     })
-  }) */
+  })
 })
