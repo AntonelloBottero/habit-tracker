@@ -64,7 +64,7 @@ export default function useForm<T extends object>({ defaultValues, rules, onSubm
 
   // --- Error messages ---
   const [errorMessages, setErrorMessages] = useState<ErrorMessages>({})
-  const [isErrorMessagesTransitionPending, startErrorMessagesTransition] = useTransition()
+  const [, startErrorMessagesTransition] = useTransition()
   function validate(key?: string, value?: T | unknown): boolean {
     const keys = !key ? Object.keys(rules || {}) : [key] // which fields we should check
     const updatedErrorMessages = {

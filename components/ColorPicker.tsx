@@ -8,7 +8,7 @@ import { defaultColors } from "@/utils/constants"
 
 import { ChangeEvent, forwardRef, useImperativeHandle } from "react"
 import useDb from "@/db/useDb"
-import { BookmarkIcon } from '@heroicons/react/24/solid'
+import { CircleFilled } from "@project-lary/react-material-symbols-700-rounded"
 import { ColorPickerRef, FormFieldProps } from "@/app/types"
 
 
@@ -64,7 +64,7 @@ const ColorPicker = forwardRef<ColorPickerRef, FormFieldProps>((props: FormField
           >
             {value === color && (
               <span role="available-color-active">
-                <BookmarkIcon className="size-3"  />
+                <CircleFilled className="size-3"  />
               </span>
             )}
           </button>

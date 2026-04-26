@@ -12,7 +12,7 @@ interface Props {
 
 const FloatingMenu = ({ reference, children, onChange = undefined }: Props) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
-  const toggleMenu = (value: boolean) => {
+  function toggleMenu(value: boolean) {
     setIsOpen(value)
     if(onChange) {
       onChange({ target: { value } })

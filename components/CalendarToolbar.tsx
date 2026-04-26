@@ -13,7 +13,7 @@ interface Props {
 
 export default function CalendarToolbar({ ref, className = '', children }: Props) {
   const [rangeStr, setRangeStr] = useState<string | undefined>(undefined)
-  const [isPending, startTransition] = useTransition()
+  const [, startTransition] = useTransition()
 
   function calendarApi(): CalendarApi | undefined {
     return ref.current?.getApi()

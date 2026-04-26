@@ -73,7 +73,7 @@ export type Schemas = {
 }
 
 export default class DbClass extends Dexie {
-  options!: Table<DbResourceSchema<OptionsSchema>, 'id'>
+  options!: Table<OptionsSchema, 'id'>
   habits!: Table<DbResourceSchema<HabitsSchema>, 'id'>
   events!: Table<DbResourceSchema<EventsSchema>, 'id'>
   slots!: Table<DbResourceSchema<SlotsSchema>, 'id'>

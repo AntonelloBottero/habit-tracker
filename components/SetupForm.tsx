@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import Form from 'next/form'
 import useDb from '@/db/useDb'
-import { ArrowRightIcon } from '@heroicons/react/24/outline'
+import { ArrowForward } from "@project-lary/react-material-symbols-700-rounded"
 import Loader from '@/components/Loader'
 
 interface Props {
@@ -42,7 +42,7 @@ export default function SetupForm({ onSubmit }: Props) {
             type="submit"
             className="bg-green-200 ht-interaction shadow-ht rounded-full text-sm p-2.5 text-center inline-flex items-center"
           >
-            {!loading ? <ArrowRightIcon className="size-6" /> : <Loader />}
+            {!loading ? <ArrowForward className="size-7" /> : <Loader />}
           </button>
         </div>
       </div>

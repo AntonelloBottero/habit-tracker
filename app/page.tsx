@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, lazy, Suspense } from "react"
+import { useState, useEffect, useRef, lazy, Suspense } from "react"
 import Link from "next/link"
 import PageLoader from '@/components/PageLoader'
 import useHabits from "@/hooks/useHabits"
@@ -8,15 +8,15 @@ import { ChatFilled } from '@project-lary/react-material-symbols-700-rounded'
 
 const HabitsCalendar = lazy(() => import('@/components/HabitsCalendar')) // HabitsCalendar is an heavy component and should be loaded only when user has finished setup
 
-let skipSetup = false // In strict mode we need to prevent useDb.setup() to be executed twice
 
 export default function Home() {
   const { setup } = useHabits()
 
   const [setupCompleted, setSetupCompleted] = useState<boolean>(false)
   const [setupLoading, setSetupLoading] = useState<boolean>(true)
+  const skipSetup = useRef(false) // In strict mode we need to prevent useDb.setup() to be executed twice
   useEffect(() => {
-    if(!skipSetup) {
+    if(!skipSetup.current) {
       setup().then(value => {
         setSetupCompleted(value)
         setSetupLoading(false)
@@ -24,7 +24,7 @@ export default function Home() {
     }
 
     return () => {
-      skipSetup = true
+      skipSetup.current = true
     }
   }, [])
 

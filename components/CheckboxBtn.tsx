@@ -5,7 +5,7 @@
  * @returns {TSX.Element}
  */
 import { ChangeEvent } from 'react'
-import { CheckCircleIcon } from '@heroicons/react/24/solid'
+import { CheckCircleFilled } from "@project-lary/react-material-symbols-700-rounded"
 import type { FormFieldProps } from "@/app/types"
 
 interface Props extends FormFieldProps {
@@ -39,7 +39,7 @@ export default function CheckboxBtn(props: Props) {
       className={btnClassName}
       onClick={handleOnClick}
     >
-      <CheckCircleIcon className={iconClassName} />
+      <CheckCircleFilled className={iconClassName} />
     </button>
   )
 }

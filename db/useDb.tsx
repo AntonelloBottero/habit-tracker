@@ -11,7 +11,7 @@ interface DbContextProvider {
   db: DbClass
   dbIsOpen: boolean
   options: { current: Options }
-  createOption: (key: string, value?: string | number | boolean) => Promise<boolean>
+  createOption: (key: string, value?: unknown) => Promise<boolean>
   getOption: (key: string, force?: boolean) => Promise<unknown>
 }
 
@@ -75,7 +75,7 @@ export function DbProvider({ children, externalDb }: ProviderProps) {
   // insert new option, or update it if the key exists already
   async function createOption(key: string, value?: unknown): Promise<boolean> {
     if(!key) { return false }
-    const formattedKey = key.toLocaleLowerCase()
+    const formattedKey = key.toLocaleLowerCase() as string
     const option = await showOption(key)
     if(!option) {
       await db.options.add({ key: formattedKey, value })
