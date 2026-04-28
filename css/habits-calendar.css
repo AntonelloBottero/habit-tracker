@@ -62,3 +62,9 @@
 .habits-calendar .fc-daygrid-event {
   font-size:.8rem;
 }
+
+@media screen and (max-width: 767px) {
+  .habits-calendar .fc .fc-daygrid-day-number {
+    font-size: .875rem;
+  }
+}

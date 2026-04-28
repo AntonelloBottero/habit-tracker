@@ -171,18 +171,15 @@ export default function HabitsCalendar() {
                 plugins={[ dayGridPlugin, interactionPlugin ]}
                 initialView="dayGridMonth"
                 editable={true}
-                customButtons={{
-                  addEvent: {
-                    text: 'Add event',
-                    click: function() {
-                      addEvent()
-                    },
-                  },
-                }}
                 headerToolbar={false}
                 events={formattedEvents}
                 datesSet={fetchResources}
                 eventClick={handleEventClick}
+                dayMaxEvents={true}
+                height="350px"
+                moreLinkContent={(arg) => {
+                  console.log('moreLinkContent', arg)
+                }}
               />
             </div>
           </div>
