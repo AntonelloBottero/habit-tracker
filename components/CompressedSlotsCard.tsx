@@ -59,25 +59,12 @@ export default function CompressedSlotsCard({ habit, className = '' }: Props) {
               </span>
             </div>
           )}
-          {slots.length === 1 && (
-            <div className="flex items-center gap-1 ml-auto">
+          {slots.length > 0 && (
+            <div className="flex items-center gap-1 -mb-0.5">
               <SlotsCompletionChip completion={completion} count={count} active_to={activeTo} />
             </div>
           )}
         </div>
-        {slots.length > 1 && (
-          <>
-            <div className="w-full border-t-1 border-green-200 my-0.5" />
-            <div className="flex items-center flex-wrap gap-2">
-              <div className="flex items-center gap-1 text-sm mr-1">
-                {slots.length} slots
-              </div>
-              <div className="flex items-center gap-1 ml-auto">
-              <SlotsCompletionChip completion={completion} count={count} active_to={activeTo} />
-              </div>
-            </div>
-          </>
-        )}
       </div>
 
       <Modal ref={modalRef} title="Overall progress" size="max-w-lg" role="compressed-slots-modal">

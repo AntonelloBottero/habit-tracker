@@ -19,7 +19,7 @@ interface Props {
     children: ReactNode | ReactNode[] // view content
 }
 
-export default function SidebarView({ value, onChange, breakpoint = 'md', width = 256, align = 'left', bordered = true, content, children }: Props) {
+export default function SidebarView({ value, onChange, breakpoint = 'md', width = 256, align = 'left', bordered = false, content, children }: Props) {
   function change(v: boolean): void {
     if(onChange && value !== v) {
       onChange({
@@ -68,9 +68,9 @@ export default function SidebarView({ value, onChange, breakpoint = 'md', width 
     className: [
       { class: 'border-r-1', value: bordered && align === 'left' },
       { class: 'border-l-1', value: bordered && align === 'right' },
-      { class: 'border-stone-200', value: bordered },
+      { class: 'border-stone-200 bg-white', value: bordered },
       { class: `transition-${align}`, value: true },
-      { class: `absolute top-0 h-full overflow-y-auto bg-white ${transitionClassName}`, value: true, }
+      { class: `absolute top-0 h-full overflow-y-auto ${transitionClassName}`, value: true, }
     ].filter(cn => cn.value).map(cn => cn.class).join(' '),
     style: {
       width: safeWidth,

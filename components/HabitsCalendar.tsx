@@ -176,7 +176,7 @@ export default function HabitsCalendar() {
                 datesSet={fetchResources}
                 eventClick={handleEventClick}
                 dayMaxEvents={true}
-                height="350px"
+                height="88vh"
                 moreLinkContent={(arg) => {
                   console.log('moreLinkContent', arg)
                 }}
