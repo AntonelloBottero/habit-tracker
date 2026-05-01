@@ -178,7 +178,7 @@ export default function HabitsCalendar() {
                 dayMaxEvents={true}
                 height="88vh"
                 moreLinkContent={(arg) => {
-                  console.log('moreLinkContent', arg)
+                  return arg.num
                 }}
               />
             </div>
