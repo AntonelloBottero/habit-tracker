@@ -89,16 +89,32 @@
     text-align:center;
     font-size:.75rem;
     background-color:var(--color-stone-200);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:2px;
   }
   .habits-calendar .fc .fc-daygrid-more-link:hover {
     background-color:var(--color-stone-300);
   }
+  .habits-calendar .fc .fc-daygrid-more-link::before {
+    content: "+";
+  }
+  .habits-calendar .fc .fc-daygrid-more-link::after {
+    content: "more";
+  }
 }
 
 @media screen and (max-width: 599px) {
+  .habits-calendar .fc {
+    margin:0 -24px -24px -24px;
+  }
   .habits-calendar .fc .fc-daygrid-day-bottom {
     top:50%;
     transform:translateY(-50%);
+    display:flex;
+    justify-content:center;
+    align-items:center;
   }
   .habits-calendar .fc .fc-daygrid-more-link {
     width:20px;
@@ -106,6 +122,7 @@
     border-radius:50%;
     background-color:var(--color-green-200);
     text-align:center;
-    line-height:20px;
+    line-height:15px;
+    box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
   }
 }

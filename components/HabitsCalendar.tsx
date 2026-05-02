@@ -1,9 +1,9 @@
 import { useState, useRef, useTransition } from 'react'
 import FullCalendar from '@fullcalendar/react'
 import dayGridPlugin from '@fullcalendar/daygrid'
-import interactionPlugin, { DateClickArg } from '@fullcalendar/interaction'
+import interactionPlugin from '@fullcalendar/interaction'
 import { EventClickArg, EventInput, type DatesSetArg } from '@fullcalendar/core/index.js'
-import { DbResourceSchema, eventsModel, EventsSchema, habitsModel, HabitsSchema, SlotsSchema } from '@/db/DbClass'
+import { DbResourceSchema, EventsSchema, HabitsSchema, SlotsSchema } from '@/db/DbClass'
 import Link from "next/link"
 import SidebarView from '@/components/SidebarView'
 import useDbCrud from '@/db/useDbCrud'
@@ -18,6 +18,7 @@ import { DateTime } from 'luxon'
 import Modal from './Modal'
 import EventDetailsModal from './EventDetailsModal'
 import CalendarToolbar from './CalendarToolbar'
+import useBreakpoints from '@/hooks/useBreakpoints'
 
 export default function HabitsCalendar() {
   // --- Active slots ---
@@ -85,11 +86,11 @@ export default function HabitsCalendar() {
     })
   }
 
-  function handleDateClick(args: DateClickArg) {
-    setFormEventsValues({
-      datetime: args.dateStr
-    })
-    formEventsModal.current?.show()
+  const { breakpoints } = useBreakpoints()
+  const isMobile = !breakpoints?.sm
+
+  const calendarProps = {
+    dayMaxEvents: isMobile ? 0 : true
   }
 
   // --- Add event ---
@@ -154,7 +155,7 @@ export default function HabitsCalendar() {
           onChange={e => setSidebar(e.target.value)}
         >
           <div className="flex-grow p-6 lg:px-10">
-            <div style={{maxWidth: '115vh'}} className="mx-auto habits-calendar">
+            <div className="mx-auto habits-calendar">
               <CalendarToolbar ref={calendarRef} className="mb-6">
                 <>
                   <button type="button" className="ht-btn py-1.5 px-4 rounded-lg shadow-ht ht-interaction bg-green-200" onClick={() => addEvent()}>
@@ -175,11 +176,11 @@ export default function HabitsCalendar() {
                 events={formattedEvents}
                 datesSet={fetchResources}
                 eventClick={handleEventClick}
-                dayMaxEvents={true}
-                height="88vh"
+                height="calc(100vh - 108px)"
                 moreLinkContent={(arg) => {
                   return arg.num
                 }}
+                {...calendarProps}
               />
             </div>
           </div>
