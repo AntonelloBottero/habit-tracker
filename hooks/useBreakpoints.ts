@@ -5,7 +5,7 @@ export type BreakpointKey = "sm" | "md" | "lg" | "xl" | "xxl"
 type Breakpoints = Record<BreakpointKey, boolean>
 
 const values = {
-  sm: 640,
+  sm: 600,
   md: 768,
   lg: 1024,
   xl: 1280,
