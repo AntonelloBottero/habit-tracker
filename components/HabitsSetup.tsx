@@ -85,7 +85,7 @@ export default function HabitsSetup({ onSetup }: Props) {
 
 	return (
 		<>
-			<div className="flex gap-3 w-full p-6 bg-white outline-1 outline-offset-1 outline-neutral-200 rounded-lg shadow-ht dark:bg-gray-800 dark:border-gray-700">
+			<div className="flex flex-col sm:flex-row gap-3 w-full p-6 bg-white outline-1 outline-offset-1 outline-neutral-200 rounded-lg shadow-ht dark:bg-gray-800 dark:border-gray-700">
 				<div className="grow basis-1/2">
 					<p>
 						Flex you good intentions.<br/>
@@ -103,7 +103,8 @@ export default function HabitsSetup({ onSetup }: Props) {
 						<HabitsCard key={habit.id} habit={habit} className="mt-4" onClick={() => { editHabit(habit) }} />
 					))}
 				</div>
-				<div className="inline-block w-0.5 self-stretch bg-neutral-100 dark:bg-white/10"></div>
+				<div className="sm:inline-block hidden w-0.5 self-stretch bg-stone-100 dark:bg-white/10"></div>
+				<div className="sm:hidden border-t-1 border-stone-200 self-stretch mt-2"></div>
 				<div className="grow basis-1/2">
 					<p>
 						We are not made of just sugar.<br />

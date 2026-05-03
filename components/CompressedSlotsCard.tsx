@@ -92,26 +92,19 @@ export default function CompressedSlotsCard({ habit, className = '' }: Props) {
             <div className="grow w-full font-bold">
               Progress details
             </div>
-            <table className="w-full text-sm text-left rtl:text-right text-body">
-              <thead className="text-sm text-body bg-neutral-secondary-soft rounded-base">
-                <tr>
-                  <th className="px-3 py-1.5 text-gray-500 font-bold">Date</th>
-                  <th className="px-3 py-1.5 text-right text-gray-500 font-bold" style={{ width: '90px', maxWidth: '90px' }}>Progress</th>
-                </tr>
-              </thead>
-              <tbody>
-                {slots.map(slot => (
-                  <tr key={slot.id} className="bg-neutral-primary border-t border-stone-200 cursor-pointer hover:bg-stone-100"  onClick={() => { showSlotDetail(slot) }}>
-                    <td className="px-3 py-1.5">
-                      {DateTime.fromISO(slot.active_to).toFormat('dd/MM/yyyy')}
-                    </td>
-                    <td className="px-3 py-1.5 text-right">
-                      <SlotsCompletionChip count={slot.count} completion={slot.completion} active_to={slot.active_to} />
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            <div className="flex flex-wrap gap-2">
+              {slots.map(slot => (
+                <div key={slot.id} className="outline-1 outline-offset-1 outline-neutral-200 rounded-md py-1 px-3 text-center ht-interaction" onClick={() => { showSlotDetail(slot) }}>
+                  <div className="text-xs">
+                    {DateTime.fromISO(slot.active_to).toFormat('LLL, yyyy')}
+                  </div>
+                  <div className="text-xl -mb-1">
+                    {DateTime.fromISO(slot.active_to).toFormat('dd')}
+                  </div>
+                  <SlotsCompletionChip count={slot.count} completion={slot.completion} active_to={slot.active_to} />
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </Modal>

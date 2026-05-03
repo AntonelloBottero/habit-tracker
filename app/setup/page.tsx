@@ -30,7 +30,7 @@ export default function Page() {
 
 
   return (
-    <div className="overflow-hidden font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen w-screen p-8 pb-20 gap-16 sm:p-20">
+    <div className="overflow-hidden font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen w-screen p-8 gap-16 sm:p-20 box-border">
       <main className="flex flex-col row-start-2 items-center sm:items-start">
         <TabsWindow value={tab}>
           <div className="w-full max-w-90">
