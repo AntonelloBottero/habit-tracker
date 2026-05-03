@@ -8,6 +8,7 @@ import Link from "next/link"
 import SidebarView from '@/components/SidebarView'
 import useDbCrud from '@/db/useDbCrud'
 import useHabits from '@/hooks/useHabits'
+import ScheduleList from '@/components/ScheduleList'
 import CompressedSlotsCard from '@/components/CompressedSlotsCard'
 import SlotsCard from '@/components/SlotsCard'
 import EventsForm from '@/components/EventsForm'
@@ -140,11 +141,7 @@ export default function HabitsCalendar() {
                   <Settings className="text-xl" />
                 </Link>
               </div>
-              {formattedHabits.map(habit => (
-                <div key={habit.id}>
-                  {habit.slots.length === 1 ? <SlotsCard habit={habit} slot={habit.slots[0]} /> : <CompressedSlotsCard habit={habit} key={habit.id} />}
-                </div>
-              ))}
+              <ScheduleList habits={formattedHabits} />
             </>
           )}
           onChange={e => setSidebar(e.target.value)}

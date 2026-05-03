@@ -75,14 +75,14 @@
   width:100%;
   text-align:center;
   font-size:.75rem;
-  background-color:var(--color-stone-200);
+  background-color:var(--color-slate-200);
   display:flex;
   justify-content:center;
   align-items:center;
   gap:2px;
 }
 .habits-calendar .fc .fc-daygrid-more-link:hover {
-  background-color:var(--color-stone-300);
+  background-color:var(--color-slate-300);
 }
 .habits-calendar .fc .fc-daygrid-more-link::before {
   content: "+";
