@@ -86,13 +86,6 @@ export default function HabitsCalendar() {
     })
   }
 
-  const { breakpoints } = useBreakpoints()
-  const isMobile = !breakpoints?.sm
-
-  const calendarProps = {
-    dayMaxEvents: isMobile ? 0 : true
-  }
-
   // --- Add event ---
   function addEvent() {
     setFormEventsValues({
@@ -131,12 +124,14 @@ export default function HabitsCalendar() {
   return (
     <>
       <div className="w-full h-[100vh] ">
+        {/* Sidebar */}
         <SidebarView
           value={sidebar}
-          width={320}
+          width={300}
           align="right"
           content={(
             <>
+              {/* Sidebar content (slot cards) */}
               <div className="flex items-center my-2">
                 <div className="text-xl font-monda font-bold grow-1">
                   Your Schedule
@@ -156,17 +151,21 @@ export default function HabitsCalendar() {
         >
           <div className="flex-grow p-6 lg:px-10">
             <div className="mx-auto habits-calendar">
-              <CalendarToolbar ref={calendarRef} className="mb-6">
-                <>
-                  <button type="button" className="ht-btn py-1.5 px-4 rounded-lg shadow-ht ht-interaction bg-green-200" onClick={() => addEvent()}>
+              {/* Toolbar */}
+              <div className="flex sm:flex-row-reverse justify-between flex-wrap align-center gap-2 mb-6">
+                <div className="flex align-center gap-2 sm:w-fit w-full">
+                  <button type="button" className="ht-btn py-1.5 px-4 rounded-lg shadow-ht ht-interaction bg-green-200 grow" onClick={() => addEvent()}>
                     <CalendarToday />
                     Add event
                   </button>
                   <button type="button" className="ht-btn ht-interaction py-2 px-2 rounded-lg text-white bg-neutral-800" onClick={() => setSidebar(!sidebar)}>
                     {sidebar ? <RightPanelClose className="text-xl" /> : <RightPanelOpen className="text-xl" />}
                   </button>
-                </>
-              </CalendarToolbar>
+                </div>
+                <CalendarToolbar ref={calendarRef} />
+              </div>
+
+              {/* Calendar */}
               <FullCalendar
                 ref={calendarRef}
                 plugins={[ dayGridPlugin, interactionPlugin ]}
@@ -176,11 +175,12 @@ export default function HabitsCalendar() {
                 events={formattedEvents}
                 datesSet={fetchResources}
                 eventClick={handleEventClick}
-                height="calc(100vh - 108px)"
+                height="calc(100vh - 128px)"
+                dayMaxEvents={true}
+                displayEventTime={false}
                 moreLinkContent={(arg) => {
                   return arg.num
                 }}
-                {...calendarProps}
               />
             </div>
           </div>

@@ -7,6 +7,7 @@
 .habits-calendar {
   --ht-shadow-color: color-mix(in oklab, color-mix(in oklab, var(--color-green-200) 50%, transparent) var(--tw-shadow-alpha), transparent);
   --ht-shadow: 0 10px 15px -3px var(--ht-shadow-color, rgba(0, 0, 0, .1)), 0 4px 6px -4px var(--ht-shadow-color, rgba(0, 0, 0, .1));
+  max-width:115vh;
 }
 
 .habits-calendar .fc .fc-toolbar.fc-header-toolbar {
@@ -15,7 +16,7 @@
 }
 
 .habits-calendar .fc-theme-standard .fc-scrollgrid {
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-xl);
   overflow:hidden;
   background-color:#fff;
   /* box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--ht-shadow); */
@@ -66,12 +67,47 @@
   box-shadow:var(--ht-shadow);
 }
 
+.habits-calendar .fc .fc-daygrid-day-bottom {
+  bottom:4px;
+}
+
+.habits-calendar .fc .fc-daygrid-more-link {
+  width:100%;
+  text-align:center;
+  font-size:.75rem;
+  background-color:var(--color-stone-200);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:2px;
+}
+.habits-calendar .fc .fc-daygrid-more-link:hover {
+  background-color:var(--color-stone-300);
+}
+.habits-calendar .fc .fc-daygrid-more-link::before {
+  content: "+";
+}
+
 .habits-calendar .fc-direction-ltr .fc-button-group > .fc-button {
   padding:0 8px;
 }
 
 .habits-calendar .fc-daygrid-event {
   font-size:.8rem;
+}
+
+.habits-calendar .fc .fc-popover {
+  border-radius:8px;
+}
+
+.habits-calendar .fc .fc-popover-header {
+  padding-left:12px;
+  padding-right:10px;
+  background-color:transparent;
+}
+
+.habits-calendar .fc .fc-more-popover .fc-popover-body {
+  padding-top:0;
 }
 
 @media screen and (max-width: 767px) {
@@ -81,25 +117,6 @@
 }
 
 @media screen and (min-width: 600px) {
-  .habits-calendar .fc .fc-daygrid-day-bottom {
-    bottom:4px;
-  }
-  .habits-calendar .fc .fc-daygrid-more-link {
-    width:100%;
-    text-align:center;
-    font-size:.75rem;
-    background-color:var(--color-stone-200);
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    gap:2px;
-  }
-  .habits-calendar .fc .fc-daygrid-more-link:hover {
-    background-color:var(--color-stone-300);
-  }
-  .habits-calendar .fc .fc-daygrid-more-link::before {
-    content: "+";
-  }
   .habits-calendar .fc .fc-daygrid-more-link::after {
     content: "more";
   }
@@ -109,7 +126,7 @@
   .habits-calendar .fc {
     margin:0 -24px -24px -24px;
   }
-  .habits-calendar .fc .fc-daygrid-day-bottom {
+  /* .habits-calendar .fc .fc-daygrid-day-bottom {
     top:50%;
     transform:translateY(-50%);
     display:flex;
@@ -124,5 +141,5 @@
     text-align:center;
     line-height:15px;
     box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
-  }
+  } */
 }
