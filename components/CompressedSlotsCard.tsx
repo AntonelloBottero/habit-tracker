@@ -67,7 +67,7 @@ export default function CompressedSlotsCard({ habit, className = '' }: Props) {
         </div>
       </div>
 
-      <Modal ref={modalRef} title="Overall progress" size="max-w-lg" role="compressed-slots-modal">
+      <Modal ref={modalRef} title="Overall progress" size="max-w-md" role="compressed-slots-modal">
         <div className="flex flex-col gap-2">
           <HabitsCardHeader habit={habit} />
           <div className="flex items-center flex-wrap gap-2">
@@ -92,16 +92,18 @@ export default function CompressedSlotsCard({ habit, className = '' }: Props) {
             <div className="grow w-full font-bold">
               Progress details
             </div>
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap">
               {slots.map(slot => (
-                <div key={slot.id} className="outline-1 outline-offset-1 outline-neutral-200 rounded-md py-1 px-3 text-center ht-interaction" onClick={() => { showSlotDetail(slot) }}>
-                  <div className="text-xs">
-                    {DateTime.fromISO(slot.active_to).toFormat('LLL, yyyy')}
+                <div className="w-[25%] p-1" key={slot.id}>
+                  <div className="outline-1 outline-offset-1 outline-neutral-200 rounded-md py-1 px-1 text-center ht-interaction" onClick={() => { showSlotDetail(slot) }}>
+                    <div className="text-xs">
+                      {DateTime.fromISO(slot.active_to).toFormat('LLL, yyyy')}
+                    </div>
+                    <div className="text-xl -mb-1">
+                      {DateTime.fromISO(slot.active_to).toFormat('dd')}
+                    </div>
+                    <SlotsCompletionChip count={slot.count} completion={slot.completion} active_to={slot.active_to} />
                   </div>
-                  <div className="text-xl -mb-1">
-                    {DateTime.fromISO(slot.active_to).toFormat('dd')}
-                  </div>
-                  <SlotsCompletionChip count={slot.count} completion={slot.completion} active_to={slot.active_to} />
                 </div>
               ))}
             </div>

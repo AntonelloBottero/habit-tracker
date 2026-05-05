@@ -31,9 +31,9 @@ export interface ErrorMessages {
     [key: string]: string[] | undefined
 }
 interface Params<T extends object> {
-    defaultValues: T
-    rules?: Rules,
-    onSubmit?: () => never | void
+    defaultValues: T // we build model strictly around those values
+    rules?: Rules, // collection of validation functions
+    onSubmit?: () => never | void // consumer's callback after submit for custom actions
 }
 
 // --- Hook ---
@@ -41,7 +41,7 @@ export default function useForm<T extends object>({ defaultValues, rules, onSubm
   // --- Model reducer ---
   function modelReducer(state: T, { type, key, value }: ModelReducerAction<T>): T {
     switch(type) {
-    case 'batch':
+    case 'batch': // updates more than one field
       const batchValue = value as T
       return {
         ...Object.entries(defaultValues).reduce((r, [k, v]) => ({
@@ -49,7 +49,7 @@ export default function useForm<T extends object>({ defaultValues, rules, onSubm
           [k]:  batchValue !== null && typeof batchValue === 'object' && (batchValue as never)[k] !== undefined ? (batchValue as never)[k] : v
         }), {} as T)
       }
-    case 'update':
+    case 'update': // updates a single field
       if(typeof key === 'string' && (defaultValues as never)[key] !== undefined) {
         return {
           ...state,
@@ -76,7 +76,7 @@ export default function useForm<T extends object>({ defaultValues, rules, onSubm
           .filter(message => typeof message === 'string')
       }), {})
     } as ErrorMessages
-    startErrorMessagesTransition(() => {
+    startErrorMessagesTransition(() => { // errorMessages state update is prioritized low to privilege user's input interaction
       setErrorMessages(updatedErrorMessages)
     })
     return Object.values(updatedErrorMessages).reduce((r, messages) => !r || messages?.length ? false : true, true) // we return the status in case a preview of the state is needed before the deferred state update happens

@@ -36,7 +36,7 @@ export default function Home() {
         <div className="w-full h-full min-h-full flex flex-col justify-center items-center text-center">
           <h1 className="text-4xl font-monda">welcome!</h1>
           <p className="mt-1 mb-3">New in here?<br />Start by stating your objectives.</p>
-          <Link href="/setup" className="ht-btn ht-btn--size-default ht-interaction bg-green-200 shadow-ht">
+          <Link href="/setup" className="ht-btn ht-btn--size-large ht-interaction bg-green-200 shadow-ht">
             <ChatFilled className="size-4" />
             Tell us about yourself
           </Link>

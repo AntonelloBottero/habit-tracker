@@ -77,7 +77,7 @@ body {
 
 /* --- Class presets (with @apply) --- */
 .ht-form-input {
-  @apply outline-gray-300 outline-1 outline-offset-1 focus:outline-3 focus:outline-primary text-gray-900 text-sm rounded-lg block py-2 px-4 dark:bg-gray-700 dark:outline-gray-600 dark:placeholder-gray-400 dark:text-white
+  @apply max-w-full outline-gray-300 outline-1 outline-offset-1 focus:outline-3 focus:outline-primary text-gray-900 text-sm rounded-lg block py-2 px-4 dark:bg-gray-700 dark:outline-gray-600 dark:placeholder-gray-400 dark:text-white 
 }
 
 .ht-btn {

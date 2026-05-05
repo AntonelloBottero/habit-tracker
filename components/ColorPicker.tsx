@@ -44,7 +44,7 @@ const ColorPicker = forwardRef<ColorPickerRef, FormFieldProps>((props: FormField
 
   return (
     <div role="color-picker" className="flex gap-2 center">
-      <div>
+      <div className="max-w-[100px]">
         <input
           placeholder="#123456"
           {...inputProps}
