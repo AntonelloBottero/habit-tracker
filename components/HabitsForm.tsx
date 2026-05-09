@@ -68,7 +68,7 @@ export default function FormHabits({ values, onSave, onDelete }: Props) {
     })
   })()
   // changing granularity resets granularity_times
-  const handleChangeGranularity = (e: ChangeEvent<HTMLSelectElement>): void => {
+  function handleChangeGranularity(e: ChangeEvent<HTMLSelectElement>): void {
     changeField('granularity', e.target.value)
     changeField('granularity_times', 1)
   }

@@ -1,5 +1,5 @@
 import { useRef, useState, forwardRef, useImperativeHandle } from "react"
-import { DbResourceSchema, eventsModel, EventsSchema, HabitsSchema, SlotsSchema } from "@/db/DbClass"
+import { DbResourceSchema, EventsSchema, HabitsSchema, SlotsSchema } from "@/db/DbClass"
 import Modal from "@/components/Modal"
 import HabitsCardHeader from "@/components/HabitsCardHeader"
 import SlotsCompletionChip from "@/components/SlotsCompletionChip"

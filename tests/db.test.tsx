@@ -1,7 +1,7 @@
 import { render, waitFor, screen } from '@testing-library/react'
 import { DateTime } from 'luxon'
 import useDb, { DbProvider } from '@/db/useDb'
-import DbClass, { DbResourceSchema, habitsModel, type HabitsSchema } from '@/db/DbClass'
+import DbClass, { DbResourceSchema, type HabitsSchema } from '@/db/DbClass'
 import useDbCrud from '@/db/useDbCrud'
 
 // --- Test db init (powered by fake-indexeddb) ---
@@ -118,7 +118,7 @@ const testHabit4 = {
 interface DbTestCrudValues<T> {
   index: () => Promise<DbResourceSchema<T>[]>
   show: (id: number) => Promise<T | undefined>
-  store: (values: Partial<T>) => Promise<DbResourceSchema<T>>
+  store: (values: Partial<T>) => Promise<DbResourceSchema<T> | false>
   bulkStore: (values: Partial<T>[]) => Promise<false | DbResourceSchema<T>[]>
   update: (id: number, values: Partial<T>) => Promise<DbResourceSchema<T>>
   bulkUpdate: (values: Partial<DbResourceSchema<T>>[]) => Promise<false | DbResourceSchema<T>[]>
@@ -164,7 +164,7 @@ describe('DB CRUD', () => {
 
     await waitFor(async () => {
       expect(testHabits.length).toBe(1)
-      expect(testHabits[0].id).toBe(returnedHabit.id)
+      expect(testHabits[0].id).toBe((returnedHabit as DbResourceSchema<HabitsSchema>).id)
       expect(testHabits[0].name).toBe(testHabit.name)
     })
   })

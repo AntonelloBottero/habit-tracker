@@ -14,7 +14,6 @@ export default defineConfig([
   {
     files,
     rules: {
-      'indent': ['error', 2],
       'semi': ['error', 'never'],
       'no-trailing-spaces': 'error',
       'block-spacing': 'error',
@@ -31,10 +30,10 @@ export default defineConfig([
       '@next/next/no-img-element': 'error',
       '@next/next/no-html-link-for-pages': 'error',
     }
-  },
+  }, */
   // typescript
   ...tseslint.configs.recommended.map((c) => ({
     ...c,
     files,
-  })), */
+  })),
 ]);

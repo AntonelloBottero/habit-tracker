@@ -1,7 +1,7 @@
 import { useState, useRef, forwardRef, useImperativeHandle } from 'react'
 import Modal from "@/components/Modal"
 import { ModalRef } from "@/app/types"
-import { DbResourceSchema, EventsSchema, habitsModel, HabitsSchema } from '@/db/DbClass'
+import { DbResourceSchema, EventsSchema, HabitsSchema } from '@/db/DbClass'
 import useDbCrud from "@/db/useDbCrud"
 import { DateTime } from 'luxon'
 import HabitsCard from '@/components/HabitsCard'

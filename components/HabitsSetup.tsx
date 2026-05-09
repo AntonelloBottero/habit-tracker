@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
-import { habitsModel, type HabitsSchema, type DbResourceSchema } from '@/db/DbClass'
+import { type HabitsSchema, type DbResourceSchema } from '@/db/DbClass'
 import { ModalRef } from '@/app/types'
 import useDb from '@/db/useDb'
 import useDbCrud from '@/db/useDbCrud'
@@ -23,7 +23,7 @@ export default function HabitsSetup({ onSetup }: Props) {
 	const goodHabits = habits.filter(habit => habit.type === 'good')
 	const badHabits = habits.filter(habit => habit.type === 'bad')
 
-	const fetchHabits = async () => {
+	async function fetchHabits() {
 		try {
 			const habits = await index()
 			setHabits(habits)
@@ -68,7 +68,7 @@ export default function HabitsSetup({ onSetup }: Props) {
 
 	// --- Complete ---
 	const { setup } = useHabits()
-	const [loadingSetup, setLoadingSetup] = useState<boolean>(false)
+	const [, setLoadingSetup] = useState<boolean>(false)
 	async function complete() {
 		if(!habits.length) { return undefined }
 		setLoadingSetup(true)

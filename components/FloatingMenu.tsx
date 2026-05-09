@@ -1,7 +1,7 @@
-'use client';
+'use client'
 
-import React, { useState, ReactNode, ChangeEvent } from 'react';
-import { useFloating, offset, flip, shift, autoUpdate } from '@floating-ui/react';
+import React, { useState, ReactNode } from 'react'
+import { useFloating, offset, flip, shift, autoUpdate } from '@floating-ui/react'
 import { FakeInputChangeEvent } from '@/app/types'
 
 interface Props {
@@ -10,8 +10,9 @@ interface Props {
   onChange?: (e: FakeInputChangeEvent) => void
 }
 
+// eslint-disable-next-line func-style
 const FloatingMenu = ({ reference, children, onChange = undefined }: Props) => {
-  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [isOpen, setIsOpen] = useState<boolean>(false)
   function toggleMenu(value: boolean) {
     setIsOpen(value)
     if(onChange) {
@@ -29,7 +30,7 @@ const FloatingMenu = ({ reference, children, onChange = undefined }: Props) => {
       shift()    // shifts menu if viewport space is not enough
     ],
     whileElementsMounted: autoUpdate, // Updates position during scroll/resize
-  });
+  })
 
   return (
     <>
@@ -55,7 +56,7 @@ const FloatingMenu = ({ reference, children, onChange = undefined }: Props) => {
         </div>
       )}
     </>
-  );
-};
+  )
+}
 
-export default FloatingMenu;
+export default FloatingMenu

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, type ReactNode, type ChangeEvent } from 'react'
+import { useEffect, useMemo, type ReactNode } from 'react'
 import useBreakpoints, { type BreakpointKey } from '@/hooks/useBreakpoints'
 import { RightPanelClose } from '@project-lary/react-material-symbols-700-rounded'
 
