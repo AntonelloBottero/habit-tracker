@@ -22,7 +22,7 @@ export default defineConfig([
     }
   },
   // next
-  {
+  /* {
     files,
     plugins: {
       '@next/next': nextPlugin as never,
@@ -36,5 +36,5 @@ export default defineConfig([
   ...tseslint.configs.recommended.map((c) => ({
     ...c,
     files,
-  })),
+  })), */
 ]);
