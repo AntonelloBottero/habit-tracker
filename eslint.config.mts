@@ -1,15 +1,19 @@
 import tseslint from "typescript-eslint";
 import nextPlugin from '@next/eslint-plugin-next';
-import { defineConfig } from "eslint/config";
+import { defineConfig, globalIgnores } from "eslint/config";
 
 const files = [
   'app/**/*.{js,jsx,ts,tsx}',
   'components/**/*.{js,jsx,ts,tsx}',
   'hooks/**/*.{js,jsx,ts,tsx}',
   'tests/**/*.{js,jsx,ts,tsx}',
-];
+]
+const ignores = [
+  '.next/**/*.{js,jsx,ts,tsx}'
+]
 
 export default defineConfig([
+  globalIgnores(['.next/*']),
   //style
   {
     files,

@@ -9,8 +9,6 @@ import SidebarView from '@/components/SidebarView'
 import useDbCrud from '@/db/useDbCrud'
 import useHabits from '@/hooks/useHabits'
 import ScheduleList from '@/components/ScheduleList'
-import CompressedSlotsCard from '@/components/CompressedSlotsCard'
-import SlotsCard from '@/components/SlotsCard'
 import EventsForm from '@/components/EventsForm'
 import { CalendarToday, RightPanelClose, RightPanelOpen, Settings } from "@project-lary/react-material-symbols-700-rounded"
 import "@/css/habits-calendar.css"
@@ -19,7 +17,6 @@ import { DateTime } from 'luxon'
 import Modal from './Modal'
 import EventDetailsModal from './EventDetailsModal'
 import CalendarToolbar from './CalendarToolbar'
-import useBreakpoints from '@/hooks/useBreakpoints'
 
 export default function HabitsCalendar() {
   // --- Active slots ---
@@ -36,7 +33,7 @@ export default function HabitsCalendar() {
   const formEventsModal = useRef<ModalRef>(null)
   const [formEventsValues, setFormEventsValues] = useState<Partial<DbResourceSchema<EventsSchema>> | undefined>(undefined)
   const [events, setEvents] = useState<DbResourceSchema<EventsSchema>[]>([])
-  const [isResourcesTransitionPending, startResourcesTransition] = useTransition()
+  const [, startResourcesTransition] = useTransition()
 
   const formattedEvents = events
     .map(event => {
