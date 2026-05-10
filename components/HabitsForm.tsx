@@ -15,9 +15,9 @@ import { DateTime } from 'luxon'
 type Values = Partial<DbResourceSchema<HabitsSchema>>
 
 interface Props {
-    values?: Values
-    onSave?: () => never | void
-    onDelete?: () => never | void
+  values?: Values
+  onSave?: () => never | void
+  onDelete?: () => never | void
 }
 
 const rules: Rules = {
@@ -49,15 +49,15 @@ export default function FormHabits({ values, onSave, onDelete }: Props) {
   const granularityTimes = (() => {
     let count = 1
     switch(model.granularity) {
-    case 'weekly':
-      count = 3
-      break
-    case 'monthly':
-      count = 5
-      break
-    case 'yearly':
-      count = 8
-      break
+      case 'weekly':
+        count = 3
+        break
+      case 'monthly':
+        count = 5
+        break
+      case 'yearly':
+        count = 8
+        break
     }
     return Array.from(Array(count).keys()).map(i => {
       const time = i + 1

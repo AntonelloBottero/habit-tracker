@@ -65,22 +65,22 @@ const SlotDetailsModal = forwardRef<ModalRef, Props>(({ slot, habit }: Props, re
       {slot && (
         <>
           <div className="w-full border-t-1 border-stone-200" />
-            <div className="flex items-center gap-2">
-              <div className="grow font-bold mr-2">
-                Slot details
-              </div>
-              <SlotsCompletionChip completion={slot.completion} count={slot.count} active_to={slot.active_to} />
+          <div className="flex items-center gap-2">
+            <div className="grow font-bold mr-2">
+              Slot details
             </div>
-            {events.length ? (
-              <div className="flex flex-col gap-4">
-                {events.map(event => <EventsCard key={event.id} habit={habit} event={event} />)}
-              </div>
-            ) : (
-              <div className="flex flex-col items-center gap-2 mt-6 mb-4 text-center">
-                <CalendarClock className="text-6xl text-gray-200" />
-                No events found
-              </div>
-            )}
+            <SlotsCompletionChip completion={slot.completion} count={slot.count} active_to={slot.active_to} />
+          </div>
+          {events.length ? (
+            <div className="flex flex-col gap-4">
+              {events.map(event => <EventsCard key={event.id} habit={habit} event={event} />)}
+            </div>
+          ) : (
+            <div className="flex flex-col items-center gap-2 mt-6 mb-4 text-center">
+              <CalendarClock className="text-6xl text-gray-200" />
+              No events found
+            </div>
+          )}
         </>
       )}
     </Modal>

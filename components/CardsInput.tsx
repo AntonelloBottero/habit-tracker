@@ -4,9 +4,9 @@ import { PlaylistRemove } from '@project-lary/react-material-symbols-700-rounded
 interface Props<T> {
   value: unknown
   onChange?: (e: ChangeEvent<HTMLInputElement>) => void
-	items: T[]
-	valueProp?: keyof T
-	titleProp?: keyof T
+  items: T[]
+  valueProp?: keyof T
+  titleProp?: keyof T
   content?: (item: T, selected: boolean) => ReactNode
   className?: string
 }

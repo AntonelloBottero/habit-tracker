@@ -3,9 +3,9 @@ import { CalendarToday, CheckCircle } from "@project-lary/react-material-symbols
 import HabitsCardHeader from "@/components/HabitsCardHeader"
 
 interface Props {
-    habit: DbResourceSchema<HabitsSchema>
-    className?: string
-    onClick?: () => void | never
+  habit: DbResourceSchema<HabitsSchema>
+  className?: string
+  onClick?: () => void | never
 }
 
 export default function HabitsCard({ habit, className = '', onClick }: Props) {

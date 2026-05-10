@@ -2,8 +2,8 @@ import { DbResourceSchema, EventsSchema, HabitsSchema } from "@/db/DbClass"
 import { DateTime } from "luxon"
 
 interface Props {
-	habit: DbResourceSchema<HabitsSchema>
-	event: DbResourceSchema<EventsSchema>
+  habit: DbResourceSchema<HabitsSchema>
+  event: DbResourceSchema<EventsSchema>
 }
 
 export default function EventsCard({ habit, event }: Props) {

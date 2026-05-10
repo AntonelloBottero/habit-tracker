@@ -16,9 +16,9 @@ import { ConfirmModalRef } from '@/app/types'
 type Values = Partial<DbResourceSchema<EventsSchema>>
 
 interface Props {
-    values?: Values
-    onSave?: () => never | void
-    onDelete?: () => never | void
+  values?: Values
+  onSave?: () => never | void
+  onDelete?: () => never | void
 }
 
 type SelectableHabit = DbResourceSchema<HabitsSchema> & {
@@ -167,15 +167,15 @@ export default function FormEvents({ values, onSave, onDelete }: Props) {
       <div className="flex justify-end items-center gap-4">
         {isNew ? (
           <>
-          {selectedHabit?.enough_amount && !model.completed && (
-            <div className="text-sm text-gray-600">
-              You have to do more...
-            </div>
-          )}
-          <button type="submit" className="ht-btn ht-btn--size-large ht-interaction bg-green-200 shadow-ht" disabled={!!selectedHabit?.enough_amount && !model.completed}>
-            <CalendarCheck />
-            Add event
-          </button>
+            {selectedHabit?.enough_amount && !model.completed && (
+              <div className="text-sm text-gray-600">
+                You have to do more...
+              </div>
+            )}
+            <button type="submit" className="ht-btn ht-btn--size-large ht-interaction bg-green-200 shadow-ht" disabled={!!selectedHabit?.enough_amount && !model.completed}>
+              <CalendarCheck />
+              Add event
+            </button>
           </>
         ) : (
           <>

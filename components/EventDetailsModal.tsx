@@ -11,7 +11,7 @@ import { ConfirmModalRef } from '@/app/types'
 import useHabits from "@/hooks/useHabits"
 
 interface Props {
-	event: DbResourceSchema<EventsSchema> | undefined,
+  event: DbResourceSchema<EventsSchema> | undefined,
   onDelete?: () => never | void
 }
 
@@ -68,7 +68,7 @@ const EventDetailsModal = forwardRef<ModalRef, Props>(({ event, onDelete }: Prop
       <div className="grid grid-cols-1 gap-3">
         <div>
           <div className="text-sm font-medium">
-						Date & time
+            Date & time
           </div>
           <div className="text-base font-bold">
             {DateTime.fromISO(event.datetime).toFormat('dd/MM/yyyy HH:ii')}

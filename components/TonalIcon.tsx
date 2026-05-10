@@ -1,9 +1,9 @@
 import { ReactElement } from "react"
 
 interface Props {
-    color?: string
-    icon: ReactElement
-    className?: string
+  color?: string
+  icon: ReactElement
+  className?: string
 }
 
 export default function TonalIcon({ color, icon, className = '' }: Props) {

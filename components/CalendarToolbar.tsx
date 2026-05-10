@@ -6,9 +6,9 @@ import { DateTime } from 'luxon'
 import { useState, useTransition, useEffect, type ReactElement, RefObject } from 'react'
 
 interface Props {
-	ref: RefObject<FullCalendar | null>
+  ref: RefObject<FullCalendar | null>
   className?: string
-	children?: ReactElement
+  children?: ReactElement
 }
 
 export default function CalendarToolbar({ ref, className = '', children }: Props) {
@@ -37,15 +37,15 @@ export default function CalendarToolbar({ ref, className = '', children }: Props
         if(!date || !from || !to) { return '' }
 
         switch(view) {
-        case 'dayGridMonth':
-          return date.toFormat('LLLL yyyy')
-        case 'dayGridDay':
-          return date.toFormat('dd LLLL yyyy')
-        default:
-          let fromFormat = 'dd'
-          if(from.toFormat('MM') !== to.toFormat('MM')) { fromFormat += ' LLLL' }
-          if(from.toFormat('yyyy') !== to.toFormat('MM')) { fromFormat += ' yyyy' }
-          return `From ${from.toFormat(fromFormat)} To ${to.toFormat('dd LLLL yyyy')}`
+          case 'dayGridMonth':
+            return date.toFormat('LLLL yyyy')
+          case 'dayGridDay':
+            return date.toFormat('dd LLLL yyyy')
+          default:
+            let fromFormat = 'dd'
+            if(from.toFormat('MM') !== to.toFormat('MM')) { fromFormat += ' LLLL' }
+            if(from.toFormat('yyyy') !== to.toFormat('MM')) { fromFormat += ' yyyy' }
+            return `From ${from.toFormat(fromFormat)} To ${to.toFormat('dd LLLL yyyy')}`
         }
       })())
     })

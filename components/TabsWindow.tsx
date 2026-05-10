@@ -1,8 +1,8 @@
 import { Children, ReactElement } from 'react'
 
 interface Props {
-    children: ReactElement[]
-    value: number | null | undefined
+  children: ReactElement[]
+  value: number | null | undefined
 }
 
 export default function TabsWindow({children, value = 0 }: Props) {

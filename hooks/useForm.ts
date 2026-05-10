@@ -25,15 +25,15 @@ export interface ModelReducerAction<T extends object> {
   value: T | unknown | null
 }
 export interface Rules {
-    [key: string]: Validator[]
+  [key: string]: Validator[]
 }
 export interface ErrorMessages {
-    [key: string]: string[] | undefined
+  [key: string]: string[] | undefined
 }
 interface Params<T extends object> {
-    defaultValues: T // we build model strictly around those values
-    rules?: Rules, // collection of validation functions
-    onSubmit?: () => never | void // consumer's callback after submit for custom actions
+  defaultValues: T // we build model strictly around those values
+  rules?: Rules, // collection of validation functions
+  onSubmit?: () => never | void // consumer's callback after submit for custom actions
 }
 
 // --- Hook ---
@@ -41,23 +41,23 @@ export default function useForm<T extends object>({ defaultValues, rules, onSubm
   // --- Model reducer ---
   function modelReducer(state: T, { type, key, value }: ModelReducerAction<T>): T {
     switch(type) {
-    case 'batch': // updates more than one field
-      const batchValue = value as T
-      return {
-        ...Object.entries(defaultValues).reduce((r, [k, v]) => ({
-          ...r,
-          [k]:  batchValue !== null && typeof batchValue === 'object' && (batchValue as never)[k] !== undefined ? (batchValue as never)[k] : v
-        }), {} as T)
-      }
-    case 'update': // updates a single field
-      if(typeof key === 'string' && (defaultValues as never)[key] !== undefined) {
+      case 'batch': // updates more than one field
+        const batchValue = value as T
         return {
-          ...state,
-          [key]: value
+          ...Object.entries(defaultValues).reduce((r, [k, v]) => ({
+            ...r,
+            [k]:  batchValue !== null && typeof batchValue === 'object' && (batchValue as never)[k] !== undefined ? (batchValue as never)[k] : v
+          }), {} as T)
         }
-      }
-    default:
-      return state
+      case 'update': // updates a single field
+        if(typeof key === 'string' && (defaultValues as never)[key] !== undefined) {
+          return {
+            ...state,
+            [key]: value
+          }
+        }
+      default:
+        return state
     }
   }
   const [model, dispatchModel] = useReducer(modelReducer, defaultValues)

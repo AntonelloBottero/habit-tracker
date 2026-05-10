@@ -8,10 +8,10 @@ const modalRoot = typeof document !== 'undefined'
   : null
 
 interface Props {
-    title?: string,
-    children?: ReactNode,
-    size?: string
-    role?: string
+  title?: string,
+  children?: ReactNode,
+  size?: string
+  role?: string
 }
 
 // Typescript needs the component props to be explicited in order to infere the correct props on component instance

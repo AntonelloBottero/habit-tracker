@@ -1,6 +1,6 @@
-import tseslint from "typescript-eslint";
-import nextPlugin from '@next/eslint-plugin-next';
-import { defineConfig, globalIgnores } from "eslint/config";
+import tseslint from "typescript-eslint"
+import stylistic from '@stylistic/eslint-plugin'
+import { defineConfig, globalIgnores } from "eslint/config"
 
 const files = [
   'app/**/*.{js,jsx,ts,tsx}',
@@ -40,4 +40,13 @@ export default defineConfig([
     ...c,
     files,
   })),
+  // stylistic
+  {
+    plugins: {
+      '@stylistic': stylistic
+    },
+    rules: {
+      '@stylistic/indent': ['error', 2],
+    }
+  }
 ]);

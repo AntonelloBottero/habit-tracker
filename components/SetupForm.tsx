@@ -7,7 +7,7 @@ import { ArrowForward } from "@project-lary/react-material-symbols-700-rounded"
 import Loader from '@/components/Loader'
 
 interface Props {
-    onSubmit?: (name: string) => void | never
+  onSubmit?: (name: string) => void | never
 }
 
 export default function SetupForm({ onSubmit }: Props) {

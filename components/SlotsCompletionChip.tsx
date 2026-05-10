@@ -1,8 +1,8 @@
 import { DateTime } from "luxon"
 
 interface Props {
-	completion: number,
-	count: number,
+  completion: number,
+  count: number,
   active_to: string
 }
 

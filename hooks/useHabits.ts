@@ -15,14 +15,14 @@ export default function useHabits() {
     if(!granularity || !date) { return null }
 
     switch(granularity) {
-    case 'yearly':
-      return date.endOf('year').toISO()
-    case 'monthly':
-      return date.endOf('month').toISO()
-    case 'weekly':
-      return date.endOf('week').toISO()
-    default:
-      return date.endOf('day').toISO()
+      case 'yearly':
+        return date.endOf('year').toISO()
+      case 'monthly':
+        return date.endOf('month').toISO()
+      case 'weekly':
+        return date.endOf('week').toISO()
+      default:
+        return date.endOf('day').toISO()
     }
   }
 

@@ -9,9 +9,9 @@ const testDb = new DbClass('TestDatabase')
 
 // --- Test consumer ---
 interface DbTestValues {
-    dbIsOpen: boolean;
-    getOption: (key: string) => Promise<unknown>;
-    createOption: (key: string, value?: string | number) => Promise<boolean>;
+  dbIsOpen: boolean;
+  getOption: (key: string) => Promise<unknown>;
+  createOption: (key: string, value?: string | number) => Promise<boolean>;
 }
 
 function TestDbConsumer({ onHookReady }: { onHookReady: (values: DbTestValues) => void }) {

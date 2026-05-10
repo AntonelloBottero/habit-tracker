@@ -9,14 +9,14 @@ interface SidebarChangeEvent {
 }
 
 interface Props {
-    value: boolean
-    onChange?: (e: SidebarChangeEvent) => void
-    breakpoint?: BreakpointKey
-    width?: number
-    align?: 'left' | 'right'
-    bordered?: boolean
-		content: ReactNode | ReactNode[] // content of the sidebar
-    children: ReactNode | ReactNode[] // view content
+  value: boolean
+  onChange?: (e: SidebarChangeEvent) => void
+  breakpoint?: BreakpointKey
+  width?: number
+  align?: 'left' | 'right'
+  bordered?: boolean
+  content: ReactNode | ReactNode[] // content of the sidebar
+  children: ReactNode | ReactNode[] // view content
 }
 
 export default function SidebarView({ value, onChange, breakpoint = 'md', width = 256, align = 'left', bordered = false, content, children }: Props) {

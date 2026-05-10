@@ -1,15 +1,15 @@
 import { cloneElement, ReactElement } from 'react'
 
 interface Input extends ReactElement {
-    props: {
-        className?: string
-    }
+  props: {
+    className?: string
+  }
 }
 
 interface Props {
-    errorMessages?: string[]
-    label?: string,
-    input: Input
+  errorMessages?: string[]
+  label?: string,
+  input: Input
 }
 
 export default function InputWrapper({ errorMessages = [], label = '', input}: Props) {

@@ -3,9 +3,9 @@ import TonalIcon from '@/components/TonalIcon'
 import { NorthEast, SouthEast } from "@project-lary/react-material-symbols-700-rounded"
 
 interface Props {
-    habit: DbResourceSchema<HabitsSchema>
-    dense?: boolean
-    className?: string
+  habit: DbResourceSchema<HabitsSchema>
+  dense?: boolean
+  className?: string
 }
 
 export default function HabitsCardHeader({ habit, className = '', dense = false }: Props) {

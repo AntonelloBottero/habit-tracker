@@ -51,7 +51,7 @@ const FloatingMenu = ({ reference, children, onChange = undefined }: Props) => {
         >
           {children}
           <div className="text-xs text-gray-500 mt-2">
-             Posizionato: {placement}
+            Posizionato: {placement}
           </div>
         </div>
       )}

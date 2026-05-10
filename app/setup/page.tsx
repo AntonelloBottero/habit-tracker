@@ -36,7 +36,7 @@ export default function Page() {
           <div className="w-full max-w-90">
             <h1 className="text-4xl font-monda">welcome!</h1>
             <p>New in here? Start by inserting your name...<br />
-                        ...or whatever you want us to call you</p>
+              ...or whatever you want us to call you</p>
             <div className="w-full mt-4">
               <SetupForm onSubmit={handleSetupFormSubmit} />
             </div>
