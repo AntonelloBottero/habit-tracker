@@ -1,5 +1,6 @@
 import tseslint from "typescript-eslint"
 import stylistic from '@stylistic/eslint-plugin'
+import nextPlugin from '@next/eslint-plugin-next';
 import { defineConfig, globalIgnores } from "eslint/config"
 
 const files = [
@@ -25,7 +26,7 @@ export default defineConfig([
     }
   },
   // next
-  /* {
+  {
     files,
     plugins: {
       '@next/next': nextPlugin as never,
@@ -34,7 +35,7 @@ export default defineConfig([
       '@next/next/no-img-element': 'error',
       '@next/next/no-html-link-for-pages': 'error',
     }
-  }, */
+  },
   // typescript
   ...tseslint.configs.recommended.map((c) => ({
     ...c,
