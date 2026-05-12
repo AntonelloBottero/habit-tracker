@@ -11,7 +11,7 @@ export default function Page() {
   const { getOption } = useDb()
   const [tab, setTab] = useState(0)
   async function getName() {
-    const nameOption = await getOption('name') as string | undefined
+    const nameOption = await getOption('name', true) as string | undefined
     if(nameOption) {
       setTab(1)
     }
