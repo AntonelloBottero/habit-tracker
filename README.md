@@ -1,8 +1,8 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+Next + React Application to keep track of good and bad Habits
 
 ## Getting Started
 
-First, run the development server:
+### Run the development server
 
 ```bash
 npm run dev
@@ -16,21 +16,28 @@ bun dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### View the last release
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+[habit-tracker-snowy-phi.vercel.app](habit-tracker-snowy-phi.vercel.app)
 
-## Learn More
+## Details
 
-To learn more about Next.js, take a look at the following resources:
+The Habits Tracker consists of two main sections.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Setup
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+On the first access the user is asked to:
+- Provide a nickname
+- Provide the Habits he wants to track
 
-## Deploy on Vercel
+The user can then access the setup page anytime to:
+- Delete existing Habits
+- Add new Habits
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Calendar
+
+In this page, which consists of a simple calendar monthly view, the user can keep track of its Habits.
+
+
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
