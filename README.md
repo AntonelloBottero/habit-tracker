@@ -1,4 +1,4 @@
-Next + React Application to keep track of good and bad Habits
+Next + React Application to keep track of good and bad Habits. Data storage managed through IndexedDb (powered by Dexie).
 
 ## Getting Started
 
@@ -20,7 +20,7 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 [habit-tracker-snowy-phi.vercel.app](habit-tracker-snowy-phi.vercel.app)
 
-## Details
+## UX
 
 The Habits Tracker consists of two main sections.
 
@@ -36,8 +36,25 @@ The user can then access the setup page anytime to:
 
 ### Calendar
 
-In this page, which consists of a simple calendar monthly view, the user can keep track of its Habits.
+In this page, which consists of a simple calendar monthly view, the user can keep track of its Habits:
+- register a new Event
+- check progress of each Habit on a monthly basis
 
+## Resources
 
+### Habit
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Holds informations about the Habit to track, provided by user:
+- title
+- color
+- granularity (affects Slots setup)
+
+### Slot
+
+A virtual time slot where user can schedule events. Slots are associated with Habits and are generated each month for the current month.
+
+Slots allow you to track the progress of users' Habits over time.
+
+### Event
+
+Registers a progress with an Habit, at a given time. A registered Event takes up a Slot, which belongs the Habit the user wants to track.
