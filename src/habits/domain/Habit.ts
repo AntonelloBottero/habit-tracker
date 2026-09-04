@@ -14,7 +14,6 @@ export interface HabitProps {
     includeWeekends: boolean
     granularityTimes: number
     enoughAmount: string
-    manageFrom: Date
 }
 
 export class Habit {

@@ -1,8 +1,9 @@
-export type ID = string | null
+export type ID = string | number
 
 export interface SearchGateway<T> {
-    show: (id: string) => Promise<T | null>
+    show: (id: ID) => Promise<T | null>
     index: () => Promise<T[]>
+    findById: (id: ID) => Promise<T | null>
 }
 
 export interface SaveGateway<T> {
