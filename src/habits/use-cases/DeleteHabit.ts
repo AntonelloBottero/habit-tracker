@@ -5,7 +5,7 @@ export type DeleteHabitOutputDTO = void
 
 export type DeleteHabitGateway = DeleteGateway & SearchGateway<HabitProps>
 
-export class StoreHabit {
+export class DeleteHabit {
     private _gateway: DeleteHabitGateway
 
     constructor(gateway: DeleteHabitGateway) {
