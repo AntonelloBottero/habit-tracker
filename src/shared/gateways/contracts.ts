@@ -8,7 +8,7 @@ export interface SearchGateway<T> {
 
 export interface SaveGateway<T> {
     store: (data: T) => Promise<T & { createdAt: Date }>
-    update: (data: T) => Promise<T & { updatedAt: Date }>
+    update: (id: ID, data: T) => Promise<T & { updatedAt: Date }>
     generateId: () => Promise<ID>
 }
 

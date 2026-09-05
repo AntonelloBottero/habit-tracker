@@ -14,6 +14,7 @@ export interface HabitProps {
     includeWeekends: boolean
     granularityTimes: number
     enoughAmount: string
+    manageFrom: Date | null // every field represents the Entity state, even though is not critical business logic
 }
 
 export class Habit {
@@ -37,6 +38,9 @@ export class Habit {
         }
         if(Number.isNaN(props.granularityTimes) || props.granularityTimes < 1) {
             throw new Error('Adopt the Habit at least one time')
+        }
+        if(props.manageFrom && isNaN(props.manageFrom.getTime())) {
+            throw new Error('manage from must be a real date')
         }
         this._props = props
     }
