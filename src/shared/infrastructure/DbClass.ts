@@ -1,7 +1,7 @@
 import { HabitRawProps } from '@/src/habits/mappers/HabitMapper'
 import Dexie, { Table } from 'dexie'
 
-// --- Schemas and Models ---
+// --- Schemas ---
 export type DbResourceSchema<T> = Omit<T, 'id'> & {
   id: number
   created_at: string
@@ -9,7 +9,7 @@ export type DbResourceSchema<T> = Omit<T, 'id'> & {
   deleted_at: string
 }
 
-export default class DbClass extends Dexie {
+export class DbClass extends Dexie {
   habits!: Table<DbResourceSchema<HabitRawProps>, 'id'>
   constructor(name: string) {
     super(name)
@@ -17,6 +17,4 @@ export default class DbClass extends Dexie {
       habits: `++id, type, name, color, granularity, include_weekends, granularity_times, enough_amount, manage_from, created_at, updated_at, deleted_at`,
     })
   }
-
-  // TODO: findById, findByName, ...
 }
