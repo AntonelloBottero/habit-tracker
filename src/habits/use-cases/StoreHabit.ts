@@ -1,5 +1,5 @@
 import { Habit, type HabitProps } from '../domain/Habit'
-import { type SaveGateway } from '../../shared/gateways/contracts'
+import { HabitGateway } from '../contracts/HabitGateway'
 
 export type StoreHabitInputDTO = Omit<HabitProps, 'id' | 'manageFrom'> & {
     id: string | number | undefined
@@ -9,14 +9,10 @@ export type StoreHabitOutputDTO = Omit<HabitProps, 'manageFrom'> & {
     manageFrom: null
 }
 
-export type StoreHabitGateway = SaveGateway<StoreHabitOutputDTO> & {
-    findByName: (name: string) => Promise<StoreHabitOutputDTO | null>
-}
-
 export class StoreHabit {
-    private _gateway: StoreHabitGateway
+    private _gateway: HabitGateway
 
-    constructor(saveGateway: StoreHabitGateway) {
+    constructor(saveGateway: HabitGateway) {
         this._gateway = saveGateway
     }
 

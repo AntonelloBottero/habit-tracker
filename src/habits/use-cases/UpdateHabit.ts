@@ -1,18 +1,14 @@
 import { Habit, type HabitProps } from '../domain/Habit'
-import { SearchGateway, type SaveGateway } from '../../shared/gateways/contracts'
+import { HabitGateway } from '../contracts/HabitGateway'
 import { selectiveMerge } from '../../shared/utils/obj'
 
 export type UpdateHabitInputDTO = Partial<Omit<HabitProps, 'id'>>
 export type UpdateHabitOutputDTO = HabitProps
 
-export type UpdateHabitGateway = SaveGateway<UpdateHabitOutputDTO> & SearchGateway<UpdateHabitOutputDTO> & {
-    findByName: (name: string, exclude?: string | number) => Promise<UpdateHabitOutputDTO | null>
-}
-
 export class UpdateHabit {
-    private _gateway: UpdateHabitGateway
+    private _gateway: HabitGateway
 
-    constructor(saveGateway: UpdateHabitGateway) {
+    constructor(saveGateway: HabitGateway) {
         this._gateway = saveGateway
     }
 

@@ -1,5 +1,6 @@
 import { StoreHabit } from "../use-cases/StoreHabit"
 import { UpdateHabit } from "../use-cases/UpdateHabit"
+import { ShowHabit } from "../use-cases/ShowHabit"
 import { type HabitRawProps } from "../mappers/HabitMapper"
 import useForm, { validators } from "@/hooks/useForm"
 
@@ -30,14 +31,17 @@ export default function useHabitCrud({ onSubmit }: Params) {
     const form = useForm({ defaultValues, rules, onSubmit })
 
     function initStore() {
+        form.init(defaultValues)
+    }
+    async function store() {
 
     }
-    function store() {
 
-    }
+    async function initUpdate(id: string | number) {
+        try {
+            
 
-    function initUpdate() {
-
+        }
     }
     function update() {}
 
