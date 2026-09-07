@@ -1,5 +1,5 @@
 import { Habit, type HabitProps } from '../domain/Habit'
-import { HabitGateway } from '../contracts/HabitGateway'
+import { HabitGateway } from '../contracts/gateways'
 import { selectiveMerge } from '../../shared/utils/obj'
 
 export type UpdateHabitInputDTO = Partial<Omit<HabitProps, 'id'>>

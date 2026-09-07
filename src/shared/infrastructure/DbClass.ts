@@ -9,7 +9,9 @@ export type DbResourceSchema<T> = Omit<T, 'id'> & {
   deleted_at: string
 }
 
-export class DbClass extends Dexie {
+export type DexieTableName = 'habit'
+
+export class DexieDbClass extends Dexie {
   habits!: Table<DbResourceSchema<HabitRawProps>, 'id'>
   constructor(name: string) {
     super(name)

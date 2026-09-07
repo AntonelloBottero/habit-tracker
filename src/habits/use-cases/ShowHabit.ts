@@ -1,5 +1,5 @@
 import { type HabitProps } from '../domain/Habit'
-import { HabitGateway } from '../contracts/HabitGateway'
+import { HabitGateway } from '../contracts/gateways'
 
 export type ShowHabitOutputDTO = HabitProps
 

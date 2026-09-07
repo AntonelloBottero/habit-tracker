@@ -1,4 +1,4 @@
-import { HabitGateway } from '../contracts/HabitGateway'
+import { HabitGateway } from '../contracts/gateways'
 
 export type DeleteHabitOutputDTO = void
 
