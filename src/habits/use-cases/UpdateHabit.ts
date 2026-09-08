@@ -14,7 +14,7 @@ export class UpdateHabit {
 
     public async execute(id: string | number, input: UpdateHabitInputDTO): Promise<UpdateHabitOutputDTO> {
         // input validations
-        const storedHabit = await this._gateway.findById(id)
+        const storedHabit = await this._gateway.show(id)
         if(!storedHabit) {
             throw new Error(`The habit to be edited doesn't exists.`)
         }

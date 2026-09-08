@@ -11,7 +11,7 @@ export class DeleteHabit {
 
     public async execute(id: string | number): Promise<void> {
         // input validations
-        const storedHabit = await this._gateway.findById(id)
+        const storedHabit = await this._gateway.show(id)
         if(!storedHabit) {
             throw new Error(`The habit to be deleted doesn't exists.`)
         }

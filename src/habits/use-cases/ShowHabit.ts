@@ -12,7 +12,7 @@ export class ShowHabit {
 
     public async execute(id: string | number): Promise<ShowHabitOutputDTO> {
         // input validations
-        const storedHabit = await this._gateway.findById(id)
+        const storedHabit = await this._gateway.show(id)
         if(!storedHabit) {
             throw new Error(`The habit to be deleted doesn't exists.`)
         }
