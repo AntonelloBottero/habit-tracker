@@ -28,12 +28,16 @@ export abstract class DexieBaseGateway implements BaseGateway<RP, DP> {
         return items.map(this._mapper.toDomain)
     }
 
-    public async store(values: Partial<RP>): Promise<(DP & { createdAt: Date }) | null> {
+    // Save
+    public async store(domainValues: Partial<DP>): Promise<DP> {
+        const values = this._mapper.toRaw(domainValues)
         await this._table.add({
             deleted_at: '', // deleted_at is first, so it can be easily overwritten by values
             ...values,
             created_at: new Date().toISOString(),
         })
-        return await this.show(values.id)
+        return await this.show(values.id) as DP
     }
+
+
 }
