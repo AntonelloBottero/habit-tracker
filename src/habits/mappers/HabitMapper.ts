@@ -1,6 +1,7 @@
 import { type HabitProps, type Type, type Granularity } from "../domain/Habit"
+import { type RawProps, type DomainProps, type Mapper } from "../../shared/contracts/mappers";
 
-export interface HabitRawProps {
+export interface HabitRawProps extends RawProps {
     id?: string | number
     user_id?: string | number
     type: Type

@@ -1,32 +1,34 @@
 import { Table } from "dexie";
-import { type BaseGateway } from "../contracts/gateways";
-import { DexieDbClass, type DexieTableName, type DbResourceSchema } from "./DbClass";
+import { DexieDbClass, type DexieTableName } from "./DbClass";
+import { type BaseGateway } from "../contracts/gateways"
+import { type RawProps, type DomainProps, type Mapper } from "../contracts/mappers";
 
-type RawProps = Record<string, any>
-type Props = Record<string, any>
+type DP = DomainProps
+type RP = RawProps
 
-export abstract class DexieBaseGateway implements BaseGateway<RawProps, Props> {
+export abstract class DexieBaseGateway implements BaseGateway<RP, DP> {
     private _table: Table
-    protected abstract _toDomain: (raw: RawProps) => Props
+    private _mapper: Mapper
 
-    constructor(tableName: DexieTableName) {
+    constructor(tableName: DexieTableName, mapper: Mapper) {
         const db = new DexieDbClass('HabiterDatabase')
         db.open()
         this._table = db.table(tableName)
+        this._mapper = mapper
     }
 
     // GET
-    public async show(id: string | number): Promise<Props | null> {
+    public async show(id: string | number): Promise<DP | null> {
         const item = await this._table.where('id').equals(id).and(item => item.deleted_at === '').first()
-        return this._toDomain(item)
+        return this._mapper.toDomain(item)
     }
 
-    public async index(): Promise<Props[]> {
+    public async index(): Promise<DP[]> {
         const items = await this._table.where('deleted_at').equals('').toArray()
-        return items.map(this._toDomain)
+        return items.map(this._mapper.toDomain)
     }
 
-    public async store(values: Partial<RawProps>): Promise<Props | null> {
+    public async store(values: Partial<RP>): Promise<(DP & { createdAt: Date }) | null> {
         await this._table.add({
             deleted_at: '', // deleted_at is first, so it can be easily overwritten by values
             ...values,
