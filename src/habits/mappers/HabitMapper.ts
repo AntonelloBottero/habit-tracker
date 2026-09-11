@@ -14,8 +14,8 @@ export interface HabitRawProps extends RawProps {
     manage_from: string | null
 }
 
-export class HabitMapper {
-    public static toDomain(raw: Partial<HabitRawProps>): Partial<HabitProps> { // Partial -> which properties to show to presenters/gateways depends on the use case's scope
+export class HabitMapper implements Mapper {
+    public static toDomain(raw: Partial<HabitRawProps>): Partial<HabitProps> {
         return {
             id: raw.id,
             userId: raw.user_id,

@@ -6,8 +6,8 @@ export type ID = string | number // includes string and numbers to leave as many
 export interface BaseGateway<RP extends RawProps, DP extends DomainProps> {
     show: (id: ID) => Promise<DP | null>
     index: () => Promise<DP[]>
+    generateId: () => Promise<ID>
     store: (values: DP) => Promise<DP>
     update: (id: ID, data: RP) => Promise<DP>
-    generateId: () => Promise<ID>
     delete: (id: ID) => Promise<void>
 }

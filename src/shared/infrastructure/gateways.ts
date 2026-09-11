@@ -6,7 +6,7 @@ import { type RawProps, type DomainProps, type Mapper } from "../contracts/mappe
 type DP = DomainProps
 type RP = RawProps
 
-export abstract class DexieBaseGateway implements BaseGateway<RP, DP> {
+export class DexieBaseGateway implements BaseGateway<RP, DP> {
     private _table: Table
     private _mapper: Mapper
 
@@ -28,16 +28,35 @@ export abstract class DexieBaseGateway implements BaseGateway<RP, DP> {
         return items.map(this._mapper.toDomain)
     }
 
+    public async generateId() {
+        return Math.floor(Math.random() * 1000)
+    }
+
     // Save
     public async store(domainValues: Partial<DP>): Promise<DP> {
         const values = this._mapper.toRaw(domainValues)
         await this._table.add({
             deleted_at: '', // deleted_at is first, so it can be easily overwritten by values
             ...values,
-            created_at: new Date().toISOString(),
+            created_at: new Date().toISOString(), // created at -> now
         })
         return await this.show(values.id) as DP
     }
 
+    public async update(id: string | number, domainValues: Partial<DP>): Promise<DP> {
+        const values = this._mapper.toRaw(domainValues)
+        const storedValues = await this.show(id) // we fetch the existing resource so we can update the entire resource even if domainValues is Partial
 
+        await this._table.put({
+            ...storedValues,
+            ...values,
+            updated_at: new Date().toISOString() // last update -> now
+        })
+        return await this.show(values.id) as DP
+    }
+
+    // Delete
+    public async delete(id: string | number): Promise<void> {
+        await this._table.delete(id)
+    }
 }
