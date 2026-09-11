@@ -7,8 +7,8 @@ type DP = DomainProps
 type RP = RawProps
 
 export class DexieBaseGateway implements BaseGateway<RP, DP> {
-    private _table: Table
-    private _mapper: Mapper
+    protected _table: Table
+    protected _mapper: Mapper
 
     constructor(tableName: DexieTableName, mapper: Mapper) {
         const db = new DexieDbClass('HabiterDatabase')
