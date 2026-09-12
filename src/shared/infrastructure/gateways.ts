@@ -50,6 +50,7 @@ export class DexieBaseGateway implements BaseGateway<RP, DP> {
         await this._table.put({
             ...storedValues,
             ...values,
+            id,
             updated_at: new Date().toISOString() // last update -> now
         })
         return await this.show(values.id) as DP

@@ -1,6 +1,7 @@
+import { useInfrastructure } from "@/src/shared/infrastructure/InfrastructureContext"
 import { StoreHabit } from "../use-cases/StoreHabit"
 import { UpdateHabit } from "../use-cases/UpdateHabit"
-import { ShowHabit } from "../use-cases/ShowHabit"
+import { DeleteHabit } from "../use-cases/DeleteHabit"
 import { type HabitRawProps } from "../mappers/HabitMapper"
 import useForm, { validators } from "@/hooks/useForm"
 
@@ -9,6 +10,14 @@ interface Params {
 }
 
 export default function useHabitCrud({ onSubmit }: Params) {
+    // Init Infrastructure
+    const { habitGateway } = useInfrastructure()
+
+    // Init Use Cases
+    const storeHabit = new StoreHabit(habitGateway)
+    const updateHabit = new UpdateHabit(habitGateway)
+    const deleteHabit = new DeleteHabit(habitGateway)
+
     // Form
     const defaultValues: HabitRawProps = {
         type: 'good',
@@ -41,7 +50,7 @@ export default function useHabitCrud({ onSubmit }: Params) {
         try {
             
 
-        }
+        } catch(error) {}
     }
     function update() {}
 

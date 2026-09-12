@@ -1,8 +1,9 @@
 import { DexieBaseGateway } from "@/src/shared/infrastructure/gateways"
 import { HabitMapper, HabitRawProps } from "../mappers/HabitMapper"
 import { HabitProps } from "../domain/Habit"
+import { HabitGateway } from "../contracts/gateways"
 
-export class HabitGateway extends DexieBaseGateway {
+export class DexieHabitGateway extends DexieBaseGateway implements HabitGateway {
     constructor() {
         super('habit', new HabitMapper())
     }
