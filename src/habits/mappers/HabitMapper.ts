@@ -1,5 +1,5 @@
 import { type HabitProps, type Type, type Granularity } from "../domain/Habit"
-import { type Mapper } from "../../shared/contracts/mappers";
+import { DomainProps, RawProps, type Mapper } from "../../shared/contracts/mappers";
 
 export interface HabitRawProps {
     id?: string | number
@@ -14,7 +14,7 @@ export interface HabitRawProps {
     manage_from: string | null
 }
 
-export class HabitMapper implements Mapper {
+export class HabitMapper implements Mapper<HabitRawProps, HabitProps> {
     public toDomain(raw: Partial<HabitRawProps>): Partial<HabitProps> {
         return {
             id: raw.id,
