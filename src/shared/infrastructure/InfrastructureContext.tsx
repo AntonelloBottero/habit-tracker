@@ -5,6 +5,7 @@
 
 import React, { createContext, useContext } from 'react'
 import { DexieHabitGateway } from '../../habits/infrastructure/DexieHabitGateway'
+import { DexieFactory } from './DbClass'
 
 interface Infrastructure {
     habitGateway: DexieHabitGateway
@@ -13,9 +14,8 @@ interface Infrastructure {
 const InfrastructureContext = createContext<Infrastructure | null>(null)
 
 export const DependenciesProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  // Le istanze concrete vivono QUI, ai confini dell'applicazione (Composition Root)
   const infrastructure: Infrastructure = {
-    habitGateway: new DexieHabitGateway()
+    habitGateway: new DexieHabitGateway(DexieFactory.execute())
   };
 
   return (

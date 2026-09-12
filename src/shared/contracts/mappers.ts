@@ -9,6 +9,6 @@ export type RawProps = Record<string, any>
  * - the downside to this is that communication between Use Cases and Adapters happens using Domain Entities, which it appears not to be a proper Clean Architecture communication
  */
 export interface Mapper<TRaw extends RawProps, TDomain extends DomainProps> {
-    toDomain(raw: Partial<TRaw>): Partial<TDomain> // Partial -> which properties to show to Adapters depends on the use case's scope
-    toRaw(domain: Partial<TDomain>): TRaw
+    toDomain(raw: TRaw): TDomain // Partial -> which properties to show to Adapters depends on the use case's scope
+    toRaw(domain: TDomain): TRaw
 }

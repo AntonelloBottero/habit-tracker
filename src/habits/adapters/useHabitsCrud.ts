@@ -19,7 +19,7 @@ export default function useHabitCrud({ onSubmit }: Params) {
     const deleteHabit = new DeleteHabit(habitGateway)
 
     // Form
-    const defaultValues: HabitRawProps = {
+    const defaultValues: Partial<HabitRawProps> = {
         type: 'good',
         name: '',
         color: '',

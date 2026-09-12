@@ -1,5 +1,5 @@
-import { Table } from "dexie";
-import { DexieDbClass, type DexieTableName } from "./DbClass";
+import { type Dexie, type Table } from "dexie";
+import { type DexieTableName } from "./DbClass";
 import { type BaseGateway } from "../contracts/gateways"
 import { type RawProps, type DomainProps, type Mapper } from "../contracts/mappers";
 
@@ -7,9 +7,7 @@ export class DexieBaseGateway<TRaw extends RawProps, TDomain extends DomainProps
     protected _table: Table
     protected _mapper: Mapper<TRaw, TDomain>
 
-    constructor(tableName: DexieTableName, mapper: Mapper<TRaw, TDomain>) {
-        const db = new DexieDbClass('HabiterDatabase')
-        db.open()
+    constructor(db: Dexie, tableName: DexieTableName, mapper: Mapper<TRaw, TDomain>) {
         this._table = db.table(tableName)
         this._mapper = mapper
     }
@@ -26,35 +24,42 @@ export class DexieBaseGateway<TRaw extends RawProps, TDomain extends DomainProps
         return items.map((item) => this._mapper.toDomain(item)) as TDomain[]
     }
 
-    public async generateId() {
+    public async generateId() { // business logic requires a prior ID generation. Dexie doesn't support such feature, so we return a mocked id to discard before every store operation
         return Math.floor(Math.random() * 1000)
     }
 
     // Save
-    public async store(domainValues: Partial<TDomain>): Promise<TDomain> {
-        const values = this._mapper.toRaw(domainValues)
-        await this._table.add({
+    public async store(domainValues: TDomain): Promise<TDomain> {
+        const {
+            id: mockId, // we discard mocked id
+            ...values
+        } = this._mapper.toRaw(domainValues)
+
+        const now = new Date().toISOString()
+        const newId = await this._table.add({
             deleted_at: '', // deleted_at is first, so it can be easily overwritten by values
             ...values,
-            created_at: new Date().toISOString(), // created at -> now
+            created_at: now, // created at -> now
+            updated_at: now, // last update -> now
         })
-        return await this.show(values.id) as TDomain
+        return this._mapper.toDomain({...values, id: newId })
     }
 
-    public async update(id: string | number, domainValues: Partial<TDomain>): Promise<TDomain> {
+    public async update(id: string | number, domainValues: TDomain): Promise<TDomain> {
         const values = this._mapper.toRaw(domainValues)
         const storedDomainValues = await this.show(id) // we fetch the existing resource so we can update the entire resource even if domainValues is Partial
         if(!storedDomainValues) {
             throw new Error("Cannot update a non-existing resource")
         }
 
-        await this._table.put({
+        const updatedRaw = {
             ...this._mapper.toRaw(storedDomainValues),
             ...values,
             id,
             updated_at: new Date().toISOString() // last update -> now
-        })
-        return await this.show(values.id) as TDomain
+        }
+        await this._table.put(updatedRaw)
+        return this._mapper.toDomain(updatedRaw)
     }
 
     // Delete

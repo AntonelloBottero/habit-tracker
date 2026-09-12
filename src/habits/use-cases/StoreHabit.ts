@@ -1,8 +1,7 @@
 import { Habit, type HabitProps } from '../domain/Habit'
 import { HabitGateway } from '../contracts/gateways'
 
-export type StoreHabitInputDTO = Omit<HabitProps, 'id' | 'manageFrom'> & {
-    id: string | number | undefined
+export type StoreHabitInputDTO = Omit<HabitProps, | 'manageFrom'> & {
     manageFrom: null
 }
 export type StoreHabitOutputDTO = Omit<HabitProps, 'manageFrom'> & {
