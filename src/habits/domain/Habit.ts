@@ -49,4 +49,21 @@ export class Habit {
     public toPrimitives(): Readonly<HabitProps> {
         return Object.freeze({...this._props})
     }
+
+    // how many times we allow an habit to be registered depends on the timespan
+    public static getAllowedGranularityTimes(granularity: Granularity): number[] { // this is designed to be used easily by both Use cases and Adapters, so it's designed as a static method
+        let count = 1
+        switch(granularity) {
+        case 'weekly':
+            count = 3
+            break
+        case 'monthly':
+            count = 5
+            break
+        case 'yearly':
+            count = 8
+            break
+        }
+        return Array.from({ length: count }, (_, i) => i + 1)
+    }
 }

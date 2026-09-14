@@ -14,7 +14,7 @@ export class ShowHabit {
         // input validations
         const storedHabit = await this._gateway.show(id)
         if(!storedHabit) {
-            throw new Error(`The habit to be deleted doesn't exists.`)
+            throw new Error(`The habit to be shown doesn't exists.`)
         }
 
         return storedHabit
