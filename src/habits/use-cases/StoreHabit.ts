@@ -1,9 +1,7 @@
 import { Habit, type HabitProps } from '../domain/Habit'
 import { HabitGateway } from '../contracts/gateways'
 
-export type StoreHabitInputDTO = Omit<HabitProps, | 'manageFrom'> & {
-    manageFrom: null
-}
+export type StoreHabitInputDTO = Omit<HabitProps, 'id' | 'userId'>
 export type StoreHabitOutputDTO = Omit<HabitProps, 'manageFrom'> & {
     manageFrom: null
 }
@@ -15,14 +13,15 @@ export class StoreHabit {
         this._gateway = saveGateway
     }
 
-    public async execute(input: StoreHabitOutputDTO): Promise<StoreHabitOutputDTO> {
+    public async execute(input: StoreHabitInputDTO): Promise<StoreHabitOutputDTO> {
         const existingHabit = await this._gateway.findByName(input.name.trim());
         if (existingHabit) {
         throw new Error(`A habit with name '${input.name}' already exists.`);
         }
 
-        input.id = await this._gateway.generateId()
-        const habit = new Habit(input)
+        const id = await this._gateway.generateId()
+        const userId = await this._gateway.getUserId()
+        const habit = new Habit({...input, id, userId})
 
         const data = {...habit.toPrimitives(), manageFrom: null }
         await this._gateway.store(data)

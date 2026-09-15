@@ -7,6 +7,7 @@ export interface BaseGateway<RP extends RawProps, DP extends DomainProps> {
     show: (id: ID) => Promise<DP | null>
     index: () => Promise<DP[]>
     generateId: () => Promise<ID>
+    getUserId: () => Promise<ID>
     store: (values: DP) => Promise<DP>
     update: (id: ID, data: DP) => Promise<DP>
     delete: (id: ID) => Promise<void>

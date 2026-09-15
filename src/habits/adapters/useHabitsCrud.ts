@@ -1,18 +1,18 @@
 import { useInfrastructure } from "@/src/shared/infrastructure/InfrastructureContext"
 import { ShowHabit } from "../use-cases/ShowHabit"
-import { StoreHabit } from "../use-cases/StoreHabit"
+import { StoreHabit, StoreHabitInputDTO } from "../use-cases/StoreHabit"
 import { UpdateHabit } from "../use-cases/UpdateHabit"
 import { DeleteHabit } from "../use-cases/DeleteHabit"
 import { HabitMapper, type HabitRawProps } from "../mappers/HabitMapper"
 import useForm, { validators } from "@/hooks/useForm"
 import { Habit, HabitProps } from "../domain/Habit"
-import { useRef } from "react"
+import { useRef, useState } from "react"
 
 interface Params {
-    onSubmit?: () => never | void
+    onSave?: () => never | void
 }
 
-export default function useHabitCrud({ onSubmit }: Params) {
+export default function useHabitCrud({ onSave }: Params) {
     // Init Infrastructure
     const { habitGateway } = useInfrastructure()
 
@@ -26,6 +26,7 @@ export default function useHabitCrud({ onSubmit }: Params) {
 
     // Internal state
     const storedHabit = useRef<HabitRawProps | null>(null) // in case we are editing an existing habit we save it here
+    const [loadingSave, setLoadingSave] = useState<boolean>(false) // useState to allow ui to be rerendered accordingly
 
     // Form
     const defaultValues: Omit<HabitRawProps, 'id' | 'user_id'> = { // i and user_id are not intended to be edited directly, so we omit them from defaultValues
@@ -52,10 +53,7 @@ export default function useHabitCrud({ onSubmit }: Params) {
         form.init(defaultValues)
         storedHabit.current = null
     }
-    async function store() {
-        
-    }
-    
+
     async function initUpdate(id: string | number) {
         try {
             const _storedHabit = habitMapper.toRaw(await showHabit.execute(id))
@@ -65,7 +63,21 @@ export default function useHabitCrud({ onSubmit }: Params) {
             console.error(error)
         }
     }
-    function update() {}
+
+    async function onSubmit() {
+        setLoadingSave(true)
+        try {
+            if(!storedHabit.current?.id) {
+                await storeHabit.execute(habitMapper.toDomain(form.model) as StoreHabitInputDTO)
+            }
+            if(onSave) {
+                onSave()
+            }
+        } catch(error) {
+            console.error(error)
+        }
+        setLoadingSave(false)
+    }
 
     // Utils
     const granularityTimes = Habit.getAllowedGranularityTimes(form.model.granularity).map(value => ({
@@ -76,9 +88,8 @@ export default function useHabitCrud({ onSubmit }: Params) {
     return {
         form,
         initStore,
-        store,
         initUpdate,
-        update,
+        loadingSave,
         granularityTimes,
     }
 }

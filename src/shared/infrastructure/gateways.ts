@@ -28,21 +28,23 @@ export class DexieBaseGateway<TRaw extends RawProps, TDomain extends DomainProps
         return Math.floor(Math.random() * 1000)
     }
 
+    public async getUserId() {
+        return 1 // there is no login and everything is managed through indexedDb, so we return a mock id
+    }
+
     // Save
     public async store(domainValues: TDomain): Promise<TDomain> {
-        const {
-            id: mockId, // we discard mocked id
-            ...values
-        } = this._mapper.toRaw(domainValues)
+        const values = this._mapper.toRaw(domainValues)
 
         const now = new Date().toISOString()
         const newId = await this._table.add({
             deleted_at: '', // deleted_at is first, so it can be easily overwritten by values
             ...values,
+            id: undefined, // we discard mocked id
             created_at: now, // created at -> now
             updated_at: now, // last update -> now
         })
-        return this._mapper.toDomain({...values, id: newId })
+        return this._mapper.toDomain({...values, id: newId }) as TDomain // we overwrite type checker because we for sure have the complete TDomain
     }
 
     public async update(id: string | number, domainValues: TDomain): Promise<TDomain> {
@@ -59,7 +61,7 @@ export class DexieBaseGateway<TRaw extends RawProps, TDomain extends DomainProps
             updated_at: new Date().toISOString() // last update -> now
         }
         await this._table.put(updatedRaw)
-        return this._mapper.toDomain(updatedRaw)
+        return this._mapper.toDomain(updatedRaw) as TDomain // we overwrite type checker because we for sure have the complete TDomain
     }
 
     // Delete

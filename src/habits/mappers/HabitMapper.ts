@@ -15,7 +15,7 @@ export interface HabitRawProps {
 }
 
 export class HabitMapper implements Mapper<HabitRawProps, HabitProps> {
-    public toDomain(raw: HabitRawProps): HabitProps {
+    public toDomain(raw: Partial<HabitRawProps>): Partial<HabitProps> {
         return {
             id: raw.id,
             userId: raw.user_id,
