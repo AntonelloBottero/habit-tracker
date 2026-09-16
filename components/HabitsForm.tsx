@@ -29,13 +29,12 @@ const rules: Rules = {
   enough_amount: []
 }
 
-const granularities: string[] = ['daily', 'weekly', 'monthly', 'yearly']
-
+// TODO: expose store and update methods
 export default function FormHabits({ values, onSave, onDelete }: Props) {
   const { options } = useDb()
   const setupDone = (options.current.last_setup_at || '') > DateTime.now().toISO()
 
-  // --- useForm ---
+  // --- useHabitsCrud ---
   const { model, changeField, init, errorMessages, handleFormSubmit } = useForm({ defaultValues: habitsModel, rules, onSubmit })
   useEffect(() => {
     init(values)

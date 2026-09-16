@@ -49,11 +49,10 @@ export default function useHabitCrud({ onSave }: Params) {
     }
     const form = useForm({ defaultValues, rules, onSubmit })
 
-    function initStore() {
-        form.init(defaultValues)
+    function initStore(values?: Partial<HabitRawProps>) {
+        form.init(values)
         storedHabit.current = null
     }
-
     async function initUpdate(id: string | number) {
         try {
             const _storedHabit = habitMapper.toRaw(await showHabit.execute(id))
@@ -80,6 +79,7 @@ export default function useHabitCrud({ onSave }: Params) {
     }
 
     // Utils
+    const granularities: string[] = ['daily', 'weekly', 'monthly', 'yearly']
     const granularityTimes = Habit.getAllowedGranularityTimes(form.model.granularity).map(value => ({
         value,
         text: value === 1 ? '1 time' : `${value} times`
@@ -91,5 +91,6 @@ export default function useHabitCrud({ onSave }: Params) {
         initUpdate,
         loadingSave,
         granularityTimes,
+        granularities
     }
 }
