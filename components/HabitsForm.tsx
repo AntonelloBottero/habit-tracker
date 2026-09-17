@@ -1,4 +1,4 @@
-import { useState, useEffect, type ChangeEvent, useRef } from 'react'
+import { useState, useEffect, type ChangeEvent, useRef, forwardRef, useImperativeHandl } from 'react'
 import InputWrapper from '@/components/InputWrapper'
 import ColorPicker from '@/components/ColorPicker'
 import CheckboxBtn from '@/components/CheckboxBtn'
@@ -11,8 +11,14 @@ import ConfirmModal from '@/components/ConfirmModal'
 import { ColorPickerRef, ConfirmModalRef } from '@/app/types'
 import { CheckCircle, Info } from '@project-lary/react-material-symbols-700-rounded'
 import { DateTime } from 'luxon'
+import { HabitRawProps } from '@/src/habits/mappers/HabitMapper'
 
 type Values = Partial<DbResourceSchema<HabitsSchema>>
+
+interface Ref {
+  store: (values?: Partial<HabitRawProps>) => void
+  update: (id: string | number) => Promise<void>
+}
 
 interface Props {
   values?: Values
@@ -30,7 +36,7 @@ const rules: Rules = {
 }
 
 // TODO: expose store and update methods
-export default function FormHabits({ values, onSave, onDelete }: Props) {
+const HabitsForm = forwardRef<Ref, Props>(({ values, onSave, onDelete }: Props, ref) => {
   const { options } = useDb()
   const setupDone = (options.current.last_setup_at || '') > DateTime.now().toISO()
 
@@ -255,4 +261,6 @@ export default function FormHabits({ values, onSave, onDelete }: Props) {
       </div>
     </form>
   )
-}
+})
+
+export default HabitsForm

@@ -49,11 +49,11 @@ export default function useHabitCrud({ onSave }: Params) {
     }
     const form = useForm({ defaultValues, rules, onSubmit })
 
-    function initStore(values?: Partial<HabitRawProps>) {
+    function store(values?: Partial<HabitRawProps>) {
         form.init(values)
         storedHabit.current = null
     }
-    async function initUpdate(id: string | number) {
+    async function update(id: string | number) {
         try {
             const _storedHabit = habitMapper.toRaw(await showHabit.execute(id))
             form.init(_storedHabit)
@@ -87,8 +87,8 @@ export default function useHabitCrud({ onSave }: Params) {
 
     return {
         form,
-        initStore,
-        initUpdate,
+        store,
+        update,
         loadingSave,
         granularityTimes,
         granularities
