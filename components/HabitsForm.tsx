@@ -1,4 +1,5 @@
-import { useState, useEffect, type ChangeEvent, useRef, forwardRef, useImperativeHandl } from 'react'
+// Habits form module - stores, updates, deletes through ref controls
+import { useState, useEffect, type ChangeEvent, useRef, forwardRef, useImperativeHandle } from 'react'
 import InputWrapper from '@/components/InputWrapper'
 import ColorPicker from '@/components/ColorPicker'
 import CheckboxBtn from '@/components/CheckboxBtn'
@@ -12,8 +13,7 @@ import { ColorPickerRef, ConfirmModalRef } from '@/app/types'
 import { CheckCircle, Info } from '@project-lary/react-material-symbols-700-rounded'
 import { DateTime } from 'luxon'
 import { HabitRawProps } from '@/src/habits/mappers/HabitMapper'
-
-type Values = Partial<DbResourceSchema<HabitsSchema>>
+import useHabitCrud from '@/src/habits/adapters/useHabitsCrud'
 
 interface Ref {
   store: (values?: Partial<HabitRawProps>) => void
@@ -21,68 +21,38 @@ interface Ref {
 }
 
 interface Props {
-  values?: Values
   onSave?: () => never | void
   onDelete?: () => never | void
 }
 
-const rules: Rules = {
-  name: [validators.required],
-  color: [validators.required, validators.hex],
-  granularity: [validators.required],
-  include_weekends: [],
-  granularity_times: [validators.numeric],
-  enough_amount: []
-}
-
 // TODO: expose store and update methods
-const HabitsForm = forwardRef<Ref, Props>(({ values, onSave, onDelete }: Props, ref) => {
+const HabitsForm = forwardRef<Ref, Props>(({ onSave, onDelete }: Props, ref) => {
+  // TODO: refactor
   const { options } = useDb()
   const setupDone = (options.current.last_setup_at || '') > DateTime.now().toISO()
 
   // --- useHabitsCrud ---
-  const { model, changeField, init, errorMessages, handleFormSubmit } = useForm({ defaultValues: habitsModel, rules, onSubmit })
-  useEffect(() => {
-    init(values)
-  }, [values])
+  const {
+    form,
+    store,
+    update,
+    loadingSave,
+    granularities,
+    granularityTimes,
+    isNew,
+    canEdit
+  } = useHabitCrud({ onSave })
 
-  const id = values?.id
-  const isNew = !id
-  const canEdit = isNew || !setupDone
-
-  // --- granularity times ---
-  const granularityTimes = (() => {
-    let count = 1
-    switch(model.granularity) {
-      case 'weekly':
-        count = 3
-        break
-      case 'monthly':
-        count = 5
-        break
-      case 'yearly':
-        count = 8
-        break
-    }
-    return Array.from(Array(count).keys()).map(i => {
-      const time = i + 1
-      return {
-        value: time,
-        text: time === 1 ? '1 time' : `${time} times`
-      }
-    })
-  })()
   // changing granularity resets granularity_times
   function handleChangeGranularity(e: ChangeEvent<HTMLSelectElement>): void {
-    changeField('granularity', e.target.value)
-    changeField('granularity_times', 1)
+    form.changeField('granularity', e.target.value)
+    form.changeField('granularity_times', 1)
   }
 
   // --- Color picker ref ---
   const colorPickerRef = useRef<ColorPickerRef>(null)
 
   // --- Save data ---
-  const { store, update } = useDbCrud('habits')
   const [loading, setLoading] = useState(false)
   async function onSubmit() {
     if(loading || !canEdit) { return undefined }
@@ -131,9 +101,13 @@ const HabitsForm = forwardRef<Ref, Props>(({ values, onSave, onDelete }: Props, 
     setLoadingDelete(false)
   }
 
+  useImperativeHandle(ref, () => ({
+    store,
+    update
+  }))
 
   return (
-    <form onSubmit={handleFormSubmit} className="grid grid-cols-2 gap-x-3">
+    <form onSubmit={save} className="grid grid-cols-2 gap-x-3">
       <div className="col-span-2">
         <InputWrapper errorMessages={errorMessages.name} label="Name" input={(
           <input

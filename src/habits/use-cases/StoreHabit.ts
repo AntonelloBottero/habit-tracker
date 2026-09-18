@@ -2,8 +2,9 @@ import { Habit, type HabitProps } from '../domain/Habit'
 import { HabitGateway } from '../contracts/gateways'
 
 export type StoreHabitInputDTO = Omit<HabitProps, 'id' | 'userId'>
-export type StoreHabitOutputDTO = Omit<HabitProps, 'manageFrom'> & {
+export type StoreHabitOutputDTO = Omit<HabitProps, 'manageFrom' | 'lastUpdatedAt'> & {
     manageFrom: null
+    lastUpdatedAt: null
 }
 
 export class StoreHabit {
@@ -23,7 +24,7 @@ export class StoreHabit {
         const userId = await this._gateway.getUserId()
         const habit = new Habit({...input, id, userId})
 
-        const data = {...habit.toPrimitives(), manageFrom: null }
+        const data = {...habit.toPrimitives(), manageFrom: null, lastUpdatedAt: null }
         await this._gateway.store(data)
 
         return data

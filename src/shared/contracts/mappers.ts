@@ -10,5 +10,5 @@ export type RawProps = Record<string, any>
  */
 export interface Mapper<TRaw extends RawProps, TDomain extends DomainProps> {
     toDomain(raw: Partial<TRaw>): Partial<TDomain> // Partial -> which properties to show to Adapters depends on the use case's scope
-    toRaw(domain: TDomain): TRaw
+    toRaw(domain: TDomain): TRaw // A Domain comes from a use case, and since they interact directly with Domain structures, TDomain will never be partial
 }

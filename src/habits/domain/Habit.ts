@@ -14,7 +14,10 @@ export interface HabitProps {
     includeWeekends: boolean
     granularityTimes: number
     enoughAmount: string
-    manageFrom: Date | null // every field represents the Entity state, even though is not critical business logic
+    // application fields
+    // every field represents the Entity state, even though is not critical business logic
+    manageFrom: Date | null
+    lastSetupAt: Date | null
 }
 
 export class Habit {
@@ -41,6 +44,9 @@ export class Habit {
         }
         if(props.manageFrom && isNaN(props.manageFrom.getTime())) {
             throw new Error('manage from must be a real date')
+        }
+        if(props.lastSetupAt && isNaN(props.lastSetupAt.getTime())) {
+            throw new Error('last setup at must be a real date')
         }
         this._props = props
     }

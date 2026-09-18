@@ -16,7 +16,7 @@ class DexieDbClass extends Dexie {
   constructor(name: string) {
     super(name)
     this.version(3).stores({
-      habits: `++id, type, name, color, granularity, include_weekends, granularity_times, enough_amount, manage_from, created_at, updated_at, deleted_at`,
+      habits: `++id, type, name, color, granularity, include_weekends, granularity_times, enough_amount, manage_from, last_updated_at, created_at, updated_at, deleted_at`,
     })
   }
 }

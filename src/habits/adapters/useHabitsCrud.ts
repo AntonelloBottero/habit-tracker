@@ -17,19 +17,17 @@ export default function useHabitCrud({ onSave }: Params) {
     const { habitGateway } = useInfrastructure()
 
     // Init Use Cases
-    const showHabit = new ShowHabit(habitGateway)
-    const storeHabit = new StoreHabit(habitGateway)
     const updateHabit = new UpdateHabit(habitGateway)
     const deleteHabit = new DeleteHabit(habitGateway)
     // init mapper
     const habitMapper = new HabitMapper()
 
-    // Internal state
-    const storedHabit = useRef<HabitRawProps | null>(null) // in case we are editing an existing habit we save it here
-    const [loadingSave, setLoadingSave] = useState<boolean>(false) // useState to allow ui to be rerendered accordingly
+    // Internal state - useState to allow ui to be rerendered accordingly
+    const [storedHabit, setStoredHabit] = useState<HabitRawProps | null>(null) // in case we are editing an existing habit we save it here
+    const [loadingSave, setLoadingSave] = useState<boolean>(false)
 
     // Form
-    const defaultValues: Omit<HabitRawProps, 'id' | 'user_id'> = { // i and user_id are not intended to be edited directly, so we omit them from defaultValues
+    const defaultValues: Omit<HabitRawProps, 'id' | 'user_id'> = { // id and user_id are not intended to be edited directly, so we omit them from defaultValues
         type: 'good',
         name: '',
         color: '',
@@ -37,7 +35,8 @@ export default function useHabitCrud({ onSave }: Params) {
         include_weekends: false,
         granularity_times: 0,
         enough_amount: '',
-        manage_from: null
+        manage_from: null,
+        last_setup_at: null
     }
     const rules = {
       name: [validators.required],
@@ -51,13 +50,13 @@ export default function useHabitCrud({ onSave }: Params) {
 
     function store(values?: Partial<HabitRawProps>) {
         form.init(values)
-        storedHabit.current = null
+        setStoredHabit(null)
     }
     async function update(id: string | number) {
         try {
-            const _storedHabit = habitMapper.toRaw(await showHabit.execute(id))
+            const _storedHabit = habitMapper.toRaw(await new ShowHabit(habitGateway).execute(id))
             form.init(_storedHabit)
-            storedHabit.current = _storedHabit
+            setStoredHabit(_storedHabit)
         } catch(error) {
             console.error(error)
         }
@@ -66,8 +65,8 @@ export default function useHabitCrud({ onSave }: Params) {
     async function onSubmit() {
         setLoadingSave(true)
         try {
-            if(!storedHabit.current?.id) {
-                await storeHabit.execute(habitMapper.toDomain(form.model) as StoreHabitInputDTO)
+            if(!storedHabit?.id) {
+                await new StoreHabit(habitGateway).execute(habitMapper.toDomain(form.model) as StoreHabitInputDTO)
             }
             if(onSave) {
                 onSave()
@@ -84,13 +83,20 @@ export default function useHabitCrud({ onSave }: Params) {
         value,
         text: value === 1 ? '1 time' : `${value} times`
     }))
+    // those change based on hook's states
+    const isNew = !storedHabit?.id
+    // TODO: new use case
+    const setupDone = storedHabit?.last_setup_at && storedHabit.last_setup_at < new Date().toISOString()
+    const canEdit = isNew || !setupDone
 
     return {
         form,
         store,
         update,
         loadingSave,
+        granularities,
         granularityTimes,
-        granularities
+        isNew,
+        canEdit
     }
 }
