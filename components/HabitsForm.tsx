@@ -43,6 +43,7 @@ const HabitsForm = forwardRef<Ref, Props>(({ onSave, onDelete }: Props, ref) => 
     canEdit
   } = useHabitCrud({ onSave })
 
+  // TODO: put in store/update use cases
   // changing granularity resets granularity_times
   function handleChangeGranularity(e: ChangeEvent<HTMLSelectElement>): void {
     form.changeField('granularity', e.target.value)
@@ -51,33 +52,8 @@ const HabitsForm = forwardRef<Ref, Props>(({ onSave, onDelete }: Props, ref) => 
 
   // --- Color picker ref ---
   const colorPickerRef = useRef<ColorPickerRef>(null)
-
-  // --- Save data ---
-  const [loading, setLoading] = useState(false)
-  async function onSubmit() {
-    if(loading || !canEdit) { return undefined }
-    setLoading(true)
-    const fullModel = {
-      ...model,
-      granularity_times: Number(model.granularity_times || 1),
-      manage_from: ''
-    }
-    try {
-      if(!id) {
-        await store(fullModel)
-      } else {
-        await update(id, fullModel)
-      }
-      await colorPickerRef.current?.updateUserColorsOption(model.color)
-      if(onSave) {
-        onSave()
-      }
-    } catch(error) {
-      console.error(error)
-      // TODO: notify error to user
-    }
-    setLoading(false)
-  }
+  // TODO: refactor on onSave
+  // await colorPickerRef.current?.updateUserColorsOption(model.color)
 
   // --- Delete ---
   const { deleteHabit: _deleteHabit } = useHabits()
@@ -107,69 +83,69 @@ const HabitsForm = forwardRef<Ref, Props>(({ onSave, onDelete }: Props, ref) => 
   }))
 
   return (
-    <form onSubmit={save} className="grid grid-cols-2 gap-x-3">
+    <form onSubmit={form.handleFormSubmit} className="grid grid-cols-2 gap-x-3">
       <div className="col-span-2">
-        <InputWrapper errorMessages={errorMessages.name} label="Name" input={(
+        <InputWrapper errorMessages={form.errorMessages.name} label="Name" input={(
           <input
             id="name"
             type="text"
             name="name"
             className="grow w-full ht-form-input"
             placeholder="Insert the name of the habit"
-            value={model.name}
-            onChange={e => changeField('name', e.target.value)}
+            value={form.model.name}
+            onChange={e => form.changeField('name', e.target.value)}
           />
         )}/>
       </div>
       <div className="col-span-2">
-        <InputWrapper errorMessages={errorMessages.color} label="Color" input={(
+        <InputWrapper errorMessages={form.errorMessages.color} label="Color" input={(
           <ColorPicker
             ref={colorPickerRef}
             id="color"
             name="color"
             className="ht-form-input !py-1"
-            value={model.color}
-            onChange={e => changeField('color', e.target.value)}
+            value={form.model.color}
+            onChange={e => form.changeField('color', e.target.value)}
           />
         )}
         />
       </div>
 
       <div>
-        <InputWrapper errorMessages={errorMessages.granularity} label="You should check" input={(
+        <InputWrapper errorMessages={form.errorMessages.granularity} label="You should check" input={(
           <select
             id="granularity"
             name="granularity"
             className="ht-form-input w-full grow"
-            value={model.granularity}
-            onChange={handleChangeGranularity}
+            value={form.model.granularity}
+            onChange={e => form.changeField('granularity', e.target.value)}
           >
             {granularities.map(granularity => <option key={granularity} value={granularity}>{granularity}</option>)}
           </select>
         )} />
       </div>
-      {model.granularity === 'daily'
+      {form.model.granularity === 'daily'
         ? (
           <div>
-            <InputWrapper errorMessages={errorMessages.include_weekends} label="Including weekends?" input={(
+            <InputWrapper errorMessages={form.errorMessages.include_weekends} label="Including weekends?" input={(
               <CheckboxBtn
                 id="include_weekends"
                 name="include_weekends"
-                defaultChecked={model.include_weekends}
-                onChange={e => changeField('include_weekends', e.target.checked)}
+                defaultChecked={form.model.include_weekends}
+                onChange={e => form.changeField('include_weekends', e.target.checked)}
               />
             )} />
           </div>
         )
         : (
           <div>
-            <InputWrapper errorMessages={errorMessages.granularity_times} label="Check it" input={(
+            <InputWrapper errorMessages={form.errorMessages.granularity_times} label="Check it" input={(
               <select
                 id="granularity_times"
                 name="granularity_times"
                 className="ht-form-input w-full grow"
-                value={model.granularity_times}
-                onChange={e => changeField('granularity_times', e.target.value)}
+                value={form.model.granularity_times}
+                onChange={e => form.changeField('granularity_times', e.target.value)}
               >
                 {granularityTimes.map(granularityTime => <option key={granularityTime.value} value={granularityTime.value}>{granularityTime.text}</option>)}
               </select>
@@ -185,15 +161,15 @@ const HabitsForm = forwardRef<Ref, Props>(({ onSave, onDelete }: Props, ref) => 
           <div className="text-xs text-gray-500 mb-2">
             Optional. If you don't have enough of simply checking your habit, declare here the right amount that would make you happy you reached.
           </div>
-          <InputWrapper errorMessages={errorMessages.enough_amount} input={(
+          <InputWrapper errorMessages={form.errorMessages.enough_amount} input={(
             <input
               id="enough_amount"
               type="text"
               name="enough_amount"
               className="grow w-full ht-form-input"
               placeholder="2lt of water, 10€ saved..."
-              value={model.enough_amount}
-              onChange={e => changeField('enough_amount', e.target.value)}
+              value={form.model.enough_amount}
+              onChange={e => form.changeField('enough_amount', e.target.value)}
             />
           )}/>
         </div>
