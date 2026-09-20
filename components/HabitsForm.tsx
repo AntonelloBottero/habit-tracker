@@ -1,14 +1,11 @@
 // Habits form module - stores, updates, deletes through ref controls
-import { useState, useEffect, type ChangeEvent, useRef, forwardRef, useImperativeHandle } from 'react'
+import { useRef, forwardRef, useImperativeHandle } from 'react'
 import InputWrapper from '@/components/InputWrapper'
 import ColorPicker from '@/components/ColorPicker'
 import CheckboxBtn from '@/components/CheckboxBtn'
-import useDb from "@/db/useDb"
-import useHabits from '@/hooks/useHabits'
 import ConfirmModal from '@/components/ConfirmModal'
 import { ColorPickerRef, ConfirmModalRef } from '@/app/types'
 import { CheckCircle, Info } from '@project-lary/react-material-symbols-700-rounded'
-import { DateTime } from 'luxon'
 import { HabitRawProps } from '@/src/habits/mappers/HabitMapper'
 import useHabitCrud from '@/src/habits/adapters/useHabitsCrud'
 
@@ -18,27 +15,25 @@ interface Ref {
 }
 
 interface Props {
-  onSave?: () => never | void
+  onSave?: (values: HabitRawProps) => never | void
   onDelete?: () => never | void
 }
 
 // TODO: expose store and update methods
 const HabitsForm = forwardRef<Ref, Props>(({ onSave, onDelete }: Props, ref) => {
-  // TODO: refactor
-  const { options } = useDb()
-  const setupDone = (options.current.last_setup_at || '') > DateTime.now().toISO()
-
   // --- useHabitsCrud ---
   const {
     form,
     store,
     update,
-    loadingSave,
+    deleteHabit: adapterDeleteHabit,
+    // loadingSave,
+    loadingDelete,
     granularities,
     granularityTimes,
     isNew,
     canEdit
-  } = useHabitCrud({ onSave })
+  } = useHabitCrud({ onSave, onDelete })
 
   // --- Color picker ref ---
   const colorPickerRef = useRef<ColorPickerRef>(null)
@@ -46,25 +41,18 @@ const HabitsForm = forwardRef<Ref, Props>(({ onSave, onDelete }: Props, ref) => 
   // await colorPickerRef.current?.updateUserColorsOption(model.color)
 
   // --- Delete ---
-  const { deleteHabit: _deleteHabit } = useHabits()
   const confirmDeleteModalRef = useRef<ConfirmModalRef>(null)
-  const [loadingDelete, setLoadingDelete] = useState<boolean>(false)
   async function deleteHabit() {
     if(loadingDelete || isNew) { return undefined }
     const confirmed = await confirmDeleteModalRef.current?.confirm()
     if(!confirmed) { return undefined }
 
-    setLoadingDelete(true)
     try{
-      await _deleteHabit(id as number)
-      if(onDelete) {
-        onDelete()
-      }
+      await adapterDeleteHabit()
     } catch(error) {
       console.error(error)
       // TODO: notify error to user
     }
-    setLoadingDelete(false)
   }
 
   useImperativeHandle(ref, () => ({
@@ -188,7 +176,7 @@ const HabitsForm = forwardRef<Ref, Props>(({ onSave, onDelete }: Props, ref) => 
               <button type="button" className="ht-btn ht-interaction rounded-lg bg-red-50 text-red-500 py-2 px-5 mr-2" onClick={deleteHabit}>
                 Delete
               </button>
-              <ConfirmModal text={setupDone ? 'Deleting this habit will delete every attached event and slot.' : undefined} ref={confirmDeleteModalRef} />
+              <ConfirmModal text={canEdit ? 'Deleting this habit will delete every attached event and slot.' : undefined} ref={confirmDeleteModalRef} />
             </>
           )}
           {canEdit && (

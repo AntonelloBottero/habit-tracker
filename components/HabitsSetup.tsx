@@ -39,10 +39,10 @@ export default function HabitsSetup({ onSetup }: Props) {
 
   // --- Manage form ad habits store/update ---
   const formModalRef = useRef<ModalRef>(null)
-  const [formHabitsValues, setFormHabitsValues] = useState<Partial<DbResourceSchema<HabitsSchema>> | undefined>(undefined)
+  const formRef = useRef(null)
   function addHabit(type: 'good' | 'bad') {
     formModalRef.current?.show()
-    setFormHabitsValues({
+    formRef.current?.store({
       type
     })
   }
@@ -145,7 +145,7 @@ export default function HabitsSetup({ onSetup }: Props) {
       )}
 
       <Modal ref={formModalRef} title={formModalTitle}>
-        <HabitsForm values={formHabitsValues} onSave={handleFormSave} onDelete={handleFormSave} />
+        <HabitsForm ref={formRef} onSave={handleFormSave} onDelete={handleFormSave} />
       </Modal>
     </>
   )
