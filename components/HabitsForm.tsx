@@ -8,11 +8,7 @@ import { ColorPickerRef, ConfirmModalRef } from '@/app/types'
 import { CheckCircle, Info } from '@project-lary/react-material-symbols-700-rounded'
 import { HabitRawProps } from '@/src/habits/mappers/HabitMapper'
 import useHabitCrud from '@/src/habits/adapters/useHabitsCrud'
-
-interface Ref {
-  store: (values?: Partial<HabitRawProps>) => void
-  update: (id: string | number) => Promise<void>
-}
+import { HabitsFormRef } from '@/src/shared/infrastructure/contracts'
 
 interface Props {
   onSave?: (values: HabitRawProps) => never | void
@@ -20,7 +16,7 @@ interface Props {
 }
 
 // TODO: expose store and update methods
-const HabitsForm = forwardRef<Ref, Props>(({ onSave, onDelete }: Props, ref) => {
+const HabitsForm = forwardRef<HabitsFormRef, Props>(({ onSave, onDelete }: Props, ref) => {
   // --- useHabitsCrud ---
   const {
     form,

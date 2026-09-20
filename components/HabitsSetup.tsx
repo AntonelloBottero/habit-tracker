@@ -10,6 +10,7 @@ import { CalendarCheck } from '@project-lary/react-material-symbols-700-rounded'
 import useHabits from '@/hooks/useHabits'
 import { DateTime } from 'luxon'
 import Link from "next/link"
+import { HabitsFormRef } from '@/src/shared/infrastructure/contracts'
 
 interface Props {
   onSetup?: () => never | void
@@ -23,6 +24,7 @@ export default function HabitsSetup({ onSetup }: Props) {
   const goodHabits = habits.filter(habit => habit.type === 'good')
   const badHabits = habits.filter(habit => habit.type === 'bad')
 
+  // TODO: move in Use Case
   async function fetchHabits() {
     try {
       const habits = await index()
@@ -39,28 +41,23 @@ export default function HabitsSetup({ onSetup }: Props) {
 
   // --- Manage form ad habits store/update ---
   const formModalRef = useRef<ModalRef>(null)
-  const formRef = useRef(null)
-  function addHabit(type: 'good' | 'bad') {
+  const formRef = useRef<HabitsFormRef>(null) // TODO: check if ref is active even though Modal doesn't render it
+  function store(type: 'good' | 'bad') {
     formModalRef.current?.show()
     formRef.current?.store({
       type
     })
   }
-  function editHabit(habit: DbResourceSchema<HabitsSchema>) {
+  function update(habit: DbResourceSchema<HabitsSchema>) {
     if(!habit) { return undefined }
     formModalRef.current?.show()
-    setFormHabitsValues(habit)
+    formRef.current?.update(habit.id)
   }
 
   function handleFormSave() {
     formModalRef.current?.hide()
     fetchHabits()
   }
-
-  const formModalTitle = (() => {
-    const operation = !formHabitsValues?.id ? 'Your new' : 'Edit your'
-    return `${operation} ${formHabitsValues?.type ?? ''} habit`
-  })()
 
   // --- Check setup is already done ---
   const { options } = useDb()
@@ -92,7 +89,7 @@ export default function HabitsSetup({ onSetup }: Props) {
             <button
               type="button"
               className="px-3 py-1 mt-1 text-sm font-medium text-center bg-green-200 shadow-ht rounded-lg ht-interaction w-full ht-btn"
-              onClick={() => addHabit('good')}
+              onClick={() => store('good')}
             >
               <span>
                 Add some <b>Good habits</b>
@@ -100,7 +97,7 @@ export default function HabitsSetup({ onSetup }: Props) {
             </button>
           </p>
           {goodHabits.map(habit => (
-            <HabitsCard key={habit.id} habit={habit} className="mt-4" onClick={() => { editHabit(habit) }} />
+            <HabitsCard key={habit.id} habit={habit} className="mt-4" onClick={() => { update(habit) }} />
           ))}
         </div>
         <div className="sm:inline-block hidden w-0.5 self-stretch bg-stone-100 dark:bg-white/10"></div>
@@ -111,7 +108,7 @@ export default function HabitsSetup({ onSetup }: Props) {
             <button
               type="button"
               className="px-3 py-1 mt-1 text-sm font-medium text-center bg-green-200 shadow-ht rounded-lg ht-interaction w-full ht-btn"
-              onClick={() => addHabit('bad')}
+              onClick={() => store('bad')}
             >
               <span>
                 Unveil your <b>Bad habits</b>
@@ -119,7 +116,7 @@ export default function HabitsSetup({ onSetup }: Props) {
             </button>
           </p>
           {badHabits.map(habit => (
-            <HabitsCard key={habit.id} habit={habit} className="mt-4" onClick={() => { editHabit(habit) }} />
+            <HabitsCard key={habit.id} habit={habit} className="mt-4" onClick={() => { update(habit) }} />
           ))}
         </div>
       </div>
@@ -144,7 +141,7 @@ export default function HabitsSetup({ onSetup }: Props) {
         </div>
       )}
 
-      <Modal ref={formModalRef} title={formModalTitle}>
+      <Modal ref={formModalRef} title="Manage your habit">
         <HabitsForm ref={formRef} onSave={handleFormSave} onDelete={handleFormSave} />
       </Modal>
     </>
