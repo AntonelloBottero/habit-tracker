@@ -48,6 +48,9 @@ export class Habit {
         if(props.lastSetupAt && isNaN(props.lastSetupAt.getTime())) {
             throw new Error('last setup at must be a real date')
         }
+
+        props.granularityTimes = this._adjustGranularityTimes(props.granularity, props.granularityTimes)
+
         this._props = props
     }
 
@@ -56,8 +59,13 @@ export class Habit {
         return Object.freeze({...this._props})
     }
 
-    // how many times we allow an habit to be registered depends on the timespan
-    public static getAllowedGranularityTimes(granularity: Granularity): number[] { // this is designed to be used easily by both Use cases and Adapters, so it's designed as a static method
+    public static getGranularities(): Granularity[] {
+        return ['daily', 'weekly', 'monthly', 'yearly']
+    }
+
+    public static getAllowedGranularityTimes(granularity: Granularity): number[] {
+        // how many times we allow an habit to be registered depends on the timespan
+        // this is designed to be used easily by both Use cases and Adapters, so it's designed as a static method
         let count = 1
         switch(granularity) {
         case 'weekly':
@@ -71,5 +79,13 @@ export class Habit {
             break
         }
         return Array.from({ length: count }, (_, i) => i + 1)
+    }
+
+    // Actions
+    private _adjustGranularityTimes(granularity: Granularity, granularityTimes: number): number {
+        // based on granularity, we adjust granularity times if needed (if granularity doesn't support such count)
+        // no error thrown
+        const allowedGranularityTimes = Habit.getAllowedGranularityTimes(granularity)
+        return allowedGranularityTimes.includes(granularityTimes) ? granularityTimes : allowedGranularityTimes[0]
     }
 }

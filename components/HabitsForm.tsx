@@ -3,10 +3,7 @@ import { useState, useEffect, type ChangeEvent, useRef, forwardRef, useImperativ
 import InputWrapper from '@/components/InputWrapper'
 import ColorPicker from '@/components/ColorPicker'
 import CheckboxBtn from '@/components/CheckboxBtn'
-import { habitsModel, type HabitsSchema, type DbResourceSchema } from '@/db/DbClass'
-import useForm, {Rules, validators} from '@/hooks/useForm'
 import useDb from "@/db/useDb"
-import useDbCrud from '@/db/useDbCrud'
 import useHabits from '@/hooks/useHabits'
 import ConfirmModal from '@/components/ConfirmModal'
 import { ColorPickerRef, ConfirmModalRef } from '@/app/types'
@@ -42,13 +39,6 @@ const HabitsForm = forwardRef<Ref, Props>(({ onSave, onDelete }: Props, ref) => 
     isNew,
     canEdit
   } = useHabitCrud({ onSave })
-
-  // TODO: put in store/update use cases
-  // changing granularity resets granularity_times
-  function handleChangeGranularity(e: ChangeEvent<HTMLSelectElement>): void {
-    form.changeField('granularity', e.target.value)
-    form.changeField('granularity_times', 1)
-  }
 
   // --- Color picker ref ---
   const colorPickerRef = useRef<ColorPickerRef>(null)

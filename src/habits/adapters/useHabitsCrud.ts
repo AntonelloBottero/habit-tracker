@@ -5,7 +5,7 @@ import { UpdateHabit } from "../use-cases/UpdateHabit"
 import { DeleteHabit } from "../use-cases/DeleteHabit"
 import { HabitMapper, type HabitRawProps } from "../mappers/HabitMapper"
 import useForm, { validators } from "@/hooks/useForm"
-import { Habit, HabitProps } from "../domain/Habit"
+import { Habit, HabitProps, type Granularity } from "../domain/Habit"
 import { useRef, useState } from "react"
 
 interface Params {
@@ -78,7 +78,7 @@ export default function useHabitCrud({ onSave }: Params) {
     }
 
     // Utils
-    const granularities: string[] = ['daily', 'weekly', 'monthly', 'yearly']
+    const granularities: Granularity[] = Habit.getGranularities()
     const granularityTimes = Habit.getAllowedGranularityTimes(form.model.granularity).map(value => ({
         value,
         text: value === 1 ? '1 time' : `${value} times`
