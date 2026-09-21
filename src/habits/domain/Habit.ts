@@ -59,6 +59,14 @@ export class Habit {
         return Object.freeze({...this._props})
     }
 
+    get id(): string | number {
+        return this._props.id
+    }
+
+    public setupDone(): boolean {
+        return !!this._props.lastSetupAt && this._props.lastSetupAt.getTime() < new Date().getTime()
+    }
+
     public static getGranularities(): Granularity[] {
         return ['daily', 'weekly', 'monthly', 'yearly']
     }
@@ -79,6 +87,10 @@ export class Habit {
             break
         }
         return Array.from({ length: count }, (_, i) => i + 1)
+    }
+
+    public static setupDone(lastSetupAt?: Date | null): boolean {
+        return !!lastSetupAt && lastSetupAt.getTime() < new Date().getTime()
     }
 
     // Actions
