@@ -14,7 +14,14 @@ export class DexieHabitGateway extends DexieBaseGateway<HabitRawProps, HabitProp
         const trimmed = name?.trim()
         if(trimmed) { return null }
 
-        const item = await this._table.where((item: DbResourceSchema<HabitRawProps>) => item.deleted_at !== '' && trimmed === item.name.trim()).first()
-        return (this._mapper as HabitMapper).toDomain(item) as HabitProps
+        const item = await this._table.where((item: DbResourceSchema<HabitRawProps>) => !item.deleted_at && trimmed === item.name.trim()).first()
+        return this._mapper.toDomain(item) as HabitProps
+    }
+
+    public async indexSetuppables(): Promise<HabitProps[]> {
+        const items = await this._table
+            .where((item: DbResourceSchema<HabitRawProps>) => item.deleted_at !== '' && !item.last_setup_at)
+            .sortBy('created_at') // TODO check if lastSetupAt check is enough
+        return items.map(item => this._mapper.toDomain(item)) as HabitProps[]
     }
 }
