@@ -34,8 +34,7 @@ export default function useHabitCrud({ onSave, onDelete }: Params) {
         include_weekends: false,
         granularity_times: 0,
         enough_amount: '',
-        manage_from: null,
-        last_setup_at: null
+        last_managed_at: null,
     }
     const rules = {
       name: [validators.required],
@@ -55,8 +54,8 @@ export default function useHabitCrud({ onSave, onDelete }: Params) {
     }))
     // those change based on hook's states
     const isNew = !storedHabit?.id
-    const setupDone = Habit.setupDone(storedHabit?.lastSetupAt)
-    const canEdit = isNew || !setupDone
+    const wasManaged = !!storedHabit?.lastManagedAt
+    const canEdit = isNew || !wasManaged // TODO test
 
     // Actions
     async function index(): Promise<HabitRawProps[]> {

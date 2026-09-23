@@ -1,6 +1,6 @@
 import { DexieBaseGateway } from "@/src/shared/infrastructure/gateways"
 import { HabitMapper, HabitRawProps } from "../mappers/HabitMapper"
-import { HabitProps } from "../domain/Habit"
+import { Habit, HabitProps } from "../domain/Habit"
 import { HabitGateway } from "../contracts/gateways"
 import Dexie from "dexie"
 import { DbResourceSchema } from "@/src/shared/infrastructure/DbClass"
@@ -18,10 +18,10 @@ export class DexieHabitGateway extends DexieBaseGateway<HabitRawProps, HabitProp
         return this._mapper.toDomain(item) as HabitProps
     }
 
-    public async indexSetuppables(): Promise<HabitProps[]> {
+    public async indexManageables(): Promise<HabitProps[]> {
         const items = await this._table
-            .where((item: DbResourceSchema<HabitRawProps>) => item.deleted_at !== '' && !item.last_setup_at)
-            .sortBy('created_at') // TODO check if lastSetupAt check is enough
+            .where((item: DbResourceSchema<HabitRawProps>) => item.deleted_at !== '' && Habit.isManageable(item.last_managed_at ? new Date(item.last_managed_at) : null))
+            .sortBy('created_at')
         return items.map(item => this._mapper.toDomain(item)) as HabitProps[]
     }
 }

@@ -11,8 +11,7 @@ export interface HabitRawProps {
     include_weekends: boolean
     granularity_times: number
     enough_amount: string
-    manage_from: string | null
-    last_setup_at: string | null
+    last_managed_at: string | null
 }
 
 export class HabitMapper implements Mapper<HabitRawProps, HabitProps> {
@@ -27,8 +26,7 @@ export class HabitMapper implements Mapper<HabitRawProps, HabitProps> {
             includeWeekends: raw.include_weekends,
             granularityTimes: raw.granularity_times,
             enoughAmount: raw.enough_amount,
-            manageFrom: raw.manage_from ? new Date(raw.manage_from) : null,
-            lastSetupAt: raw.last_setup_at ? new Date(raw.last_setup_at) : null
+            lastManagedAt: raw.last_managed_at ? new Date(raw.last_managed_at) : null,
         }
     }
 
@@ -43,8 +41,7 @@ export class HabitMapper implements Mapper<HabitRawProps, HabitProps> {
             include_weekends: domain.includeWeekends,
             granularity_times: domain.granularityTimes,
             enough_amount: domain.enoughAmount,
-            manage_from: domain.manageFrom?.toISOString() ?? null,
-            last_setup_at: domain.lastSetupAt?.toISOString() ?? null
+            last_managed_at: domain.lastManagedAt?.toISOString() ?? null,
         }
     }
 }

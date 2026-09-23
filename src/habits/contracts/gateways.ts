@@ -4,5 +4,5 @@ import { type HabitRawProps } from "../mappers/HabitMapper";
 
 export type HabitGateway = BaseGateway<HabitRawProps, HabitProps> & {
     findByName: (name: string, id?: string | number) => Promise<HabitProps | null>
-    indexSetuppables: () => Promise<HabitProps[]>
+    indexManageables: () => Promise<HabitProps[]>
 }

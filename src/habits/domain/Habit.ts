@@ -16,8 +16,7 @@ export interface HabitProps {
     enoughAmount: string
     // application fields
     // every field represents the Entity state, even though is not critical business logic
-    manageFrom: Date | null
-    lastSetupAt: Date | null
+    lastManagedAt: Date | null
 }
 
 export class Habit {
@@ -42,11 +41,8 @@ export class Habit {
         if(Number.isNaN(props.granularityTimes) || props.granularityTimes < 1) {
             throw new Error('Adopt the Habit at least one time')
         }
-        if(props.manageFrom && isNaN(props.manageFrom.getTime())) {
+        if(props.lastManagedAt && isNaN(props.lastManagedAt.getTime())) {
             throw new Error('manage from must be a real date')
-        }
-        if(props.lastSetupAt && isNaN(props.lastSetupAt.getTime())) {
-            throw new Error('last setup at must be a real date')
         }
 
         props.granularityTimes = this._adjustGranularityTimes(props.granularity, props.granularityTimes)
@@ -61,10 +57,6 @@ export class Habit {
 
     get id(): string | number {
         return this._props.id
-    }
-
-    public setupDone(): boolean {
-        return !!this._props.lastSetupAt && this._props.lastSetupAt.getTime() < new Date().getTime()
     }
 
     public static getGranularities(): Granularity[] {
@@ -89,8 +81,11 @@ export class Habit {
         return Array.from({ length: count }, (_, i) => i + 1)
     }
 
-    public static setupDone(lastSetupAt?: Date | null): boolean {
-        return !!lastSetupAt && lastSetupAt.getTime() < new Date().getTime()
+    public static isManageable(lastManagedAt?: Date | null): boolean {
+        // setup is on a monthly basis, so the manageable habits are the one that have been managed earler that the current month, or never managed before
+        if(!lastManagedAt) { return true }
+        const startOfMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1, 0, 0, 0, 0)
+        return lastManagedAt.getTime() < startOfMonth.getTime()
     }
 
     // Actions

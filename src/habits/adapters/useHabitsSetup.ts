@@ -1,10 +1,14 @@
 import { useInfrastructure } from "@/src/shared/infrastructure/InfrastructureContext";
-import { IndexSetuppablesHabits } from "../use-cases/IndexSetuppableHabits";
+import { IndexManageableHabits } from "../use-cases/IndexManageableHabits";
 
 export default function useHabitsSetup() {
     const { habitGateway } = useInfrastructure()
 
     async function setup() {
-        const setuppableHabits = new IndexSetuppablesHabits(habitGateway).execute()
+        const manageableHabits = new IndexManageableHabits(habitGateway).execute()
+    }
+
+    return {
+        setup
     }
 }
