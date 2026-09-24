@@ -1,8 +1,8 @@
+import { granularities, type Granularity } from "@/src/shared/contracts/consts"
+
 const types = ['good', 'bad'] as const
-const granularities = ['daily', 'weekly', 'monthly', 'yearly'] as const
 
 export type Type = typeof types[number]
-export type Granularity = typeof granularities[number]
 
 export interface HabitProps {
     id: string | number

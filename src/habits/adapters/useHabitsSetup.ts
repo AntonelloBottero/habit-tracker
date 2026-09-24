@@ -5,7 +5,7 @@ export default function useHabitsSetup() {
     const { habitGateway } = useInfrastructure()
 
     async function setup() {
-        const manageableHabits = new IndexManageableHabits(habitGateway).execute()
+        const manageableHabits = await new IndexManageableHabits(habitGateway).execute()
     }
 
     return {

@@ -1,4 +1,5 @@
-import { type HabitProps, type Type, type Granularity } from "../domain/Habit"
+import { type Granularity } from "@/src/shared/contracts/consts";
+import { type HabitProps, type Type } from "../domain/Habit"
 import { DomainProps, RawProps, type Mapper } from "../../shared/contracts/mappers";
 
 export interface HabitRawProps {
