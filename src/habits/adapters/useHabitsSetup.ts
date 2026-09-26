@@ -9,7 +9,7 @@ export default function useHabitsSetup() {
         const manageableHabits = await new IndexManageableHabits(habitGateway).execute()
         if(!manageableHabits.length) { return undefined }
 
-        await new StoreMonthlySlots(slotGateway)
+        await new StoreMonthlySlots(slotGateway).execute({ habits: manageableHabits, date: new Date() })
 
         // TODO: bulkUpdate habits.lastManagedAt
     }
