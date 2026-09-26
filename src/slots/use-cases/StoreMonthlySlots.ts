@@ -14,13 +14,14 @@ export class StoreMonthlySlots {
     constructor(gateway: SlotGateway) {
         this._gateway = gateway
     }
-    
-    async execute({ habits, date = new Date() }: StoreMonthlySlotsInputTDO) {
 
+    async execute({ habits, date = new Date() }: StoreMonthlySlotsInputTDO) {
+        const slots = habits.map(habit => this._calculateHabitMonthlySlots(habit, date)).flat()
+        await this._gateway.bulkStore(slots)
     }
 
     // Utils
-    private calculateGranularityDays(granularity: Granularity, date: Date) {
+    private _calculateGranularityDays(granularity: Granularity, date: Date) {
         // given a certain granularity, returns the exact number of days
         switch(granularity) {
             case 'weekly':
@@ -39,20 +40,29 @@ export class StoreMonthlySlots {
         }
     }
 
-    private calculateHabitMonthlySlots(habit: HabitProps, date: Date): SlotProps[] {
-        let activeTo = date
+    private _calculateHabitMonthlySlots(habit: HabitProps, date: Date): SlotProps[] {
+        const endOfMonth = new Date(date.getFullYear(), date.getMonth() + 1, 0, 23, 59, 59, 0) // used to check when to stop calculation
+        let activeTo = new Date(date.getFullYear(), date.getMonth(), 1, 0, 0, 0, 0) // we begin loading calculating slots since the start of month
         const slots = []
-        do {
+        while(activeTo.getTime() <= endOfMonth.getTime()) {
             slots.push({
-                id: 1, // TODO: generateId
+                id: this._gateway.generateId(),
                 habitId: habit.id,
                 eventIds: [],
                 count: habit.granularityTimes,
                 completion: 0,
                 activeTo
             })
-            activeTo = new Date(activeTo.getFullYear(), activeTo.getMonth(), activeTo.getDate() - this.calculateGranularityDays(habit.granularity, activeTo), activeTo.getHours(), activeTo.getMinutes(), activeTo.getSeconds(), activeTo.getMilliseconds())
-        } while(activeTo.getTime() >= date.getTime()) // temporarily removing a day/week/month/year simulates an active_from field (we won't add a new slot if the active period spans across two months)
+            activeTo = new Date(
+                activeTo.getFullYear(),
+                activeTo.getMonth(),
+                activeTo.getDate() - this._calculateGranularityDays(habit.granularity, activeTo), 
+                activeTo.getHours(),
+                activeTo.getMinutes(),
+                activeTo.getSeconds(),
+                activeTo.getMilliseconds()
+            )
+        }
 
         return slots
     }

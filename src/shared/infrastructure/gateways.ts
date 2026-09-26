@@ -24,7 +24,7 @@ export class DexieBaseGateway<TRaw extends RawProps, TDomain extends DomainProps
         return items.map((item) => this._mapper.toDomain(item)) as TDomain[]
     }
 
-    public async generateId() { // business logic requires a prior ID generation. Dexie doesn't support such feature, so we return a mocked id to discard before every store operation
+    public generateId() { // business logic requires a prior ID generation. Dexie doesn't support such feature, so we return a mocked id to discard before every store operation
         return Math.floor(Math.random() * 1000)
     }
 
@@ -33,18 +33,27 @@ export class DexieBaseGateway<TRaw extends RawProps, TDomain extends DomainProps
     }
 
     // Save
-    public async store(domainValues: TDomain): Promise<TDomain> {
-        const values = this._mapper.toRaw(domainValues)
-
+    private _buildStoreProps(domainValues: TDomain) {
         const now = new Date().toISOString()
-        const newId = await this._table.add({
+        return {
             deleted_at: '', // deleted_at is first, so it can be easily overwritten by values
-            ...values,
+            ...this._mapper.toRaw(domainValues),
             id: undefined, // we discard mocked id
             created_at: now, // created at -> now
             updated_at: now, // last update -> now
-        })
+        }
+    }
+
+    public async store(domainValues: TDomain): Promise<TDomain> {
+        const values = this._buildStoreProps(domainValues)
+
+        const newId = await this._table.add(values)
         return this._mapper.toDomain({...values, id: newId }) as TDomain // we overwrite type checker because we for sure have the complete TDomain
+    }
+
+    public async bulkStore(domains: TDomain[]): Promise<void> {
+        const values = domains.map(domain => this._buildStoreProps(domain))
+        await this._table.bulkAdd(values)
     }
 
     public async update(id: string | number, domainValues: TDomain): Promise<TDomain> {

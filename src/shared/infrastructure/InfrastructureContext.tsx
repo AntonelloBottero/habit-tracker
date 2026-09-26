@@ -6,16 +6,19 @@
 import React, { createContext, useContext } from 'react'
 import { DexieHabitGateway } from '../../habits/infrastructure/DexieHabitGateway'
 import { DexieFactory } from './DbClass'
+import { DexieSlotGateway } from '@/src/slots/infrastructure/DexieSlotGateway'
 
 interface Infrastructure {
     habitGateway: DexieHabitGateway
+    slotGateway: DexieSlotGateway
 }
 
 const InfrastructureContext = createContext<Infrastructure | null>(null)
 
 export const DependenciesProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const infrastructure: Infrastructure = {
-    habitGateway: new DexieHabitGateway(DexieFactory.execute())
+    habitGateway: new DexieHabitGateway(DexieFactory.execute()),
+    slotGateway: new DexieSlotGateway(DexieFactory.execute())
   };
 
   return (

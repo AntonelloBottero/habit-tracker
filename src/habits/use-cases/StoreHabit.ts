@@ -20,7 +20,7 @@ export class StoreHabit {
         throw new Error(`A habit with name '${input.name}' already exists.`);
         }
 
-        const id = await this._gateway.generateId()
+        const id = this._gateway.generateId()
         const userId = await this._gateway.getUserId()
         const habit = new Habit({...input, id, userId})
 
