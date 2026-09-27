@@ -1,7 +1,7 @@
 import { Granularity } from '@/src/shared/contracts/consts'
 import { SlotGateway } from '../contracts/gateways'
 import { HabitProps } from '@/src/habits/domain/Habit'
-import { SlotProps } from '../domain/Slot'
+import { Slot, SlotProps } from '../domain/Slot'
 
 export interface StoreMonthlySlotsInputTDO {
     habits: HabitProps[]
@@ -17,7 +17,6 @@ export class StoreMonthlySlots {
 
     public async execute({ habits, date = new Date() }: StoreMonthlySlotsInputTDO) {
         const slots = habits.map(habit => this._calculateHabitMonthlySlots(habit, date)).flat()
-        // TODO create many instances of Slot to get a proper data structure
         await this._gateway.bulkStore(slots)
     }
 
@@ -46,14 +45,14 @@ export class StoreMonthlySlots {
         let activeTo = new Date(date.getFullYear(), date.getMonth(), 1, 0, 0, 0, 0) // we begin loading calculating slots since the start of month
         const slots = []
         while(activeTo.getTime() <= endOfMonth.getTime()) {
-            slots.push({
+            slots.push(new Slot({
                 id: this._gateway.generateId(),
                 habitId: habit.id,
                 eventIds: [],
                 count: habit.granularityTimes,
                 completion: 0,
                 activeTo
-            })
+            }).toPrimitives())
             activeTo = new Date(
                 activeTo.getFullYear(),
                 activeTo.getMonth(),

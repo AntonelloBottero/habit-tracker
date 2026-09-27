@@ -17,6 +17,7 @@ class DexieDbClass extends Dexie {
     super(name)
     this.version(3).stores({
       habits: `++id, type, name, color, granularity, include_weekends, granularity_times, enough_amount, last_managed_at, last_updated_at, created_at, updated_at, deleted_at`,
+      slots: '++id, habit_id, event_ids, count, completion, active_to, created_at, updated_at, deleted_at'
     })
   }
 }
