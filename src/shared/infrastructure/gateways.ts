@@ -64,13 +64,21 @@ export class DexieBaseGateway<TRaw extends RawProps, TDomain extends DomainProps
         }
 
         const updatedRaw = {
-            ...this._mapper.toRaw(storedDomainValues),
             ...values,
             id,
             updated_at: new Date().toISOString() // last update -> now
         }
         await this._table.put(updatedRaw)
         return this._mapper.toDomain(updatedRaw) as TDomain // we overwrite type checker because we for sure have the complete TDomain
+    }
+
+    public async bulkUpdate(domainValues: TDomain[]): Promise<void> {
+        // TODO: should check if every value exists?
+        const rawValues = domainValues.map(domainValue => ({
+            ...this._mapper.toRaw(domainValue),
+            updated_at: new Date().toISOString() // last update -> now
+        }))
+        await this._table.bulkPut(rawValues, undefined, { allKeys: true })
     }
 
     // Delete

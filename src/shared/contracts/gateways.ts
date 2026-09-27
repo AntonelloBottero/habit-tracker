@@ -11,5 +11,6 @@ export interface BaseGateway<RP extends RawProps, DP extends DomainProps> {
     store: (values: DP) => Promise<DP>
     bulkStore: (values: DP[]) => Promise<void>
     update: (id: ID, data: DP) => Promise<DP>
+    bulkUpdate: (values: DP[]) => Promise<void>
     delete: (id: ID) => Promise<void>
 }

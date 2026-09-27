@@ -15,8 +15,9 @@ export class StoreMonthlySlots {
         this._gateway = gateway
     }
 
-    async execute({ habits, date = new Date() }: StoreMonthlySlotsInputTDO) {
+    public async execute({ habits, date = new Date() }: StoreMonthlySlotsInputTDO) {
         const slots = habits.map(habit => this._calculateHabitMonthlySlots(habit, date)).flat()
+        // TODO create many instances of Slot to get a proper data structure
         await this._gateway.bulkStore(slots)
     }
 
