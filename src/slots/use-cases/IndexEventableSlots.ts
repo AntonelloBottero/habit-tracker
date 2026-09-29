@@ -5,7 +5,7 @@ export interface IndexInRangeSlotsInputDTO {
     date: Date
 }
 
-export class IndexInRangeSlots {
+export class IndexEventableSlots {
     private _gateway: SlotGateway
 
     constructor(gateway: SlotGateway) {
@@ -13,7 +13,6 @@ export class IndexInRangeSlots {
     }
 
     async execute({ date }: IndexInRangeSlotsInputDTO) {
-        // TODO: refactor useHabits.fetchSelectableHabits
-
+        return await this._gateway.indexEventables(date)
     }
 }

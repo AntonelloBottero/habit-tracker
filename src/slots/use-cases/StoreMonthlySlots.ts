@@ -41,29 +41,26 @@ export class StoreMonthlySlots {
     }
 
     private _calculateHabitMonthlySlots(habit: HabitProps, date: Date): SlotProps[] {
-        const endOfMonth = new Date(date.getFullYear(), date.getMonth() + 1, 0, 23, 59, 59, 0) // used to check when to stop calculation
-        let activeTo = new Date(date.getFullYear(), date.getMonth(), 1, 0, 0, 0, 0) // we begin loading calculating slots since the start of month
+        const endOfMonth = new Date(date.getFullYear(), date.getMonth() + 1, 0, 23, 59, 59) // used to check when to stop calculation
+        let activeFrom = null
+        let activeTo = new Date(date.getFullYear(), date.getMonth(), 0, 23, 59, 59) // we begin loading calculating slots since the start of month
+        const daysToAdd = this._calculateGranularityDays(habit.granularity, activeTo)
         const slots = []
-        while(activeTo.getTime() <= endOfMonth.getTime()) {
+        do {
+            activeFrom = new Date(activeTo.getTime())
+            activeFrom.setSeconds(activeFrom.getSeconds() + 1) // manageFrom is set at the beginning of the next day of previous activeTo
+            activeTo.setDate(activeTo.getDate() + daysToAdd)
+
             slots.push(new Slot({
                 id: this._gateway.generateId(),
                 habitId: habit.id,
                 eventIds: [],
                 count: habit.granularityTimes,
                 completion: 0,
-                activeFrom: new Date(), // TODO: refactor
+                activeFrom,
                 activeTo
             }).toPrimitives())
-            activeTo = new Date(
-                activeTo.getFullYear(),
-                activeTo.getMonth(),
-                activeTo.getDate() - this._calculateGranularityDays(habit.granularity, activeTo), // TODO: refactor
-                activeTo.getHours(),
-                activeTo.getMinutes(),
-                activeTo.getSeconds(),
-                activeTo.getMilliseconds()
-            )
-        }
+        } while(activeTo.getTime() <= endOfMonth.getTime())
 
         return slots
     }
