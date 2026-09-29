@@ -57,7 +57,7 @@ export class StoreMonthlySlots {
             activeTo = new Date(
                 activeTo.getFullYear(),
                 activeTo.getMonth(),
-                activeTo.getDate() - this._calculateGranularityDays(habit.granularity, activeTo), 
+                activeTo.getDate() - this._calculateGranularityDays(habit.granularity, activeTo), // TODO: refactor
                 activeTo.getHours(),
                 activeTo.getMinutes(),
                 activeTo.getSeconds(),
