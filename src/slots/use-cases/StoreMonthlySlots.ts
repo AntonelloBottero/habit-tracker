@@ -51,6 +51,7 @@ export class StoreMonthlySlots {
                 eventIds: [],
                 count: habit.granularityTimes,
                 completion: 0,
+                activeFrom: new Date(), // TODO: refactor
                 activeTo
             }).toPrimitives())
             activeTo = new Date(

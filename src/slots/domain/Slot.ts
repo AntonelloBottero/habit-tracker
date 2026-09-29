@@ -5,6 +5,7 @@ export interface SlotProps {
     count: number
     completion: number
     // application fields
+    activeFrom: Date // Date in which the slot is considered to be filled
     activeTo: Date // Date in which the slot expires and the habit is considered failed
 }
 
