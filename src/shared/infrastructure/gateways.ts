@@ -1,6 +1,6 @@
 import { type Dexie, type Table } from "dexie";
-import { type DexieTableName } from "./DbClass";
-import { type BaseGateway } from "../contracts/gateways"
+import { DbResourceSchema, type DexieTableName } from "./DbClass";
+import { type BaseGateway, type ID } from "../contracts/gateways"
 import { type RawProps, type DomainProps, type Mapper } from "../contracts/mappers";
 
 export class DexieBaseGateway<TRaw extends RawProps, TDomain extends DomainProps> implements BaseGateway<TRaw, TDomain> {
@@ -13,7 +13,7 @@ export class DexieBaseGateway<TRaw extends RawProps, TDomain extends DomainProps
     }
 
     // GET
-    public async show(id: string | number): Promise<TDomain | null> {
+    public async show(id: ID): Promise<TDomain | null> {
         const item = await this._table.where('id').equals(id).and(item => item.deleted_at === '').first()
         if(!item) { return null }
         return this._mapper.toDomain(item) as TDomain
@@ -21,6 +21,11 @@ export class DexieBaseGateway<TRaw extends RawProps, TDomain extends DomainProps
 
     public async index(): Promise<TDomain[]> {
         const items = await this._table.where('deleted_at').equals('').toArray()
+        return items.map((item) => this._mapper.toDomain(item)) as TDomain[]
+    }
+
+    public async indexByIds(ids: ID[]): Promise<TDomain[]> {
+        const items = await this._table.where((item: DbResourceSchema<TDomain>) => item.deleted_at !== '' && ids.includes(item.id)).toArray()
         return items.map((item) => this._mapper.toDomain(item)) as TDomain[]
     }
 
