@@ -27,7 +27,7 @@ export class HabitMapper implements Mapper<HabitRawProps, HabitProps> {
             includeWeekends: raw.include_weekends,
             granularityTimes: raw.granularity_times,
             enoughAmount: raw.enough_amount,
-            lastManagedAt: raw.last_managed_at ? new Date(raw.last_managed_at) : null,
+            lastManagedAt: raw.last_managed_at ? new Date(raw.last_managed_at) : undefined,
         }
     }
 

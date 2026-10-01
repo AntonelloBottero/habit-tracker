@@ -7,19 +7,24 @@ import React, { createContext, useContext } from 'react'
 import { DexieHabitGateway } from '../../habits/infrastructure/DexieHabitGateway'
 import { DexieFactory } from './DbClass'
 import { DexieSlotGateway } from '@/src/slots/infrastructure/DexieSlotGateway'
+import { DexieEventGateway } from '@/src/events/infrastructure/DexieEventGateway'
 
 interface Infrastructure {
     habitGateway: DexieHabitGateway
     slotGateway: DexieSlotGateway
+    eventGateway: DexieEventGateway
 }
 
 const InfrastructureContext = createContext<Infrastructure | null>(null)
 
+const dexieFactory = new DexieFactory()
+
 export const DependenciesProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const infrastructure: Infrastructure = {
-    habitGateway: new DexieHabitGateway(DexieFactory.execute()),
-    slotGateway: new DexieSlotGateway(DexieFactory.execute())
-  };
+    habitGateway: new DexieHabitGateway(dexieFactory.execute()),
+    slotGateway: new DexieSlotGateway(dexieFactory.execute()),
+    eventGateway: new DexieEventGateway(dexieFactory.execute())
+  }
 
   return (
     <InfrastructureContext.Provider value={infrastructure}>
