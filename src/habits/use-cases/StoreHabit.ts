@@ -10,8 +10,8 @@ export type StoreHabitOutputDTO = Omit<HabitProps, 'lastManagedAt' | 'lastUpdate
 export class StoreHabit {
     private _gateway: HabitGateway
 
-    constructor(saveGateway: HabitGateway) {
-        this._gateway = saveGateway
+    constructor(gateway: HabitGateway) {
+        this._gateway = gateway
     }
 
     public async execute(input: StoreHabitInputDTO): Promise<StoreHabitOutputDTO> {
@@ -24,7 +24,7 @@ export class StoreHabit {
         const userId = await this._gateway.getUserId()
         const habit = new Habit({...input, id, userId})
 
-        const data = {...habit.toPrimitives(), lastManagedAt: null, lastUpdatedAt: null }
+        const data = {...habit.toPrimitives(), lastManagedAt: null }
         await this._gateway.store(data)
 
         return data
