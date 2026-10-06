@@ -15,7 +15,6 @@ interface Props {
   onDelete?: () => never | void
 }
 
-// TODO: expose store and update methods
 const HabitsForm = forwardRef<HabitsFormRef, Props>(({ onSave, onDelete }: Props, ref) => {
   // --- useHabitsCrud ---
   const {

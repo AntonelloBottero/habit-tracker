@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react"
+import { useEffect, useState, useRef, forwardRef } from "react"
 import { CalendarCheck } from '@project-lary/react-material-symbols-700-rounded'
 import { DbResourceSchema, eventsModel, EventsSchema, HabitsSchema, SlotsSchema } from "@/db/DbClass"
 import useForm, { Rules, validators } from "@/hooks/useForm"
@@ -12,12 +12,11 @@ import ConfirmModal from '@/components/ConfirmModal'
 import { DateTime } from "luxon"
 import useHabits from "@/hooks/useHabits"
 import { ConfirmModalRef } from '@/app/types'
-
-type Values = Partial<DbResourceSchema<EventsSchema>>
+import { EventRawProps } from "@/src/events/mappers/EventMapper"
+import { EventsFormRef } from "@/src/shared/infrastructure/contracts"
 
 interface Props {
-  values?: Values
-  onSave?: () => never | void
+  onSave?: (values: EventRawProps) => never | void
   onDelete?: () => never | void
 }
 
@@ -31,7 +30,7 @@ const rules: Rules = {
   completed: [validators.numeric]
 }
 
-export default function FormEvents({ values, onSave, onDelete }: Props) {
+const EventsForm = forwardRef<EventsFormRef, Props>(({ onSave, onDelete }: Props, ref) => {
   const { fetchSelectableHabits, saveEvent, deleteEvent: _deleteEvent } = useHabits()
 
   // --- useForm ---
@@ -188,4 +187,6 @@ export default function FormEvents({ values, onSave, onDelete }: Props) {
       </div>
     </form>
   )
-}
+})
+
+export default EventsForm

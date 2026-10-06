@@ -7,7 +7,7 @@ import { HabitMapper, type HabitRawProps } from "../mappers/HabitMapper"
 import useForm, { validators } from "@/hooks/useForm"
 import { Habit, HabitProps } from "../domain/Habit"
 import { type Granularity } from "@/src/shared/contracts/consts"
-import { useState } from "react"
+import { useRef, useState } from "react"
 import { IndexHabits } from "../use-cases/IndexHabits"
 
 interface Params {
@@ -15,11 +15,32 @@ interface Params {
     onDelete?: () => never | void
 }
 
+// Form - outside to prevent reinit at every rerender
+const defaultValues: Omit<HabitRawProps, 'id' | 'user_id'> = { // id and user_id are not intended to be edited directly, so we omit them from defaultValues
+    type: 'good',
+    name: '',
+    color: '',
+    granularity: 'daily',
+    include_weekends: false,
+    granularity_times: 0,
+    enough_amount: '',
+    last_managed_at: null,
+}
+const rules = {
+    name: [validators.required],
+    color: [validators.required, validators.hex],
+    granularity: [validators.required],
+    include_weekends: [],
+    granularity_times: [validators.numeric],
+    enough_amount: []
+}
+
+// init mapper - outside to prevent reinit at every rerender
+const habitMapper = new HabitMapper()
+
 export default function useHabitCrud({ onSave, onDelete }: Params) {
     // Init Infrastructure
     const { habitGateway } = useInfrastructure()
-    // init mapper
-    const habitMapper = new HabitMapper()
 
     // Internal state - useState to allow ui to be rerendered accordingly
     const [storedHabit, setStoredHabit] = useState<HabitProps | null>(null) // in case we are editing an existing habit we save it here
@@ -27,24 +48,6 @@ export default function useHabitCrud({ onSave, onDelete }: Params) {
     const [loadingDelete, setLoadingDelete] = useState<boolean>(false)
 
     // Form
-    const defaultValues: Omit<HabitRawProps, 'id' | 'user_id'> = { // id and user_id are not intended to be edited directly, so we omit them from defaultValues
-        type: 'good',
-        name: '',
-        color: '',
-        granularity: 'daily',
-        include_weekends: false,
-        granularity_times: 0,
-        enough_amount: '',
-        last_managed_at: null,
-    }
-    const rules = {
-      name: [validators.required],
-      color: [validators.required, validators.hex],
-      granularity: [validators.required],
-      include_weekends: [],
-      granularity_times: [validators.numeric],
-      enough_amount: []
-    }
     const form = useForm({ defaultValues, rules, onSubmit })
 
     // Utils

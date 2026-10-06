@@ -5,21 +5,36 @@ import { HabitMapper, HabitRawProps } from "@/src/habits/mappers/HabitMapper"
 import { IndexEventableSlots } from "@/src/slots/use-cases/IndexEventableSlots"
 import { IndexHabitsByIds } from "@/src/habits/use-cases/IndexHabitsByIds"
 import { EventProps } from "../domain/Event"
-import { useState } from "react"
+import { useRef, useState } from "react"
 import { ShowEvent } from "../use-cases/ShowEvent"
 import { HabitProps } from "@/src/habits/domain/Habit"
+import { StoreEvent, StoreEventInputDTO } from "../use-cases/StoreEvent"
+import { UpdateEvent, UpdateEventInputDTO } from "../use-cases/UpdateEvent"
 
 interface Params {
     onSave?: (vales: EventRawProps) => never | void
     onDelete?: () => never | void
 }
 
+// Form - outside to prevent reinit at every rerender
+const defaultValues: Omit<EventRawProps, 'id'> = {
+    habit_id: '',
+    date: '',
+    completed: 0
+}
+const rules = {
+    habit_id: [validators.required],
+    datetime: [validators.required],
+    completed: [validators.numeric]
+}
+
+// init mapper - outside to prevent reinit at every rerender
+const eventMapper = new EventMapper()
+const habitMapper = new HabitMapper()
+
 export default function useEventsCrud({ onSave, onDelete }: Params) {
     // Init Infrastructure
     const { eventGateway, slotGateway, habitGateway } = useInfrastructure()
-    // init mapper
-    const eventMapper = new EventMapper()
-    const habitMapper = new HabitMapper()
 
     // Internal state - useState to allow ui to be rerendered accordingly
     const [eventableHabits, setEventableHabits] = useState<HabitRawProps[] | []>([])
@@ -28,16 +43,6 @@ export default function useEventsCrud({ onSave, onDelete }: Params) {
     const [loadingDelete, setLoadingDelete] = useState<boolean>(false)
 
     // Form
-    const defaultValues: Omit<EventRawProps, 'id'> = {
-        habit_id: '',
-        date: '',
-        completed: 0
-    }
-    const rules = {
-      habit_id: [validators.required],
-      datetime: [validators.required],
-      completed: [validators.numeric]
-    }
     const form = useForm({ defaultValues, rules, onSubmit })
 
     // Utils
@@ -76,12 +81,12 @@ export default function useEventsCrud({ onSave, onDelete }: Params) {
         try {
             let values
             if(isNew) {
-                values = await new StoreHabit(habitGateway).execute(habitMapper.toDomain(form.model) as StoreHabitInputDTO)
+                values = await new StoreEvent(eventGateway).execute(eventMapper.toDomain(form.model) as StoreEventInputDTO)
             } else {
-                values = await new UpdateHabit(habitGateway).execute(storedHabit.id, habitMapper.toDomain(form.model) as UpdateHabitInputDTO)
+                values = await new UpdateEvent(eventGateway).execute(storedEvent.id, eventMapper.toDomain(form.model) as UpdateEventInputDTO)
             }
             if(onSave) {
-                onSave(habitMapper.toRaw(values))
+                onSave(eventMapper.toRaw(values))
             }
         } catch(error) {
             console.error(error)
