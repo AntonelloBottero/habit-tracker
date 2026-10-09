@@ -12,7 +12,14 @@ export class DexieSlotGateway extends DexieBaseGateway<SlotRawProps, SlotProps> 
 
     public async indexEventables(date: Date): Promise<SlotProps[]> {
         const isoDate = date.toISOString()
-        const items = await this._table.where((item: DbResourceSchema<SlotRawProps>) => item.event_ids.length < item.completion && isoDate >= item.active_from && isoDate <= item.active_to).toArray()
+        const items = await this._table
+            .where((item: DbResourceSchema<SlotRawProps>) =>
+                item.event_ids.length < item.completion
+                && isoDate >= item.active_from
+                && isoDate <= item.active_to
+            )
+            .reverse()
+            .sortBy('created_at')
         return items.map(item => this._mapper.toDomain(item)) as SlotProps[]
     }
 }

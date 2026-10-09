@@ -1,9 +1,9 @@
-import { DbResourceSchema, HabitsSchema } from "@/db/DbClass"
 import TonalIcon from '@/components/TonalIcon'
+import { HabitRawProps } from '@/src/habits/mappers/HabitMapper'
 import { NorthEast, SouthEast } from "@project-lary/react-material-symbols-700-rounded"
 
 interface Props {
-  habit: DbResourceSchema<HabitsSchema>
+  habit: HabitRawProps
   dense?: boolean
   className?: string
 }

@@ -10,6 +10,9 @@ import { ShowEvent } from "../use-cases/ShowEvent"
 import { HabitProps } from "@/src/habits/domain/Habit"
 import { StoreEvent, StoreEventInputDTO } from "../use-cases/StoreEvent"
 import { UpdateEvent, UpdateEventInputDTO } from "../use-cases/UpdateEvent"
+import { DeleteHabit } from "../use-cases/DeleteEvent"
+import { SlotMapper, SlotRawProps } from "@/src/slots/mappers/SlotMapper"
+import { SlotProps } from "@/src/slots/domain/Slot"
 
 interface Params {
     onSave?: (vales: EventRawProps) => never | void
@@ -31,13 +34,14 @@ const rules = {
 // init mapper - outside to prevent reinit at every rerender
 const eventMapper = new EventMapper()
 const habitMapper = new HabitMapper()
+const slotMapper = new SlotMapper()
 
 export default function useEventsCrud({ onSave, onDelete }: Params) {
     // Init Infrastructure
     const { eventGateway, slotGateway, habitGateway } = useInfrastructure()
 
     // Internal state - useState to allow ui to be rerendered accordingly
-    const [eventableHabits, setEventableHabits] = useState<HabitRawProps[] | []>([])
+    const [eventableHabits, setEventableHabits] = useState<(HabitRawProps & { slot: SlotRawProps })[] | []>([])
     const [storedEvent, setStoredEvent] = useState<EventProps | null>(null) // in case we are editing an existing habit we save it here
     const [loadingSave, setLoadingSave] = useState<boolean>(false)
     const [loadingDelete, setLoadingDelete] = useState<boolean>(false)
@@ -52,8 +56,13 @@ export default function useEventsCrud({ onSave, onDelete }: Params) {
 
         const habitIds = [...(new Set(slots.map(slot => slot.habitId)))]
         const habits = await new IndexHabitsByIds(habitGateway).execute({ ids: habitIds })
-        setEventableHabits(habits.map(habit => habitMapper.toRaw(habit)))
+        setEventableHabits(habits.map(habit => ({
+            ...habitMapper.toRaw(habit),
+            slot: slotMapper.toRaw(slots.find(slot => slot.habitId === habit.id) as SlotProps)
+        })))
     }
+
+    const selectedHabit = eventableHabits.find(habit => habit.id === form.model.habit_id)
 
     // Actions
     function store(values?: Partial<EventRawProps>) {
@@ -92,5 +101,34 @@ export default function useEventsCrud({ onSave, onDelete }: Params) {
             console.error(error)
         }
         setLoadingSave(false)
+    }
+
+    // Delete
+    // we delegate confirmation flows to ui components
+    async function deleteEvent() {
+        if(isNew) { return undefined }
+
+        setLoadingDelete(true)
+        try {
+            await new DeleteHabit(eventGateway).execute(storedEvent.id)
+            if(onDelete) {
+                onDelete()
+            }
+        } catch(error) {
+            console.error(error)
+        }
+        setLoadingDelete(false)
+    }
+
+    return {
+        form,
+        store,
+        update,
+        deleteEvent,
+        loadingSave,
+        loadingDelete,
+        isNew,
+        eventableHabits,
+        selectedHabit
     }
 }

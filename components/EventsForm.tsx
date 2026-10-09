@@ -1,7 +1,5 @@
-import { useEffect, useState, useRef, forwardRef } from "react"
+import { useRef, forwardRef, useImperativeHandle } from "react"
 import { CalendarCheck } from '@project-lary/react-material-symbols-700-rounded'
-import { DbResourceSchema, eventsModel, EventsSchema, HabitsSchema, SlotsSchema } from "@/db/DbClass"
-import useForm, { Rules, validators } from "@/hooks/useForm"
 import CardsInput from "@/components/CardsInput"
 import HabitsCardHeader from "@/components/HabitsCardHeader"
 import SlotsCompletionChip from "@/components/SlotsCompletionChip"
@@ -9,86 +7,37 @@ import { CalendarToday } from "@project-lary/react-material-symbols-700-rounded"
 import InputWrapper from "@/components/InputWrapper"
 import CheckboxBtn from "@/components/CheckboxBtn"
 import ConfirmModal from '@/components/ConfirmModal'
-import { DateTime } from "luxon"
-import useHabits from "@/hooks/useHabits"
 import { ConfirmModalRef } from '@/app/types'
 import { EventRawProps } from "@/src/events/mappers/EventMapper"
 import { EventsFormRef } from "@/src/shared/infrastructure/contracts"
+import useEventsCrud from "@/src/events/adapters/useEventsCrud"
 
 interface Props {
   onSave?: (values: EventRawProps) => never | void
   onDelete?: () => never | void
 }
 
-type SelectableHabit = DbResourceSchema<HabitsSchema> & {
-  slot: DbResourceSchema<SlotsSchema>
-}
-
-const rules: Rules = {
-  habit_id: [validators.required],
-  datetime: [validators.required],
-  completed: [validators.numeric]
-}
-
 const EventsForm = forwardRef<EventsFormRef, Props>(({ onSave, onDelete }: Props, ref) => {
-  const { fetchSelectableHabits, saveEvent, deleteEvent: _deleteEvent } = useHabits()
-
-  // --- useForm ---
-  const { model, changeField, init, errorMessages, handleFormSubmit } = useForm({ defaultValues: eventsModel, rules, onSubmit })
-
-  const id = values?.id
-  const isNew = !id
-
-  // --- datetime ---
-  const datetimeFormatted = model?.datetime ? DateTime.fromISO(model.datetime).toFormat('dd/MM/yyyy HH:ii'): ''
-
-  // --- Selectable habits ---
-  const [selectableHabits, setSelectableHabits] = useState<SelectableHabit[]>([])
-  const [selectedHabit, setSelectedHabit] = useState<SelectableHabit | null>(null)
-  useEffect(() => {
-    init(values)
-    try {
-      fetchSelectableHabits(values?.datetime ?? '').then(setSelectableHabits)
-    } catch(error) {
-      console.error(error)
-      setSelectableHabits([])
-    }
-    setSelectedHabit(selectableHabits.find(habit => habit.id === values?.habit_id) || null)
-  }, [values])
-
-  function changeHabit(habit_id: number) {
-    changeField('habit_id', habit_id)
-    setSelectedHabit(selectableHabits.find(habit => habit.id === habit_id) || null)
-  }
-
-  // --- Save ---
-  const [loading, setLoading] = useState(false)
-  async function onSubmit() {
-    if(!isNew || loading || (selectedHabit?.enough_amount && !model.completed)) { return undefined }
-    setLoading(true)
-    try {
-      await saveEvent(model, selectedHabit?.slot?.id as number)
-      if(onSave) {
-        onSave()
-      }
-    } catch(error) {
-      console.error(error)
-      // TODO: notify error to user
-    }
-    setLoading(false)
-  }
+  // --- useHabitsCrud ---
+  const {
+    form,
+    store,
+    update,
+    deleteEvent: adapterDeleteEvent,
+    // loadingSave,
+    eventableHabits,
+    selectedHabit,
+    isNew,
+  } = useEventsCrud({ onSave, onDelete })
 
   // --- Delete ---
   const confirmDeleteModalRef = useRef<ConfirmModalRef>(null)
-  const [loadingDelete, setLoadingDelete] = useState<boolean>(false)
   async function deleteEvent() {
-    if(loadingDelete || isNew) { return undefined }
     const confirmed = await confirmDeleteModalRef.current?.confirm()
     if(!confirmed) { return undefined }
 
-    setLoadingDelete(true)
     try{
-      await _deleteEvent(id as number)
+      await adapterDeleteEvent()
       if(onDelete) {
         onDelete()
       }
@@ -96,33 +45,37 @@ const EventsForm = forwardRef<EventsFormRef, Props>(({ onSave, onDelete }: Props
       console.error(error)
       // TODO: notify error to user
     }
-    setLoadingDelete(false)
   }
 
+  useImperativeHandle(ref, () => ({
+    store,
+    update
+  }))
+
   return (
-    <form onSubmit={handleFormSubmit} className="grid grid-cols-1 gap-x-3">
+    <form onSubmit={form.handleFormSubmit} className="grid grid-cols-1 gap-x-3">
       <div>
-        <InputWrapper errorMessages={errorMessages.datetime} label="Date & time" input={(
+        <InputWrapper errorMessages={form.errorMessages.datetime} label="Date & time" input={(
           <input
             id="datetime"
             type="text"
             name="datetime"
             className="grow w-full ht-form-input"
             placeholder="Date & time of your check"
-            value={datetimeFormatted}
+            value={form.model.date}
             readOnly
           />
         )}/>
       </div>
       <div>
         <InputWrapper
-          errorMessages={errorMessages.habit_id}
+          errorMessages={form.errorMessages.habit_id}
           label="Select the habit"
           input={(
             <CardsInput
-              value={model.habit_id}
-              onChange={e => changeHabit(e.target.value as unknown as number)}
-              items={selectableHabits}
+              value={form.model.habit_id}
+              onChange={e => form.changeField('habit_id', e.target.value)}
+              items={eventableHabits}
               content={(item) => (
                 <>
                   <HabitsCardHeader habit={item} />
@@ -152,8 +105,8 @@ const EventsForm = forwardRef<EventsFormRef, Props>(({ onSave, onDelete }: Props
               <CheckboxBtn
                 id="completed"
                 name="completed"
-                defaultChecked={!!model.completed}
-                onChange={e => changeField('completed', e.target.checked ? 1 : 0)}
+                defaultChecked={!!form.model.completed}
+                onChange={e => form.changeField('completed', e.target.checked ? 1 : 0)}
               />
               <div className="text-sm">
                 {selectedHabit.enough_amount}
@@ -166,12 +119,12 @@ const EventsForm = forwardRef<EventsFormRef, Props>(({ onSave, onDelete }: Props
       <div className="flex justify-end items-center gap-4">
         {isNew ? (
           <>
-            {selectedHabit?.enough_amount && !model.completed && (
+            {selectedHabit?.enough_amount && !form.model.completed && (
               <div className="text-sm text-gray-600">
                 You have to do more...
               </div>
             )}
-            <button type="submit" className="ht-btn ht-btn--size-large ht-interaction bg-green-200 shadow-ht" disabled={!!selectedHabit?.enough_amount && !model.completed}>
+            <button type="submit" className="ht-btn ht-btn--size-large ht-interaction bg-green-200 shadow-ht" disabled={!!selectedHabit?.enough_amount && !form.model.completed}>
               <CalendarCheck />
               Add event
             </button>
