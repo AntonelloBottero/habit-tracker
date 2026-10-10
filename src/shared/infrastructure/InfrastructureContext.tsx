@@ -9,10 +9,10 @@ import { DexieFactory } from './DbClass'
 import { DexieSlotGateway } from '@/src/slots/infrastructure/DexieSlotGateway'
 import { DexieEventGateway } from '@/src/events/infrastructure/DexieEventGateway'
 
-interface Infrastructure {
+interface Infrastructure { // TODO add user - methods to fetch and update global user
     habitGateway: DexieHabitGateway
     slotGateway: DexieSlotGateway
-    eventGateway: DexieEventGateway
+    eventGateway: DexieEventGateway,
 }
 
 const InfrastructureContext = createContext<Infrastructure | null>(null)

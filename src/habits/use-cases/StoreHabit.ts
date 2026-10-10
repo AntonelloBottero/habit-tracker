@@ -2,9 +2,8 @@ import { Habit, type HabitProps } from '../domain/Habit'
 import { HabitGateway } from '../contracts/gateways'
 
 export type StoreHabitInputDTO = Omit<HabitProps, 'id' | 'userId'>
-export type StoreHabitOutputDTO = Omit<HabitProps, 'lastManagedAt' | 'lastUpdatedAt'> & {
+export type StoreHabitOutputDTO = Omit<HabitProps, 'lastManagedAt'> & {
     lastManagedAt: null
-    lastUpdatedAt: null
 }
 
 export class StoreHabit {
