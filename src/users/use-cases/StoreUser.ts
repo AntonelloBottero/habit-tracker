@@ -1,5 +1,5 @@
 import { UserGateway } from "../contracts/gateways"
-import { User, type UserProps } from "../domain/User"
+import { defaultUserOptions, User, type UserProps } from "../domain/User"
 
 export type StoreUserInputDTO = Omit<UserProps, 'id' | 'options'>
 export type StoreUserOutputDTO = UserProps
@@ -16,7 +16,7 @@ export class StoreUser {
         const user = new User({
             ...input,
             id,
-            options: {} // options always empty at user store - no need for initial options
+            options: {...defaultUserOptions}
         })
 
         const data = {...user.toPrimitives() }

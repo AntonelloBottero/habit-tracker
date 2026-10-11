@@ -32,8 +32,6 @@ const HabitsForm = forwardRef<HabitsFormRef, Props>(({ onSave, onDelete }: Props
 
   // --- Color picker ref ---
   const colorPickerRef = useRef<ColorPickerRef>(null)
-  // TODO: refactor on onSave
-  // await colorPickerRef.current?.updateUserColorsOption(model.color)
 
   // --- Delete ---
   const confirmDeleteModalRef = useRef<ConfirmModalRef>(null)

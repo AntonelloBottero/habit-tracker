@@ -10,11 +10,15 @@
  *  - makes it easier to expose a global object
  *  - shall we update the domain every time a minute detail like a new option gets added? No
  *  - we shall build an interface that define the options object though
- * 
+ *
  */
 
 export interface UserOptionsProps {
-    colors?: string[]
+    colors: string[]
+}
+
+export const defaultUserOptions: UserOptionsProps = {
+    colors: []
 }
 
 export interface UserProps {
@@ -33,8 +37,16 @@ export class User {
         if(!props.name) {
             throw new Error('User name is required')
         }
+        if(!this._checkOptions(props.options)) {
+            throw new Error('User options are not compliant')
+        }
 
         this._props = props
+    }
+
+    private _checkOptions(options: UserOptionsProps): boolean {
+        const allowedKeys = Object.keys(defaultUserOptions)
+        return Object.keys(options).every(key => allowedKeys.includes(key))
     }
 
     // Getters

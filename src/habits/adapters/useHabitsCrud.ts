@@ -9,6 +9,7 @@ import { Habit, HabitProps } from "../domain/Habit"
 import { type Granularity } from "@/src/shared/contracts/consts"
 import { useRef, useState } from "react"
 import { IndexHabits } from "../use-cases/IndexHabits"
+import useOptions from "@/src/shared/adapters/useOptions"
 
 interface Params {
     onSave?: (vales: HabitRawProps) => never | void
@@ -90,12 +91,14 @@ export default function useHabitCrud({ onSave, onDelete }: Params) {
     async function onSubmit() {
         setLoadingSave(true)
         try {
+            const domain = habitMapper.toDomain(form.model) as StoreHabitInputDTO
             let values
             if(isNew) {
-                values = await new StoreHabit(habitGateway).execute(habitMapper.toDomain(form.model) as StoreHabitInputDTO)
+                values = await new StoreHabit(habitGateway).execute(domain)
             } else {
-                values = await new UpdateHabit(habitGateway).execute(storedHabit.id, habitMapper.toDomain(form.model) as UpdateHabitInputDTO)
+                values = await new UpdateHabit(habitGateway).execute(storedHabit.id, domain)
             }
+            useOptions().addColor(domain.color)
             if(onSave) {
                 onSave(habitMapper.toRaw(values))
             }

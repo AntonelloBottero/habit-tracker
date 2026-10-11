@@ -17,28 +17,31 @@ import { DexieHabitGateway } from '../../habits/infrastructure/DexieHabitGateway
 import { DexieFactory } from './DbClass'
 import { DexieSlotGateway } from '@/src/slots/infrastructure/DexieSlotGateway'
 import { DexieEventGateway } from '@/src/events/infrastructure/DexieEventGateway'
-import { UserOptionsProps, type UserProps } from '@/src/users/domain/User'
+import { defaultUserOptions, UserOptionsProps, type UserProps } from '@/src/users/domain/User'
 import { ShowUser } from '@/src/users/use-cases/ShowUser'
 import { DexieUserGateway } from '@/src/users/infrastructure/DexieUserGateway'
+import { UpdateUserOption } from '@/src/users/use-cases/UpdateUserOption'
 
 interface Infrastructure { // TODO add user - methods to fetch and update global user
     habitGateway: DexieHabitGateway
     slotGateway: DexieSlotGateway
     eventGateway: DexieEventGateway,
     user: UserProps | null,
-    showOption: (key: keyof UserOptionsProps, fallback: UserOptionsProps[keyof UserOptionsProps] | null) => UserOptionsProps[keyof UserOptionsProps] | null
+    options: UserOptionsProps
+    updateOption: (key: keyof UserOptionsProps, value: UserOptionsProps[keyof UserOptionsProps]) => Promise<void>
 }
 
 const InfrastructureContext = createContext<Infrastructure | null>(null)
 
 const dexieFactory = new DexieFactory()
+const userGateway = new DexieUserGateway(dexieFactory.execute())
 
 export const DependenciesProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [_user, setUser] = useState<UserProps | null>(null)
 
   async function showUser() {
     try {
-      const user = await new ShowUser(new DexieUserGateway(dexieFactory.execute())).execute(1) // current user's id is always 1 if exists, since user info are stored locally
+      const user = await new ShowUser(userGateway).execute(1) // current user's id is always 1 if exists, since user info are stored locally
       setUser(user)
     } catch(error) {
       console.error(error)
@@ -49,16 +52,25 @@ export const DependenciesProvider: React.FC<{ children: React.ReactNode }> = ({ 
     showUser()
   }, [])
 
-  function showOption(key: keyof UserOptionsProps, fallback: UserOptionsProps[keyof UserOptionsProps] | null = null) {
-    return _user?.options[key] || fallback
+
+  async function updateOption(key: keyof UserOptionsProps, value: UserOptionsProps[keyof UserOptionsProps]): Promise<void> {
+    if(!_user) { return undefined }
+    try {
+      const user = await new UpdateUserOption(userGateway).execute(_user.id, { key, value })
+      setUser({ ...user })
+    } catch(error) {
+      console.error(error)
+    }
   }
 
   const infrastructure: Infrastructure = {
     habitGateway: new DexieHabitGateway(dexieFactory.execute()),
     slotGateway: new DexieSlotGateway(dexieFactory.execute()),
     eventGateway: new DexieEventGateway(dexieFactory.execute()),
+    // user
     user: _user || null,
-    showOption
+    options: _user?.options ?? defaultUserOptions,
+    updateOption
   }
 
   return (
