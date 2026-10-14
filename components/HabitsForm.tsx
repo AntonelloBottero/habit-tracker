@@ -4,7 +4,7 @@ import InputWrapper from '@/components/InputWrapper'
 import ColorPicker from '@/components/ColorPicker'
 import CheckboxBtn from '@/components/CheckboxBtn'
 import ConfirmModal from '@/components/ConfirmModal'
-import { ColorPickerRef, ConfirmModalRef } from '@/app/types'
+import { ConfirmModalRef } from '@/app/types'
 import { CheckCircle, Info } from '@project-lary/react-material-symbols-700-rounded'
 import { HabitRawProps } from '@/src/habits/mappers/HabitMapper'
 import useHabitCrud from '@/src/habits/adapters/useHabitsCrud'
@@ -29,9 +29,6 @@ const HabitsForm = forwardRef<HabitsFormRef, Props>(({ onSave, onDelete }: Props
     isNew,
     canEdit
   } = useHabitCrud({ onSave, onDelete })
-
-  // --- Color picker ref ---
-  const colorPickerRef = useRef<ColorPickerRef>(null)
 
   // --- Delete ---
   const confirmDeleteModalRef = useRef<ConfirmModalRef>(null)
@@ -71,7 +68,6 @@ const HabitsForm = forwardRef<HabitsFormRef, Props>(({ onSave, onDelete }: Props
       <div className="col-span-2">
         <InputWrapper errorMessages={form.errorMessages.color} label="Color" input={(
           <ColorPicker
-            ref={colorPickerRef}
             id="color"
             name="color"
             className="ht-form-input !py-1"
