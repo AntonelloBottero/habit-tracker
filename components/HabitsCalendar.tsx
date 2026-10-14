@@ -17,44 +17,17 @@ import { DateTime } from 'luxon'
 import Modal from './Modal'
 import EventDetailsModal from './EventDetailsModal'
 import CalendarToolbar from './CalendarToolbar'
+import useCalendar from '@/src/shared/adapters/useCalendar'
 
 export default function HabitsCalendar() {
-  // --- Active slots ---
-  const { fetchActiveSlots } = useHabits()
-  const [slots, setSlots] = useState<DbResourceSchema<SlotsSchema>[]>([])
-
-  // --- Habits ---
-  const habitsCrud = useDbCrud('habits')
-  const [habits, setHabits] = useState<DbResourceSchema<HabitsSchema>[] | null>(null)
-
-  const formattedHabits: HabitWithSlots[] = habits?.map((habit) => ({ ...habit, slots: slots.filter(slot => slot.habit_id === habit.id) })).filter(habit => habit.slots.length) ?? []
+  const { indexEventables, events, habits } = useCalendar()
 
   // --- Manage events ---
   const formEventsModal = useRef<ModalRef>(null)
-  const [formEventsValues, setFormEventsValues] = useState<Partial<DbResourceSchema<EventsSchema>> | undefined>(undefined)
-  const [events, setEvents] = useState<DbResourceSchema<EventsSchema>[]>([])
   const [, startResourcesTransition] = useTransition()
-
-  const formattedEvents = events
-    .map(event => {
-      const habit = habits?.find(habit => habit.id === event.habit_id)
-      if(!habit) { return null }
-      return {
-        ...event,
-        habit,
-        // fullcalendar compliant params
-        title: habit.name,
-        start: event.datetime,
-        end: DateTime.fromISO(event.datetime).plus({ minutes: 1 }).toISO(),
-        color: habit.color
-      }
-    })
-    .filter(Boolean) as unknown as EventInput[]
 
   // --- Calendar ---
   const calendarRef = useRef<FullCalendar>(null)
-
-  const eventsCrud = useDbCrud('events')
 
   const [dateArgs, setDateArgs] = useState<DatesSetArg | null>(null) // since fullcalendar has no api to refresh current date, we have to trigger it manually using the last calendar args
 
@@ -62,26 +35,13 @@ export default function HabitsCalendar() {
     const args = calendarArgs || dateArgs
     if(!args) { return undefined }
 
-    await Promise.all([ // we allow React to batch all resurces state updates by updating those states only after all promises have resolved
-      !habits ? habitsCrud.index() : null,
-      fetchActiveSlots(args.startStr, args.endStr),
-      eventsCrud.index(item => item.datetime >= args.startStr && item.datetime <= args.endStr)
-    ]).then(([h, as, e]) => {
-      startResourcesTransition(() => {
-        if(h) { setHabits(h) }
-        setSlots(as.sort((a, b) => a.active_to > b.active_to ? 1 : -1))
-        setEvents(e)
-        setDateArgs(args)
+    try {
+      startResourcesTransition(async () => {
+        await indexEventables(args.startStr, args.endStr)
       })
-    }).catch(error => {
+    } catch(error) {
       console.error(error)
-      startResourcesTransition(() => {
-        setHabits(null)
-        setSlots([])
-        setEvents([])
-        setDateArgs(args)
-      })
-    })
+    }
   }
 
   // --- Add event ---

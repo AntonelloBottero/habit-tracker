@@ -36,7 +36,7 @@ const InfrastructureContext = createContext<Infrastructure | null>(null)
 const dexieFactory = new DexieFactory()
 const userGateway = new DexieUserGateway(dexieFactory.execute())
 
-export const DependenciesProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const InfrastructureProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [_user, setUser] = useState<UserProps | null>(null)
 
   async function showUser() {

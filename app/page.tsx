@@ -3,24 +3,31 @@
 import { useState, useEffect, useRef, lazy, Suspense } from "react"
 import Link from "next/link"
 import PageLoader from '@/components/PageLoader'
-import useHabits from "@/hooks/useHabits"
 import { ChatFilled } from '@project-lary/react-material-symbols-700-rounded'
+import useSetup from "../src/shared/adapters/useSetup"
+import { useInfrastructure } from "@/src/shared/infrastructure/InfrastructureContext"
 
 const HabitsCalendar = lazy(() => import('@/components/HabitsCalendar')) // HabitsCalendar is an heavy component and should be loaded only when user has finished setup
 
 
 export default function Home() {
-  const { setup } = useHabits()
+  const { user } = useInfrastructure()
+  const { setup } = useSetup()
 
   const [setupCompleted, setSetupCompleted] = useState<boolean>(false)
   const [setupLoading, setSetupLoading] = useState<boolean>(true)
-  const skipSetup = useRef(false) // In strict mode we need to prevent useDb.setup() to be executed twice
+  const skipSetup = useRef(false) // In strict mode we need to prevent useSetup.setup() to be executed twice
   useEffect(() => {
     if(!skipSetup.current) {
-      setup().then(value => {
-        setSetupCompleted(value)
+      if(!user) {
+        setSetupCompleted(false)
         setSetupLoading(false)
-      })
+      } else {
+        setup().then(value => {
+          setSetupCompleted(value)
+          setSetupLoading(false)
+        })
+      }
     }
 
     return () => {

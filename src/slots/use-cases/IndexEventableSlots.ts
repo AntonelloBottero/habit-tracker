@@ -1,9 +1,11 @@
-import { HabitProps } from "@/src/habits/domain/Habit"
 import { SlotGateway } from "../contracts/gateways"
+import { SlotProps } from "../domain/Slot"
 
-export interface IndexInRangeSlotsInputDTO {
+export interface IndexEventableSlotsInputDTO {
     date: Date
 }
+
+export type IndexEventableSlotsOutputDTO = SlotProps[]
 
 export class IndexEventableSlots {
     private _gateway: SlotGateway
@@ -12,7 +14,7 @@ export class IndexEventableSlots {
         this._gateway = gateway
     }
 
-    async execute({ date }: IndexInRangeSlotsInputDTO) {
+    async execute({ date }: IndexEventableSlotsInputDTO): Promise<IndexEventableSlotsOutputDTO> {
         return await this._gateway.indexEventables(date)
     }
 }

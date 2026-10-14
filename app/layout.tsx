@@ -1,4 +1,4 @@
-import { DbProvider } from '@/db/useDb'
+import { InfrastructureProvider } from "@/src/shared/infrastructure/InfrastructureContext"
 import { Monda } from "next/font/google"
 import "./globals.css"
 
@@ -18,9 +18,9 @@ export default function RootLayout({
       <body
         className={`${monda.variable} antialiased gradient-primary`}
       >
-        <DbProvider>
+        <InfrastructureProvider>
           {children}
-        </DbProvider>
+        </InfrastructureProvider>
         <div data-ht-role="modals" />
       </body>
     </html>

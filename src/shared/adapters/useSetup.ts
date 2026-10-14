@@ -9,14 +9,20 @@ import { StoreMonthlySlots } from "@/src/slots/use-cases/StoreMonthlySlots";
 import { ShiftManagedHabits } from "@/src/habits/use-cases/ShiftManagedHabits";
 
 export default function useSetup() {
-    const { habitGateway, slotGateway } = useInfrastructure()
+    const { habitGateway, slotGateway, user } = useInfrastructure()
 
     async function setup() {
-        const manageableHabits = await new IndexManageableHabits(habitGateway).execute()
-        if(!manageableHabits.length) { return undefined }
+        try {
+            const manageableHabits = await new IndexManageableHabits(habitGateway).execute()
+            if(!manageableHabits.length) { return true }
 
-        await new StoreMonthlySlots(slotGateway).execute({ habits: manageableHabits, date: new Date() })
-        await new ShiftManagedHabits(habitGateway)
+            await new StoreMonthlySlots(slotGateway).execute({ habits: manageableHabits, date: new Date() })
+            await new ShiftManagedHabits(habitGateway)
+        return true
+        } catch(error) {
+            console.error(error)
+            return false
+        }
     }
 
     return {

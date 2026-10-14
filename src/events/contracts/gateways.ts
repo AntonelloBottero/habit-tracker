@@ -4,4 +4,5 @@ import { EventProps } from "../domain/Event"
 
 export type EventGateway = BaseGateway<EventRawProps, EventProps> & {
     findOverlapping: (habitId: string | number, date: Date, habitIdToExclude?: string | number) => Promise<EventProps | null>
+    indexInRange: (from: Date, to: Date) => Promise<EventProps[]>
 }
