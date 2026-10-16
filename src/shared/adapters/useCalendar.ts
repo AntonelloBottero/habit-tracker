@@ -22,15 +22,17 @@ export default function useCalendar() {
     const [slots, setSlots] = useState<SlotRawProps[]>([])
     const [events, setEvents] = useState<EventRawProps[]>([])
 
-    async function indexEventables(from: Date, to: Date): Promise<void> {
+    async function indexEventables(from: string, to: string): Promise<void> {
+        const fromDate = new Date(from)
+        const toDate = new Date(to)
         // slots
-        const _slots = await new IndexInRangeSlots(slotGateway).execute({ from, to })
+        const _slots = await new IndexInRangeSlots(slotGateway).execute({ from: fromDate, to: toDate })
         setSlots(_slots.map(slot => slotMapper.toRaw(slot)))
         // habits
         const _habits = await new IndexHabits(habitGateway).execute()
         setHabits(_habits.map(habit => habitMapper.toRaw(habit)))
         // events
-        const _events = await new IndexInRangeEvents(eventGateway).execute({ from, to })
+        const _events = await new IndexInRangeEvents(eventGateway).execute({ from: fromDate, to: toDate })
         setEvents(_events.map(event => eventMapper.toRaw(event)))
     }
 
