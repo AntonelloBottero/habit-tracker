@@ -11,6 +11,8 @@ export interface UserRawProps {
     options: UserOptionsRawProps
 }
 
+export type UserModelProps = Omit<UserRawProps, 'id' | 'options'>
+
 export class UserMapper implements Mapper<UserRawProps, UserProps> {
     public toDomain(raw: Partial<UserRawProps>): Partial<UserProps> {
         return {

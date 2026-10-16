@@ -3,15 +3,6 @@
  * Every Adapter, which must feed their Use Cases with infrastructure entities, consumes those entities through a dedicated hook (useInfrastructure)
  */
 
-/**
- * User
- * - must be available globally (managed by provider) to be consumed
- *  - the provider makes the first UserFetch
- * - it can be created -> user added to provider
- * - it can be updated (name and options)
- * - manage options separatedly
- */
-
 import React, { createContext, useContext, useEffect, useState } from 'react'
 import { DexieHabitGateway } from '../../habits/infrastructure/DexieHabitGateway'
 import { DexieFactory } from './DbClass'
@@ -21,6 +12,8 @@ import { defaultUserOptions, UserOptionsProps, type UserProps } from '@/src/user
 import { ShowUser } from '@/src/users/use-cases/ShowUser'
 import { DexieUserGateway } from '@/src/users/infrastructure/DexieUserGateway'
 import { UpdateUserOption } from '@/src/users/use-cases/UpdateUserOption'
+import { UserMapper, UserModelProps, UserRawProps } from '@/src/users/mappers/UserMapper'
+import { StoreUser, StoreUserInputDTO } from '@/src/users/use-cases/StoreUser'
 
 interface Infrastructure { // TODO add user - methods to fetch and update global user
     habitGateway: DexieHabitGateway
@@ -28,6 +21,7 @@ interface Infrastructure { // TODO add user - methods to fetch and update global
     eventGateway: DexieEventGateway,
     user: UserProps | null,
     options: UserOptionsProps
+    storeUser: (values: UserModelProps) => Promise<UserRawProps | void>
     updateOption: (key: keyof UserOptionsProps, value: UserOptionsProps[keyof UserOptionsProps]) => Promise<void>
 }
 
@@ -35,6 +29,7 @@ const InfrastructureContext = createContext<Infrastructure | null>(null)
 
 const dexieFactory = new DexieFactory()
 const userGateway = new DexieUserGateway(dexieFactory.execute())
+const userMapper = new UserMapper()
 
 export const InfrastructureProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [_user, setUser] = useState<UserProps | null>(null)
@@ -51,6 +46,16 @@ export const InfrastructureProvider: React.FC<{ children: React.ReactNode }> = (
   useEffect(() => { // TODO: maybe refactor
     showUser()
   }, [])
+
+  async function storeUser(values: Omit<UserRawProps, 'id' | 'options'>): Promise<UserRawProps | void> {
+    try {
+    const user = await new StoreUser(userGateway).execute(userMapper.toDomain(values) as StoreUserInputDTO)
+    setUser(user)
+    return userMapper.toRaw(user)
+    } catch(error) {
+      console.error(error)
+    }
+  }
 
 
   async function updateOption(key: keyof UserOptionsProps, value: UserOptionsProps[keyof UserOptionsProps]): Promise<void> {
@@ -70,6 +75,7 @@ export const InfrastructureProvider: React.FC<{ children: React.ReactNode }> = (
     // user
     user: _user || null,
     options: _user?.options ?? defaultUserOptions,
+    storeUser,
     updateOption
   }
 

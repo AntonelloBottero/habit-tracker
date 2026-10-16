@@ -10,7 +10,7 @@ interface Props {
   onSubmit?: (name: string) => void | never
 }
 
-export default function SetupForm({ onSubmit }: Props) {
+export default function UsersForm({ onSubmit }: Props) {
   const { createOption } = useDb()
   const [name, setName] = useState('')
   const [loading, setLoading] = useState(false)

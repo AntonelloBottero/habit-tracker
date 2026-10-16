@@ -1,30 +1,24 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import useDb from '@/db/useDb'
 import TabsWindow from "@/components/TabsWindow"
 import SetupForm from "@/components/SetupForm"
 import HabitsSetup from "@/components/HabitsSetup"
 import { useState, useEffect } from 'react'
+import { useInfrastructure } from '@/src/shared/infrastructure/InfrastructureContext'
 
 export default function Page() {
-  const { getOption } = useDb()
+  const { user } = useInfrastructure()
   const [tab, setTab] = useState(0)
-  async function getName() {
-    const nameOption = await getOption('name', true) as string | undefined
-    if(nameOption) {
+
+  useEffect(() => {
+    if(user) {
       setTab(1)
     }
-  }
-  useEffect(() => {
-    getName()
-  }, [])
-  function handleSetupFormSubmit() {
-    getName()
-  }
+  }, [user])
 
   const router = useRouter()
-  function handleOnSetup() {
+  function onSetup() {
     router.push('/')
   }
 
@@ -38,12 +32,12 @@ export default function Page() {
             <p>New in here? Start by inserting your name...<br />
               ...or whatever you want us to call you</p>
             <div className="w-full mt-4">
-              <SetupForm onSubmit={handleSetupFormSubmit} />
+              <SetupForm />
             </div>
           </div>
           <div>
             <h1 className="text-4xl font-monda mb-2">It's all about your Habits in here</h1>
-            <HabitsSetup onSetup={handleOnSetup} />
+            <HabitsSetup onSetup={onSetup} />
           </div>
         </TabsWindow>
       </main>
