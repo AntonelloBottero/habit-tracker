@@ -9,9 +9,10 @@ import CheckboxBtn from "@/components/CheckboxBtn"
 import ConfirmModal from '@/components/ConfirmModal'
 import { ConfirmModalRef } from '@/app/types'
 import useHabits from "@/hooks/useHabits"
+import { EventRawProps } from '@/src/events/mappers/EventMapper'
 
 interface Props {
-  event: DbResourceSchema<EventsSchema> | undefined,
+  event: EventRawProps | undefined,
   onDelete?: () => never | void
 }
 

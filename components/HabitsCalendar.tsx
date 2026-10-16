@@ -67,7 +67,7 @@ export default function HabitsCalendar() {
 
   // --- Manage existing event ---
   const eventDetailsModal = useRef<ModalRef>(null)
-  const [selectedEvent, setSelectedEvent] = useState<EventRawProps | null>(null)
+  const [selectedEvent, setSelectedEvent] = useState<EventRawProps | null>(null) // TODO: should it hold habit?
   async function handleEventClick(eventInfo: EventClickArg) {
     try {
       const event = await showEvent(eventInfo.event.id)
