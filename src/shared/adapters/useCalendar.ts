@@ -8,6 +8,7 @@ import { IndexInRangeSlots } from "@/src/slots/use-cases/IndexInRangeSlots"
 import { CalendarEvent } from "../contracts/formatters"
 import { HabitWithSlots } from "@/app/types"
 import { IndexInRangeEvents } from "@/src/events/use-cases/IndexInRangeEvents"
+import { ShowEvent } from "@/src/events/use-cases/ShowEvent"
 
 const eventMapper = new EventMapper()
 const habitMapper = new HabitMapper()
@@ -25,15 +26,18 @@ export default function useCalendar() {
     async function indexEventables(from: string, to: string): Promise<void> {
         const fromDate = new Date(from)
         const toDate = new Date(to)
-        // slots
-        const _slots = await new IndexInRangeSlots(slotGateway).execute({ from: fromDate, to: toDate })
-        setSlots(_slots.map(slot => slotMapper.toRaw(slot)))
-        // habits
-        const _habits = await new IndexHabits(habitGateway).execute()
-        setHabits(_habits.map(habit => habitMapper.toRaw(habit)))
-        // events
-        const _events = await new IndexInRangeEvents(eventGateway).execute({ from: fromDate, to: toDate })
-        setEvents(_events.map(event => eventMapper.toRaw(event)))
+
+        // executed in parallel to allow transitions
+        // TODO: manage abortController
+        const [slotsResult, habitsResult, eventsResult] = await Promise.all([
+            new IndexInRangeSlots(slotGateway).execute({ from: fromDate, to: toDate }),
+            new IndexHabits(habitGateway).execute(),
+            new IndexInRangeEvents(eventGateway).execute({ from: fromDate, to: toDate })
+        ])
+
+        setSlots(slotsResult.map(slot => slotMapper.toRaw(slot)))
+        setHabits(habitsResult.map(habit => habitMapper.toRaw(habit)))
+        setEvents(eventsResult.map(event => eventMapper.toRaw(event)))
     }
 
     const habitsWithSlots = habits.map((habit) => ({
@@ -57,9 +61,16 @@ export default function useCalendar() {
         })
         .filter(Boolean) as CalendarEvent[]
 
+    // Utils
+    async function showEvent(id: string | number): Promise<EventRawProps> { // we keep this in adapter since it deals with use cases
+        const event = await new ShowEvent(eventGateway).execute(id)
+        return eventMapper.toRaw(event)
+    }
+
     return {
         indexEventables,
         events: calendarEvents,
-        habits: habitsWithSlots
+        habits: habitsWithSlots,
+        showEvent
     }
 }

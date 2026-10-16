@@ -3,7 +3,6 @@ import FullCalendar from '@fullcalendar/react'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import interactionPlugin from '@fullcalendar/interaction'
 import { EventClickArg, type DatesSetArg } from '@fullcalendar/core/index.js'
-import { DbResourceSchema, EventsSchema } from '@/db/DbClass'
 import Link from "next/link"
 import SidebarView from '@/components/SidebarView'
 import ScheduleList from '@/components/ScheduleList'
@@ -11,17 +10,20 @@ import EventsForm from '@/components/EventsForm'
 import { CalendarToday, RightPanelClose, RightPanelOpen, Settings } from "@project-lary/react-material-symbols-700-rounded"
 import "@/css/habits-calendar.css"
 import { ModalRef } from '@/app/types'
-import { DateTime } from 'luxon'
 import Modal from './Modal'
 import EventDetailsModal from './EventDetailsModal'
 import CalendarToolbar from './CalendarToolbar'
 import useCalendar from '@/src/shared/adapters/useCalendar'
+import { EventsFormRef } from '@/src/shared/infrastructure/contracts'
+import { EventRawProps } from '@/src/events/mappers/EventMapper'
 
 export default function HabitsCalendar() {
-  const { indexEventables, events, habits } = useCalendar()
-
-  // --- Manage events ---
-  const formEventsModal = useRef<ModalRef>(null)
+  const {
+    indexEventables,
+    events,
+    habits,
+    showEvent
+  } = useCalendar()
   const [, startResourcesTransition] = useTransition()
 
   // --- Calendar ---
@@ -35,6 +37,7 @@ export default function HabitsCalendar() {
 
     try {
       startResourcesTransition(async () => {
+        setDateArgs(args)
         await indexEventables(args.startStr, args.endStr)
       })
     } catch(error) {
@@ -42,12 +45,14 @@ export default function HabitsCalendar() {
     }
   }
 
-  // --- Add event ---
-  function addEvent() {
-    setFormEventsValues({
-      datetime: DateTime.now().toISO()
-    })
+  // --- Events crud ---
+  const formEventsModal = useRef<ModalRef>(null)
+  const formRef = useRef<EventsFormRef>(null) // TODO: check if ref is active even though Modal doesn't render it
+  function storeEvent() {
     formEventsModal.current?.show()
+    formRef.current?.store({
+      date: new Date().toISOString()
+    })
   }
 
   function handleEventsFormSave() {
@@ -55,23 +60,24 @@ export default function HabitsCalendar() {
     fetchResources()
   }
 
+  function handleEventDelete() {
+    eventDetailsModal.current?.hide()
+    fetchResources()
+  }
+
   // --- Manage existing event ---
   const eventDetailsModal = useRef<ModalRef>(null)
-  const [selectedEvent, setSelectedEvent] = useState<DbResourceSchema<EventsSchema> | undefined>(undefined)
+  const [selectedEvent, setSelectedEvent] = useState<EventRawProps | null>(null)
   async function handleEventClick(eventInfo: EventClickArg) {
     try {
-      await eventsCrud.show(Number(eventInfo.event.id)).then(setSelectedEvent)
+      const event = await showEvent(eventInfo.event.id)
+      setSelectedEvent(event)
       setTimeout(() => {
         eventDetailsModal.current?.show()
       })
     } catch(error) {
       console.error(error)
     }
-  }
-
-  function handleEventDelete() {
-    eventDetailsModal.current?.hide()
-    fetchResources()
   }
 
   //--- Sidebar ---
@@ -96,7 +102,7 @@ export default function HabitsCalendar() {
                   <Settings className="text-xl" />
                 </Link>
               </div>
-              <ScheduleList habits={formattedHabits} />
+              <ScheduleList habits={habits} />
             </>
           )}
           onChange={e => setSidebar(e.target.value)}
@@ -106,7 +112,7 @@ export default function HabitsCalendar() {
               {/* Toolbar */}
               <div className="flex sm:flex-row-reverse justify-between flex-wrap align-center gap-2 mb-6">
                 <div className="flex align-center gap-2 sm:w-fit w-full">
-                  <button type="button" className="ht-btn py-1.5 px-4 rounded-lg shadow-ht ht-interaction bg-green-200 grow" onClick={() => addEvent()}>
+                  <button type="button" className="ht-btn py-1.5 px-4 rounded-lg shadow-ht ht-interaction bg-green-200 grow" onClick={() => storeEvent()}>
                     <CalendarToday />
                     Add event
                   </button>
@@ -124,7 +130,7 @@ export default function HabitsCalendar() {
                 initialView="dayGridMonth"
                 editable={true}
                 headerToolbar={false}
-                events={formattedEvents}
+                events={events}
                 datesSet={fetchResources}
                 eventClick={handleEventClick}
                 height="calc(100vh - 128px)"
@@ -140,7 +146,7 @@ export default function HabitsCalendar() {
       </div>
 
       <Modal ref={formEventsModal} title="Add event" size="max-w-md">
-        <EventsForm values={formEventsValues} onSave={handleEventsFormSave} />
+        <EventsForm ref={formRef} onSave={handleEventsFormSave} />
       </Modal>
 
       <EventDetailsModal
