@@ -5,7 +5,7 @@ import { useEffect, useState } from "react"
 import { UserProps } from "../domain/User"
 
 interface Params {
-    onSave?: (vales: UserRawProps) => never | void
+    onSave?: (values: UserRawProps) => never | void
 }
 
 const defaultValues: UserModelProps = { // we leave out options since they are managed in different use cases
@@ -19,7 +19,7 @@ const rules = {
 const userMapper = new UserMapper()
 
 export default function useUsersCrud({ onSave }: Params) {
-    const { user, storeUser } = useInfrastructure()
+    const { user, storeUser, updateUser } = useInfrastructure()
 
     // Internal state - useState to allow ui to be rerendered accordingly
     const [loadingSave, setLoadingSave] = useState<boolean>(false)
@@ -41,10 +41,10 @@ export default function useUsersCrud({ onSave }: Params) {
             if(isNew) {
                 values = await storeUser(form.model)
             } else {
-                values = await new UpdateHabit(habitGateway).execute(storedHabit.id, domain)
+                values = await updateUser(form.model)
             }
-            if(onSave) {
-                onSave(habitMapper.toRaw(values))
+            if(onSave && values) {
+                onSave(values)
             }
         } catch(error) {
             console.error(error)
@@ -55,6 +55,7 @@ export default function useUsersCrud({ onSave }: Params) {
     return {
         user,
         isNew,
-        form
+        form,
+        loadingSave
     }
 }

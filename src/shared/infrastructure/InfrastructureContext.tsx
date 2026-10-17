@@ -14,6 +14,7 @@ import { DexieUserGateway } from '@/src/users/infrastructure/DexieUserGateway'
 import { UpdateUserOption } from '@/src/users/use-cases/UpdateUserOption'
 import { UserMapper, UserModelProps, UserRawProps } from '@/src/users/mappers/UserMapper'
 import { StoreUser, StoreUserInputDTO } from '@/src/users/use-cases/StoreUser'
+import { UpdateUser, UpdateUserInputDTO } from '@/src/users/use-cases/UpdateUser'
 
 interface Infrastructure { // TODO add user - methods to fetch and update global user
     habitGateway: DexieHabitGateway
@@ -22,6 +23,7 @@ interface Infrastructure { // TODO add user - methods to fetch and update global
     user: UserProps | null,
     options: UserOptionsProps
     storeUser: (values: UserModelProps) => Promise<UserRawProps | void>
+    updateUser: (values: UserModelProps) => Promise<UserRawProps | void>
     updateOption: (key: keyof UserOptionsProps, value: UserOptionsProps[keyof UserOptionsProps]) => Promise<void>
 }
 
@@ -49,9 +51,21 @@ export const InfrastructureProvider: React.FC<{ children: React.ReactNode }> = (
 
   async function storeUser(values: Omit<UserRawProps, 'id' | 'options'>): Promise<UserRawProps | void> {
     try {
-    const user = await new StoreUser(userGateway).execute(userMapper.toDomain(values) as StoreUserInputDTO)
-    setUser(user)
-    return userMapper.toRaw(user)
+      const user = await new StoreUser(userGateway).execute(userMapper.toDomain(values) as StoreUserInputDTO)
+      setUser(user)
+      return userMapper.toRaw(user)
+    } catch(error) {
+      console.error(error)
+    }
+  }
+
+  async function updateUser(values: Omit<UserRawProps, 'id' | 'options'>): Promise<UserRawProps | void> {
+    if(!_user) { return undefined }
+
+    try {
+      const user = await new UpdateUser(userGateway).execute(_user.id, userMapper.toDomain(values) as UpdateUserInputDTO)
+      setUser(user)
+      return userMapper.toRaw(user)
     } catch(error) {
       console.error(error)
     }
@@ -76,6 +90,7 @@ export const InfrastructureProvider: React.FC<{ children: React.ReactNode }> = (
     user: _user || null,
     options: _user?.options ?? defaultUserOptions,
     storeUser,
+    updateUser,
     updateOption
   }
 
