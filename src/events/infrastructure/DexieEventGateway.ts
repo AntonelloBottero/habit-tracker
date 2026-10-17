@@ -7,7 +7,7 @@ import { DbResourceSchema } from "@/src/shared/infrastructure/DbClass"
 
 export class DexieEventGateway extends DexieBaseGateway<EventRawProps, EventProps> implements EventGateway {
     constructor(db: Dexie) {
-        super(db, 'event', new EventMapper())
+        super(db, 'events', new EventMapper())
     }
 
     private _isoToDate(iso: string): string {

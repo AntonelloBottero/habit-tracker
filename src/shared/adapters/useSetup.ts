@@ -18,7 +18,7 @@ export default function useSetup() {
 
             await new StoreMonthlySlots(slotGateway).execute({ habits: manageableHabits, date: new Date() })
             await new ShiftManagedHabits(habitGateway)
-        return true
+            return true
         } catch(error) {
             console.error(error)
             return false

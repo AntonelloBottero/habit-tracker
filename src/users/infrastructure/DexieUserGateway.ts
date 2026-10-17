@@ -6,6 +6,6 @@ import Dexie from "dexie"
 
 export class DexieUserGateway extends DexieBaseGateway<UserRawProps,UserProps> implements UserGateway {
     constructor(db: Dexie) {
-        super(db, 'user', new UserMapper())
+        super(db, 'users', new UserMapper())
     }
 }

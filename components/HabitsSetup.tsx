@@ -4,10 +4,10 @@ import Modal from '@/components/Modal'
 import HabitsForm from '@/components/HabitsForm'
 import HabitsCard from '@/components/HabitsCard'
 import { CalendarCheck } from '@project-lary/react-material-symbols-700-rounded'
-import useHabits from '@/hooks/useHabits'
 import { HabitsFormRef } from '@/src/shared/infrastructure/contracts'
 import useHabitsCrud from '@/src/habits/adapters/useHabitsCrud'
 import { HabitRawProps } from '@/src/habits/mappers/HabitMapper'
+import useSetup from '@/src/shared/adapters/useSetup'
 
 interface Props {
   onSetup?: () => never | void
@@ -57,13 +57,13 @@ export default function HabitsSetup({ onSetup }: Props) {
   }
 
   // --- Complete ---
-  const { setup } = useHabits()
+  const { setup } = useSetup()
   const [, setLoadingSetup] = useState<boolean>(false)
   async function complete() {
     if(!habits.length) { return undefined }
     setLoadingSetup(true)
     try {
-      await setup(true)
+      await setup()
       if(onSetup) {
         onSetup()
       }

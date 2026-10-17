@@ -7,7 +7,7 @@ import { DbResourceSchema } from "@/src/shared/infrastructure/DbClass"
 
 export class DexieSlotGateway extends DexieBaseGateway<SlotRawProps, SlotProps> implements SlotGateway {
     constructor(db: Dexie) {
-        super(db, 'slot', new SlotMapper)
+        super(db, 'slots', new SlotMapper)
     }
 
     public async indexEventables(date: Date): Promise<SlotProps[]> {

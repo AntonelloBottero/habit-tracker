@@ -1,3 +1,5 @@
+'use client'
+
 /**
  * README: Infrastructure Context Provider acts as an orchestrator to provide every concrete infrastructure entity
  * Every Adapter, which must feed their Use Cases with infrastructure entities, consumes those entities through a dedicated hook (useInfrastructure)
@@ -41,7 +43,7 @@ export const InfrastructureProvider: React.FC<{ children: React.ReactNode }> = (
       const user = await new ShowUser(userGateway).execute(1) // current user's id is always 1 if exists, since user info are stored locally
       setUser(user)
     } catch(error) {
-      console.error(error)
+      console.info(error)
       setUser(null)
     }
   }

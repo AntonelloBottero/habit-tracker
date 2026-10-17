@@ -7,7 +7,7 @@ import { DbResourceSchema } from "@/src/shared/infrastructure/DbClass"
 
 export class DexieHabitGateway extends DexieBaseGateway<HabitRawProps, HabitProps> implements HabitGateway {
     constructor(db: Dexie) {
-        super(db, 'habit', new HabitMapper())
+        super(db, 'habits', new HabitMapper())
     }
 
     public async findByName(name: string): Promise<HabitProps | null> {
