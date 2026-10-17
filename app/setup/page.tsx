@@ -2,10 +2,10 @@
 
 import { useRouter } from 'next/navigation'
 import TabsWindow from "@/components/TabsWindow"
-import SetupForm from "@/components/SetupForm"
 import HabitsSetup from "@/components/HabitsSetup"
 import { useState, useEffect } from 'react'
 import { useInfrastructure } from '@/src/shared/infrastructure/InfrastructureContext'
+import UsersForm from '@/components/UsersForm'
 
 export default function Page() {
   const { user } = useInfrastructure()
@@ -32,7 +32,7 @@ export default function Page() {
             <p>New in here? Start by inserting your name...<br />
               ...or whatever you want us to call you</p>
             <div className="w-full mt-4">
-              <SetupForm />
+              <UsersForm />
             </div>
           </div>
           <div>

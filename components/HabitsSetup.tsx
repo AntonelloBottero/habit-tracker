@@ -1,26 +1,23 @@
 import { useState, useRef, useEffect } from 'react'
-import { type HabitsSchema, type DbResourceSchema } from '@/db/DbClass'
 import { ModalRef } from '@/app/types'
-import useDb from '@/db/useDb'
-import useDbCrud from '@/db/useDbCrud'
 import Modal from '@/components/Modal'
 import HabitsForm from '@/components/HabitsForm'
 import HabitsCard from '@/components/HabitsCard'
 import { CalendarCheck } from '@project-lary/react-material-symbols-700-rounded'
 import useHabits from '@/hooks/useHabits'
-import { DateTime } from 'luxon'
-import Link from "next/link"
 import { HabitsFormRef } from '@/src/shared/infrastructure/contracts'
+import useHabitsCrud from '@/src/habits/adapters/useHabitsCrud'
+import { HabitRawProps } from '@/src/habits/mappers/HabitMapper'
 
 interface Props {
   onSetup?: () => never | void
 }
 
 export default function HabitsSetup({ onSetup }: Props) {
-  const { index } = useDbCrud('habits')
+  const { index } = useHabitsCrud()
 
   // --- Existing Habits ---
-  const [habits, setHabits] = useState<DbResourceSchema<HabitsSchema>[]>([])
+  const [habits, setHabits] = useState<HabitRawProps[]>([])
   const goodHabits = habits.filter(habit => habit.type === 'good')
   const badHabits = habits.filter(habit => habit.type === 'bad')
 
@@ -48,7 +45,7 @@ export default function HabitsSetup({ onSetup }: Props) {
       type
     })
   }
-  function update(habit: DbResourceSchema<HabitsSchema>) {
+  function update(habit: HabitRawProps) {
     if(!habit) { return undefined }
     formModalRef.current?.show()
     formRef.current?.update(habit.id)
@@ -58,10 +55,6 @@ export default function HabitsSetup({ onSetup }: Props) {
     formModalRef.current?.hide()
     fetchHabits()
   }
-
-  // --- Check setup is already done ---
-  const { options } = useDb()
-  const setupDone = (options.current.last_setup_at || '') > DateTime.now().toISO()
 
   // --- Complete ---
   const { setup } = useHabits()
@@ -120,26 +113,17 @@ export default function HabitsSetup({ onSetup }: Props) {
           ))}
         </div>
       </div>
-      {!setupDone ? (
-        <div className="mt-4 flex justify-end items-center">
-          {!habits.length && (
-            <div className="text-sm text-gray-500 mr-4">
-              Add at least an habit to continue
-            </div>
-          )}
-          <button type="button" className="ht-btn ht-btn--size-large ht-interaction bg-green-200 shadow-ht" disabled={!habits.length} onClick={() => { complete() }}>
-            <CalendarCheck />
-            Start monitoring
-          </button>
-        </div>
-      ): (
-        <div className="mt-4 flex justify-end items-center">
-          <Link href="/" className="ht-btn ht-btn--size-large ht-interaction bg-green-200 shadow-ht">
-            <CalendarCheck />
-            Confirm
-          </Link>
-        </div>
-      )}
+      <div className="mt-4 flex justify-end items-center">
+        {!habits.length && (
+          <div className="text-sm text-gray-500 mr-4">
+            Add at least an habit to continue
+          </div>
+        )}
+        <button type="button" className="ht-btn ht-btn--size-large ht-interaction bg-green-200 shadow-ht" disabled={!habits.length} onClick={() => { complete() }}>
+          <CalendarCheck />
+          Start monitoring
+        </button>
+      </div>
 
       <Modal ref={formModalRef} title="Manage your habit">
         <HabitsForm ref={formRef} onSave={handleFormSave} onDelete={handleFormSave} />

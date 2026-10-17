@@ -7,7 +7,7 @@ import ConfirmModal from '@/components/ConfirmModal'
 import { ConfirmModalRef } from '@/app/types'
 import { CheckCircle, Info } from '@project-lary/react-material-symbols-700-rounded'
 import { HabitRawProps } from '@/src/habits/mappers/HabitMapper'
-import useHabitCrud from '@/src/habits/adapters/useHabitsCrud'
+import useHabitsCrud from '@/src/habits/adapters/useHabitsCrud'
 import { HabitsFormRef } from '@/src/shared/infrastructure/contracts'
 
 interface Props {
@@ -28,7 +28,7 @@ const HabitsForm = forwardRef<HabitsFormRef, Props>(({ onSave, onDelete }: Props
     granularityTimes,
     isNew,
     canEdit
-  } = useHabitCrud({ onSave, onDelete })
+  } = useHabitsCrud({ onSave, onDelete })
 
   // --- Delete ---
   const confirmDeleteModalRef = useRef<ConfirmModalRef>(null)

@@ -1,9 +1,9 @@
-import { DbResourceSchema, HabitsSchema } from "@/db/DbClass"
 import { CalendarToday, CheckCircle } from "@project-lary/react-material-symbols-700-rounded"
 import HabitsCardHeader from "@/components/HabitsCardHeader"
+import { HabitRawProps } from "@/src/habits/mappers/HabitMapper"
 
 interface Props {
-  habit: DbResourceSchema<HabitsSchema>
+  habit: HabitRawProps
   className?: string
   onClick?: () => void | never
 }

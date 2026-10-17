@@ -39,7 +39,7 @@ const rules = {
 // init mapper - outside to prevent reinit at every rerender
 const habitMapper = new HabitMapper()
 
-export default function useHabitCrud({ onSave, onDelete }: Params) {
+export default function useHabitsCrud({ onSave, onDelete }: Params | void = {}) {
     // Init Infrastructure
     const { habitGateway } = useInfrastructure()
 
