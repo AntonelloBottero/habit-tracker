@@ -4,7 +4,6 @@
  * @props {HTMLInputElement} // handle the component like any other input element
  * @returns {TSX.Element}
  */
-import { defaultColors } from "@/utils/constants"
 
 import { ChangeEvent } from "react"
 import { CircleFilled } from "@project-lary/react-material-symbols-700-rounded"
@@ -17,9 +16,6 @@ export default function({value, onChange, ...inputProps }: FormFieldProps) {
 
   // user colors are managed through db options
   const { colors } = useOptions()
-
-  // --- mixes default color with the ones chosen by the user in previous form entries ---
-  const availableColors = [...colors, ...defaultColors]
 
   function pickAvailableColor(value: string) {
     if(!onChange) { return undefined }
@@ -41,7 +37,7 @@ export default function({value, onChange, ...inputProps }: FormFieldProps) {
         />
       </div>
       <div className="flex flex-wrap gap-1">
-        {availableColors.map(color => (
+        {colors.map(color => (
           <button
             role="color-picker-available-color"
             key={color}

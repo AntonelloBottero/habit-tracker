@@ -28,7 +28,7 @@ export class DexieFactory {
   private _db: DexieDbClass
 
   constructor() {
-    this._db = new DexieDbClass('HabiterDatabase')
+    this._db = new DexieDbClass('HDB')
     this._db.open()
   }
 

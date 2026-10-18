@@ -38,14 +38,14 @@ export class Habit {
         if(!granularities.includes(props.granularity)) {
             throw new Error('Granularity not supported')
         }
+
+        props.granularityTimes = this._adjustGranularityTimes(props.granularity, props.granularityTimes)
         if(Number.isNaN(props.granularityTimes) || props.granularityTimes < 1) {
             throw new Error('Adopt the Habit at least one time')
         }
         if(props.lastManagedAt && isNaN(props.lastManagedAt.getTime())) {
             throw new Error('manage from must be a real date')
         }
-
-        props.granularityTimes = this._adjustGranularityTimes(props.granularity, props.granularityTimes)
 
         this._props = props
     }

@@ -61,6 +61,7 @@ export default function useHabitsCrud({ onSave, onDelete }: Params | void = {}) 
     const isNew = !storedHabit?.id
     const wasManaged = !!storedHabit?.lastManagedAt
     const canEdit = isNew || !wasManaged // TODO test
+    const { addColor } = useOptions()
 
     // Actions
     async function index(): Promise<HabitRawProps[]> {
@@ -98,7 +99,7 @@ export default function useHabitsCrud({ onSave, onDelete }: Params | void = {}) 
             } else {
                 values = await new UpdateHabit(habitGateway).execute(storedHabit.id, domain)
             }
-            useOptions().addColor(domain.color)
+            addColor(domain.color)
             if(onSave) {
                 onSave(habitMapper.toRaw(values))
             }

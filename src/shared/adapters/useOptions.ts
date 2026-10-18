@@ -1,20 +1,22 @@
+import { defaultColors } from "@/utils/constants";
 import { useInfrastructure } from "../infrastructure/InfrastructureContext";
 
 export default function useOptions() {
     const { options, updateOption } = useInfrastructure()
+    const colors = [...options.colors, ...defaultColors]
 
     async function addColor(color: string): Promise<void> {
-        if(options.colors.includes(color)) { return undefined }
+        if(colors.includes(color)) { return undefined }
 
         try {
-            updateOption('colors', [...options.colors, color])
+            updateOption('colors', [...colors, color])
         } catch(error) {
             console.error(error)
         }
     }
 
     return {
-        colors: options.colors,
+        colors,
         addColor
     }
 }
