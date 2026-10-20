@@ -16,14 +16,14 @@ export default function Home() {
 
   const [setupCompleted, setSetupCompleted] = useState<boolean>(false)
   const [setupLoading, setSetupLoading] = useState<boolean>(true)
-  const skipSetup = useRef(false) // In strict mode we need to prevent useSetup.setup() to be executed twice
+  const skipSetup = useRef<boolean | string | number>(false) // In strict mode we need to prevent useSetup.setup() to be executed twice
   useEffect(() => {
-    if(!skipSetup.current) {
+    if(skipSetup.current !== (user?.id || true)) {
       if(!user) {
         setSetupCompleted(false)
         setSetupLoading(false)
       } else {
-        setup().then(value => {
+        setup().then((value) => {
           setSetupCompleted(value)
           setSetupLoading(false)
         })
@@ -31,9 +31,9 @@ export default function Home() {
     }
 
     return () => {
-      skipSetup.current = true
+      skipSetup.current = user?.id || true // we skip strict mode and act only the first time or when the user changes
     }
-  }, [])
+  }, [user])
 
   return (
     <main className="font-sans w-full h-[100vh]">

@@ -24,8 +24,8 @@ export default function HabitsSetup({ onSetup }: Props) {
   // TODO: move in Use Case
   async function fetchHabits() {
     try {
-      const habits = await index()
-      setHabits(habits)
+      const _habits = await index()
+      setHabits(_habits)
     } catch(error) {
       console.error(error)
       setHabits([])
@@ -119,13 +119,13 @@ export default function HabitsSetup({ onSetup }: Props) {
             Add at least an habit to continue
           </div>
         )}
-        <button type="button" className="ht-btn ht-btn--size-large ht-interaction bg-green-200 shadow-ht" disabled={!habits.length} onClick={() => { complete() }}>
+        <button type="button" className="ht-btn ht-btn--size-large ht-interaction bg-green-200 shadow-ht" onClick={() => { complete() }}>
           <CalendarCheck />
           Start monitoring
         </button>
       </div>
 
-      <Modal ref={formModalRef} title="Manage your habit">
+      <Modal ref={formModalRef} title="Manage your habit" eager={true}>
         <HabitsForm ref={formRef} onSave={handleFormSave} onDelete={handleFormSave} />
       </Modal>
     </>

@@ -22,7 +22,7 @@ export class Slot {
         if(props.count < 1) {
             throw new Error('Slot has to be planned to happen at least one time')
         }
-        if(props.completion < 1) {
+        if(props.completion < 0) {
             throw new Error('Slot completion must be a positive number')
         }
         if(!props.activeTo || isNaN(props.activeTo.getTime())) {

@@ -36,7 +36,7 @@ const userGateway = new DexieUserGateway(dexieFactory.execute())
 const userMapper = new UserMapper()
 
 export const InfrastructureProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [_user, setUser] = useState<UserProps | null>(null)
+  const [user, setUser] = useState<UserProps | null>(null)
 
   async function showUser() {
     try {
@@ -62,12 +62,12 @@ export const InfrastructureProvider: React.FC<{ children: React.ReactNode }> = (
   }
 
   async function updateUser(values: Omit<UserRawProps, 'id' | 'options'>): Promise<UserRawProps | void> {
-    if(!_user) { return undefined }
+    if(!user) { return undefined }
 
     try {
-      const user = await new UpdateUser(userGateway).execute(_user.id, userMapper.toDomain(values) as UpdateUserInputDTO)
-      setUser(user)
-      return userMapper.toRaw(user)
+      const _user = await new UpdateUser(userGateway).execute(user.id, userMapper.toDomain(values) as UpdateUserInputDTO)
+      setUser(_user)
+      return userMapper.toRaw(_user)
     } catch(error) {
       console.error(error)
     }
@@ -75,10 +75,10 @@ export const InfrastructureProvider: React.FC<{ children: React.ReactNode }> = (
 
 
   async function updateOption(key: keyof UserOptionsProps, value: UserOptionsProps[keyof UserOptionsProps]): Promise<void> {
-    if(!_user) { return undefined }
+    if(!user) { return undefined }
     try {
-      const user = await new UpdateUserOption(userGateway).execute(_user.id, { key, value })
-      setUser({ ...user })
+      const _user = await new UpdateUserOption(userGateway).execute(user.id, { key, value })
+      setUser({ ..._user })
     } catch(error) {
       console.error(error)
     }
@@ -89,8 +89,8 @@ export const InfrastructureProvider: React.FC<{ children: React.ReactNode }> = (
     slotGateway: new DexieSlotGateway(dexieFactory.execute()),
     eventGateway: new DexieEventGateway(dexieFactory.execute()),
     // user
-    user: _user || null,
-    options: _user?.options ?? defaultUserOptions,
+    user,
+    options: user?.options ?? defaultUserOptions,
     storeUser,
     updateUser,
     updateOption

@@ -10,7 +10,8 @@ const nextConfig: NextConfig = {
   /* config options here */
   env: {
     dbName: 'HabiterDatabase',
-  }
+  },
+  output: 'export'
 };
 
 export default nextConfig;

@@ -20,8 +20,12 @@ export class DexieHabitGateway extends DexieBaseGateway<HabitRawProps, HabitProp
 
     public async indexManageables(): Promise<HabitProps[]> {
         const items = await this._table
-            .where((item: DbResourceSchema<HabitRawProps>) => item.deleted_at !== '' && Habit.isManageable(item.last_managed_at ? new Date(item.last_managed_at) : null))
-            .sortBy('created_at')
+        .orderBy('created_at')
+        .filter((item: DbResourceSchema<HabitRawProps>) => {
+            return item.deleted_at === '' &&
+                Habit.isManageable(item.last_managed_at ? new Date(item.last_managed_at) : null);
+        })
+        .toArray()
         return items.map(item => this._mapper.toDomain(item)) as HabitProps[]
     }
 }
