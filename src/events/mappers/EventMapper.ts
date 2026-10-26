@@ -1,29 +1,29 @@
-import { Mapper } from "@/src/shared/contracts/mappers"
+import { Mapper, RawProps } from "@/src/shared/contracts/mappers"
 import { EventProps } from "../domain/Event"
+import { BaseMapper } from "@/src/shared/mappers/BaseMapper"
 
-export interface EventRawProps {
-    id: string | number
+export type EventRawProps = RawProps & {
     habit_id: string | number
     date: string
     completed: number
 }
 
-export class EventMapper implements Mapper<EventRawProps, EventProps> {
+export class EventMapper extends BaseMapper implements Mapper<EventRawProps, EventProps> {
     public toDomain(raw: Partial<EventRawProps>): Partial<EventProps> {
         return {
-            id: raw.id,
             habitId: raw.habit_id,
             date: raw.date ? new Date(raw.date): undefined,
-            completed: raw.completed
+            completed: raw.completed,
+            ...this._resourceProps(raw)
         }
     }
 
     public toRaw(domain: EventProps): EventRawProps {
         return {
-            id: domain.id,
             habit_id: domain.habitId,
             date: domain.date.toISOString(),
-            completed: domain.completed
+            completed: domain.completed,
+            ...this._resourceRawProps(domain)
         }
     }
 }

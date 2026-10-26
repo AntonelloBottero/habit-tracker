@@ -1,5 +1,7 @@
+import { DomainProps } from "../domain/Domain"
+
 export type RawProps = Record<string, any> & {
-    id: string | null
+    id: string | number
     created_at: string | null
     updated_at: string | null
     deleted_at: string | null

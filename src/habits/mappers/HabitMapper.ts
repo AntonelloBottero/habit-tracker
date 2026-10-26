@@ -1,9 +1,9 @@
 import { type Granularity } from "@/src/shared/contracts/consts";
 import { type HabitProps, type Type } from "../domain/Habit"
-import { DomainProps, RawProps, type Mapper } from "../../shared/contracts/mappers";
+import { RawProps, type Mapper } from "../../shared/contracts/mappers";
+import { BaseMapper } from "@/src/shared/mappers/BaseMapper";
 
-export interface HabitRawProps {
-    id: string | number
+export type HabitRawProps = RawProps & {
     user_id: string | number
     type: Type
     name: string
@@ -15,10 +15,9 @@ export interface HabitRawProps {
     last_managed_at: string | null
 }
 
-export class HabitMapper implements Mapper<HabitRawProps, HabitProps> {
+export class HabitMapper extends BaseMapper implements Mapper<HabitRawProps, HabitProps> {
     public toDomain(raw: Partial<HabitRawProps>): Partial<HabitProps> {
         return {
-            id: raw.id,
             userId: raw.user_id,
             type: raw.type,
             name: raw.name,
@@ -28,12 +27,12 @@ export class HabitMapper implements Mapper<HabitRawProps, HabitProps> {
             granularityTimes: raw.granularity_times,
             enoughAmount: raw.enough_amount,
             lastManagedAt: raw.last_managed_at ? new Date(raw.last_managed_at) : undefined,
+            ...this._resourceProps(raw)
         }
     }
 
     public toRaw(domain: HabitProps): HabitRawProps {
         return {
-            id: domain.id,
             user_id: domain.userId,
             type: domain.type,
             name: domain.name,
@@ -43,6 +42,7 @@ export class HabitMapper implements Mapper<HabitRawProps, HabitProps> {
             granularity_times: domain.granularityTimes,
             enough_amount: domain.enoughAmount,
             last_managed_at: domain.lastManagedAt?.toISOString() ?? null,
+            ...this._resourceRawProps(domain)
         }
     }
 }
