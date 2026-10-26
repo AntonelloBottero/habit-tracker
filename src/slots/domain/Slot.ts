@@ -1,5 +1,6 @@
-export interface SlotProps {
-    id: string | number
+import { Domain, DomainProps } from "@/src/shared/domain/Domain"
+
+export type SlotProps = DomainProps & {
     habitId: string | number
     eventIds: (string | number)[]
     count: number
@@ -9,13 +10,14 @@ export interface SlotProps {
     activeTo: Date // Date in which the slot expires and the habit is considered failed
 }
 
-export class Slot {
-    private _props: SlotProps
+export class Slot extends Domain {
+    protected _props: SlotProps
 
     constructor(props: SlotProps) {
-        if(!props.id) {
-            throw new Error('Slot ID is required')
-        }
+        super()
+
+        this._validateResourceProps(props)
+
         if(!props.habitId) {
             throw new Error('Habit ID is required')
         }

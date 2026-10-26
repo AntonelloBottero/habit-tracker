@@ -1,11 +1,11 @@
 import { granularities, type Granularity } from "@/src/shared/contracts/consts"
+import { Domain, DomainProps } from "@/src/shared/domain/Domain"
 
 const types = ['good', 'bad'] as const
 
 export type Type = typeof types[number]
 
-export interface HabitProps {
-    id: string | number
+export type HabitProps = DomainProps & {
     userId: string | number
     type: Type
     name: string
@@ -19,13 +19,14 @@ export interface HabitProps {
     lastManagedAt: Date | null
 }
 
-export class Habit {
-    private _props: HabitProps
+export class Habit extends Domain {
+    protected _props: HabitProps
 
     constructor(props: HabitProps) {
-        if(!props.id) {
-            throw new Error('Habit ID is required')
-        }
+        super()
+
+        this._validateResourceProps(props)
+
         if(!props.userId) {
             throw new Error('User ID is required')
         }

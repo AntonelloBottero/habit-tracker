@@ -1,5 +1,9 @@
-export type DomainProps = Record<string, any>
-export type RawProps = Record<string, any>
+export type RawProps = Record<string, any> & {
+    id: string | null
+    created_at: string | null
+    updated_at: string | null
+    deleted_at: string | null
+}
 
 /**
  * README: a Mapper is a class that holds knowledge of both Domain Entities and Presenters/Gateways data

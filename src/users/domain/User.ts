@@ -13,6 +13,8 @@
  *
  */
 
+import { Domain, DomainProps } from "@/src/shared/domain/Domain"
+
 export interface UserOptionsProps {
     colors: string[]
 }
@@ -21,16 +23,19 @@ export const defaultUserOptions: UserOptionsProps = {
     colors: []
 }
 
-export interface UserProps {
-    id: string | number
+export type UserProps = DomainProps & {
     name: string
     options: UserOptionsProps
 }
 
-export class User {
-    private _props: UserProps
+export class User extends Domain {
+    protected _props: UserProps
 
     constructor(props: UserProps) {
+        super()
+
+        this._validateResourceProps(props)
+        
         if(!props.id) {
             throw new Error('User ID is required')
         }

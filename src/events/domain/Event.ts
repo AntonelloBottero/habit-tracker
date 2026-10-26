@@ -1,17 +1,19 @@
-export interface EventProps {
-    id: string | number
+import { Domain, DomainProps } from "@/src/shared/domain/Domain"
+
+export type EventProps = DomainProps & {
     habitId: string | number
     date: Date
     completed: number
 }
 
-export class Event {
-    private _props: EventProps
+export class Event extends Domain {
+    protected _props: EventProps
 
     constructor(props: EventProps) {
-        if(!props.id) {
-            throw new Error('Event ID is required')
-        }
+        super()
+
+        this._validateResourceProps(props)
+
         if(!props.habitId) {
             throw new Error('Habit ID is required')
         }
