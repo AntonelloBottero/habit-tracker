@@ -35,6 +35,7 @@ const EventDetailsModal = forwardRef<ModalRef, Props>(({ event, onDelete }: Prop
   // --- forwardRef ---
   const modalRef = useRef<ModalRef>(null)
   function show() {
+    // TODO: receive event and habit in show
     modalRef.current?.show()
     fetchHabit() // fetch habit only when user needs it
   }
