@@ -35,7 +35,7 @@ export class User extends Domain {
         super()
 
         this._validateResourceProps(props)
-        
+
         if(!props.id) {
             throw new Error('User ID is required')
         }

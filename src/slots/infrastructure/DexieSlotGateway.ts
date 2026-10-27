@@ -3,7 +3,6 @@ import { SlotProps } from "../domain/Slot"
 import { SlotMapper, type SlotRawProps } from "../mappers/SlotMapper"
 import { SlotGateway } from "../contracts/gateways"
 import Dexie from "dexie"
-import { DbResourceSchema } from "@/src/shared/infrastructure/DbClass"
 
 export class DexieSlotGateway extends DexieBaseGateway<SlotRawProps, SlotProps> implements SlotGateway {
     constructor(db: Dexie) {
@@ -13,7 +12,7 @@ export class DexieSlotGateway extends DexieBaseGateway<SlotRawProps, SlotProps> 
     public async indexEventables(date: Date): Promise<SlotProps[]> {
         const isoDate = date.toISOString()
         const items = await this._table
-            .where((item: DbResourceSchema<SlotRawProps>) =>
+            .where((item: SlotRawProps) =>
                 item.event_ids.length < item.completion
                 && isoDate >= item.active_from
                 && isoDate <= item.active_to
@@ -27,7 +26,7 @@ export class DexieSlotGateway extends DexieBaseGateway<SlotRawProps, SlotProps> 
         const isoFrom = from.toISOString()
         const isoTo = to.toISOString()
         const items = await this._table
-            .where((item: DbResourceSchema<SlotRawProps>) =>
+            .where((item: SlotRawProps) =>
                 item.event_ids.length < item.completion
                 && isoFrom <= item.active_to
                 && isoTo >= item.active_from

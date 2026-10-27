@@ -1,7 +1,8 @@
-import { type Dexie, type Table } from "dexie";
-import { DbResourceSchema, type DexieTableName } from "./DbClass";
+import { type Dexie, type Table } from "dexie"
+import { type DexieTableName } from "./DbClass"
 import { type BaseGateway, type ID } from "../contracts/gateways"
-import { type RawProps, type DomainProps, type Mapper } from "../contracts/mappers";
+import { type RawProps, type Mapper } from "../contracts/mappers"
+import { DomainProps } from "../domain/Domain"
 
 export class DexieBaseGateway<TRaw extends RawProps, TDomain extends DomainProps> implements BaseGateway<TRaw, TDomain> {
     protected _table: Table
@@ -25,7 +26,7 @@ export class DexieBaseGateway<TRaw extends RawProps, TDomain extends DomainProps
     }
 
     public async indexByIds(ids: ID[]): Promise<TDomain[]> {
-        const items = await this._table.where((item: DbResourceSchema<TDomain>) => item.deleted_at !== '' && ids.includes(item.id)).toArray()
+        const items = await this._table.where((item: TDomain) => item.deleted_at !== '' && ids.includes(item.id)).toArray()
         return items.map((item) => this._mapper.toDomain(item)) as TDomain[]
     }
 
@@ -38,14 +39,15 @@ export class DexieBaseGateway<TRaw extends RawProps, TDomain extends DomainProps
     }
 
     // Save
-    private _buildStoreProps(domainValues: TDomain) {
+    private _buildStoreProps(domainValues: TDomain): TRaw {
         const now = new Date().toISOString()
+        const rawValues = this._mapper.toRaw(domainValues)
         return {
-            deleted_at: '', // deleted_at is first, so it can be easily overwritten by values
-            ...this._mapper.toRaw(domainValues),
+            ...rawValues,
             id: undefined, // we discard mocked id
             created_at: now, // created at -> now
             updated_at: now, // last update -> now
+            deleted_at: rawValues.deleted_at || '', // empty if not explicitly soft deleted at store
         }
     }
 

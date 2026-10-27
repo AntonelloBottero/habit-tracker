@@ -1,4 +1,5 @@
-import { type RawProps, type DomainProps } from "./mappers";
+import { DomainProps } from "../domain/Domain"
+import { type RawProps } from "./mappers"
 
 export type ID = string | number // includes string and numbers to leave as many ID options open
 

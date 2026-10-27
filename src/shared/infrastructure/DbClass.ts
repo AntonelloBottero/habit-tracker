@@ -1,18 +1,17 @@
+import { EventRawProps } from '@/src/events/mappers/EventMapper'
 import { HabitRawProps } from '@/src/habits/mappers/HabitMapper'
+import { SlotRawProps } from '@/src/slots/mappers/SlotMapper'
+import { UserRawProps } from '@/src/users/mappers/UserMapper'
 import Dexie, { Table } from 'dexie'
-
-// --- Schemas ---
-export type DbResourceSchema<T> = Omit<T, 'id'> & {
-  id: number
-  created_at: string
-  updated_at: string
-  deleted_at: string
-}
 
 export type DexieTableName = 'habits' | 'slots' | 'events' | 'users'
 
 class DexieDbClass extends Dexie {
-  habits!: Table<DbResourceSchema<HabitRawProps>, 'id'>
+  habits!: Table<HabitRawProps, 'id'>
+  slots!: Table<SlotRawProps, 'id'>
+  events!: Table<EventRawProps, 'id'>
+  users!: Table<UserRawProps, 'id'>
+
   constructor(name: string) {
     super(name)
     this.version(4).stores({

@@ -16,8 +16,11 @@ export class StoreUser {
         const user = new User({
             ...input,
             id,
-            options: {...defaultUserOptions}
-        })
+            options: {...defaultUserOptions},
+            createdAt: null,
+            updatedAt: null,
+            deletedAt: null
+        } as UserProps)
 
         const data = {...user.toPrimitives() }
         await this._gateway.store(data)

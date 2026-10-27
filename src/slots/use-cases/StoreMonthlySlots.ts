@@ -58,7 +58,11 @@ export class StoreMonthlySlots {
                 count: habit.granularityTimes,
                 completion: 0,
                 activeFrom,
-                activeTo
+                activeTo,
+                // those are null, since they will be overwritten by gateway
+                createdAt: null,
+                updatedAt: null,
+                deletedAt: null
             }).toPrimitives())
         } while(activeTo.getTime() <= endOfMonth.getTime())
 

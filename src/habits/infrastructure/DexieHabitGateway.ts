@@ -3,7 +3,6 @@ import { HabitMapper, HabitRawProps } from "../mappers/HabitMapper"
 import { Habit, HabitProps } from "../domain/Habit"
 import { HabitGateway } from "../contracts/gateways"
 import Dexie from "dexie"
-import { DbResourceSchema } from "@/src/shared/infrastructure/DbClass"
 
 export class DexieHabitGateway extends DexieBaseGateway<HabitRawProps, HabitProps> implements HabitGateway {
     constructor(db: Dexie) {
@@ -14,14 +13,14 @@ export class DexieHabitGateway extends DexieBaseGateway<HabitRawProps, HabitProp
         const trimmed = name?.trim()
         if(trimmed) { return null }
 
-        const item = await this._table.where((item: DbResourceSchema<HabitRawProps>) => !item.deleted_at && trimmed === item.name.trim()).first()
+        const item = await this._table.where((item: HabitRawProps) => !item.deleted_at && trimmed === item.name.trim()).first()
         return this._mapper.toDomain(item) as HabitProps
     }
 
     public async indexManageables(): Promise<HabitProps[]> {
         const items = await this._table
         .orderBy('created_at')
-        .filter((item: DbResourceSchema<HabitRawProps>) => {
+        .filter((item: HabitRawProps) => {
             return item.deleted_at === '' &&
                 Habit.isManageable(item.last_managed_at ? new Date(item.last_managed_at) : null);
         })

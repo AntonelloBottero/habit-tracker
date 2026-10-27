@@ -3,7 +3,6 @@ import { EventMapper, EventRawProps } from "../mappers/EventMapper"
 import { EventProps } from "../domain/Event"
 import { EventGateway } from "../contracts/gateways"
 import Dexie from "dexie"
-import { DbResourceSchema } from "@/src/shared/infrastructure/DbClass"
 
 export class DexieEventGateway extends DexieBaseGateway<EventRawProps, EventProps> implements EventGateway {
     constructor(db: Dexie) {
@@ -16,7 +15,7 @@ export class DexieEventGateway extends DexieBaseGateway<EventRawProps, EventProp
 
     public async findOverlapping(habitId: string | number, date: Date, habitIdToExclude?: string | number): Promise<EventProps | null> {
         const dateStr = this._isoToDate(date.toISOString())
-        return await this._table.where((item: DbResourceSchema<EventRawProps>) => 
+        return await this._table.where((item: EventRawProps) => 
             item.habit_id === habitId &&
             habitIdToExclude !== item.habit_id &&
             dateStr === this._isoToDate(item.date)
@@ -27,7 +26,7 @@ export class DexieEventGateway extends DexieBaseGateway<EventRawProps, EventProp
         const isoFrom = from.toISOString()
         const isoTo = to.toISOString()
         const items = await this._table
-            .where((item: DbResourceSchema<EventRawProps>) =>
+            .where((item: EventRawProps) =>
                 item.date >= isoFrom
                 && item.date <= isoTo
             )

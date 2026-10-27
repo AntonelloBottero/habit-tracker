@@ -2,9 +2,7 @@ import { Habit, type HabitProps } from '../domain/Habit'
 import { HabitGateway } from '../contracts/gateways'
 
 export type StoreHabitInputDTO = Omit<HabitProps, 'id' | 'userId'>
-export type StoreHabitOutputDTO = Omit<HabitProps, 'lastManagedAt'> & {
-    lastManagedAt: null
-}
+export type StoreHabitOutputDTO = HabitProps
 
 export class StoreHabit {
     private _gateway: HabitGateway
@@ -21,7 +19,7 @@ export class StoreHabit {
 
         const id = this._gateway.generateId()
         const userId = await this._gateway.getUserId()
-        const habit = new Habit({...input, id, userId})
+        const habit = new Habit({ ...input, id, userId } as HabitProps) // type checker doesn't recognize this as HabitProps, but it surely is, so we force type
 
         const data = {...habit.toPrimitives(), lastManagedAt: null }
         await this._gateway.store(data)
