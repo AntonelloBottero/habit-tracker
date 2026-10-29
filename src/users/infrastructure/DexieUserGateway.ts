@@ -8,4 +8,14 @@ export class DexieUserGateway extends DexieBaseGateway<UserRawProps,UserProps> i
     constructor(db: Dexie) {
         super(db, 'users', new UserMapper())
     }
+
+    public generateId() {
+        return 1
+    }
+
+    public async store(domainValues: UserProps): Promise<UserProps> {
+        const values = this._buildStoreProps(domainValues)
+        const newId = await this._table.add({...values, id: domainValues.id }) // overwritten userId to keep user always known
+        return this._mapper.toDomain({...values, id: newId }) as UserProps
+    }
 }

@@ -70,6 +70,7 @@ export default function HabitsCalendar() {
   const [selectedEvent, setSelectedEvent] = useState<EventRawProps | null>(null) // TODO: should it hold habit?
   async function handleEventClick(eventInfo: EventClickArg) {
     try {
+      console.log('eventInfo', eventInfo)
       const event = await showEvent(eventInfo.event.id)
       setSelectedEvent(event)
       setTimeout(() => {

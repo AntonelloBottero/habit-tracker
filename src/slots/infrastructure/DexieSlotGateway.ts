@@ -26,7 +26,7 @@ export class DexieSlotGateway extends DexieBaseGateway<SlotRawProps, SlotProps> 
         const isoFrom = from.toISOString()
         const isoTo = to.toISOString()
         const items = await this._table
-            .where((item: SlotRawProps) =>
+            .filter((item: SlotRawProps) =>
                 item.event_ids.length < item.completion
                 && isoFrom <= item.active_to
                 && isoTo >= item.active_from

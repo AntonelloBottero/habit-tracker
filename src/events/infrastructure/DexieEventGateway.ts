@@ -26,7 +26,7 @@ export class DexieEventGateway extends DexieBaseGateway<EventRawProps, EventProp
         const isoFrom = from.toISOString()
         const isoTo = to.toISOString()
         const items = await this._table
-            .where((item: EventRawProps) =>
+            .filter((item: EventRawProps) =>
                 item.date >= isoFrom
                 && item.date <= isoTo
             )

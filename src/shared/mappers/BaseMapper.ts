@@ -17,9 +17,9 @@ export abstract class BaseMapper implements Mapper<RawProps, DomainProps> {
     protected _resourceRawProps(domain: DomainProps): RawProps {
         return {
             id: domain.id,
-            created_at: domain.createdAt?.toISOString() ?? null,
-            updated_at: domain.updatedAt?.toISOString() ?? null,
-            deleted_at: domain.deletedAt?.toISOString() ?? null,
+            created_at: domain.createdAt instanceof Date ? domain.createdAt.toISOString() : null,
+            updated_at: domain.updatedAt instanceof Date ? domain.updatedAt.toISOString() : null,
+            deleted_at: domain.deletedAt instanceof Date ? domain.deletedAt.toISOString() : null,
         }
     }
 }

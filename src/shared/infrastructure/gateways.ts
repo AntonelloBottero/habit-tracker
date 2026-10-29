@@ -39,7 +39,7 @@ export class DexieBaseGateway<TRaw extends RawProps, TDomain extends DomainProps
     }
 
     // Save
-    private _buildStoreProps(domainValues: TDomain): TRaw {
+    protected _buildStoreProps(domainValues: TDomain): TRaw {
         const now = new Date().toISOString()
         const rawValues = this._mapper.toRaw(domainValues)
         return {
@@ -53,7 +53,6 @@ export class DexieBaseGateway<TRaw extends RawProps, TDomain extends DomainProps
 
     public async store(domainValues: TDomain): Promise<TDomain> {
         const values = this._buildStoreProps(domainValues)
-
         const newId = await this._table.add(values)
         return this._mapper.toDomain({...values, id: newId }) as TDomain // we overwrite type checker because we for sure have the complete TDomain
     }
