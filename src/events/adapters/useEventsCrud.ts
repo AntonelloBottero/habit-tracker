@@ -105,12 +105,12 @@ export default function useEventsCrud({ onSave, onDelete }: Params) {
 
     // Delete
     // we delegate confirmation flows to ui components
-    async function deleteEvent() {
-        if(isNew) { return undefined }
+    async function deleteEvent(eventId?: string | number) { // eventId to delete an event that has not been internally registered
+        if(!eventId && isNew) { return undefined }
 
         setLoadingDelete(true)
         try {
-            await new DeleteHabit(eventGateway).execute(storedEvent.id)
+            await new DeleteHabit(eventGateway).execute(storedEvent?.id || eventId as string | number) // storedEvent is prioritized to an external event's id
             if(onDelete) {
                 onDelete()
             }

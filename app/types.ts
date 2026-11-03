@@ -1,4 +1,6 @@
 import { DbResourceSchema, HabitsSchema, SlotsSchema } from "@/db/DbClass"
+import { EventRawProps } from "@/src/events/mappers/EventMapper"
+import { HabitRawProps } from "@/src/habits/mappers/HabitMapper"
 import { ChangeEvent } from "react"
 
 export interface ModalRef {
@@ -45,4 +47,9 @@ export type HabitWithSlots = DbResourceSchema<HabitsSchema> & {
 
 export type SelectableHabit = DbResourceSchema<HabitsSchema> & {
   slot: DbResourceSchema<SlotsSchema>
+}
+
+export interface EventDetailsModalRef {
+  show: (_event: EventRawProps, _habit: HabitRawProps) => void
+  hide: () => void
 }

@@ -1,43 +1,33 @@
 import { useState, useRef, forwardRef, useImperativeHandle } from 'react'
 import Modal from "@/components/Modal"
-import { ModalRef } from "@/app/types"
-import { DbResourceSchema, EventsSchema, HabitsSchema } from '@/db/DbClass'
-import useDbCrud from "@/db/useDbCrud"
+import { type ModalRef, type EventDetailsModalRef } from "@/app/types"
 import { DateTime } from 'luxon'
 import HabitsCard from '@/components/HabitsCard'
 import CheckboxBtn from "@/components/CheckboxBtn"
 import ConfirmModal from '@/components/ConfirmModal'
 import { ConfirmModalRef } from '@/app/types'
-import useHabits from "@/hooks/useHabits"
 import { EventRawProps } from '@/src/events/mappers/EventMapper'
+import { HabitRawProps } from '@/src/habits/mappers/HabitMapper'
+import useEventsCrud from '@/src/events/adapters/useEventsCrud'
 
 interface Props {
-  event: EventRawProps | undefined,
   onDelete?: () => never | void
 }
 
-const EventDetailsModal = forwardRef<ModalRef, Props>(({ event, onDelete }: Props, ref) => {
-  const { deleteEvent: _deleteEvent } = useHabits()
+const EventDetailsModal = forwardRef<EventDetailsModalRef, Props>(({ onDelete }: Props, ref) => {
+  const { deleteEvent: _deleteEvent } = useEventsCrud({ onDelete })
 
   // --- Habit ---
-  const habitsCrud = useDbCrud('habits')
-  const [habit, setHabit] = useState<DbResourceSchema<HabitsSchema> | undefined>(undefined)
-  async function fetchHabit() {
-    if(!event) { return undefined }
-    try {
-      await habitsCrud.show(event.habit_id as number).then(setHabit)
-    } catch(error) {
-      console.error(error)
-      setHabit(undefined)
-    }
-  }
+  const [event, setEvent] = useState<EventRawProps | undefined>(undefined)
+  const [habit, setHabit] = useState<HabitRawProps | undefined>(undefined)
 
   // --- forwardRef ---
   const modalRef = useRef<ModalRef>(null)
-  function show() {
-    // TODO: receive event and habit in show
+  function show(_event: EventRawProps, _habit: HabitRawProps) {
+    if(!_event || !_habit) { return undefined }
+    setEvent(_event)
+    setHabit(_habit)
     modalRef.current?.show()
-    fetchHabit() // fetch habit only when user needs it
   }
   useImperativeHandle(ref, () => ({
     show,
@@ -55,9 +45,9 @@ const EventDetailsModal = forwardRef<ModalRef, Props>(({ event, onDelete }: Prop
     setLoadingDelete(true)
     try{
       await _deleteEvent(event.id)
-      if(onDelete) {
-        onDelete()
-      }
+      setEvent(undefined)
+      setHabit(undefined)
+      modalRef.current?.hide()
     } catch(error) {
       console.error(error)
       // TODO: notify error to user
