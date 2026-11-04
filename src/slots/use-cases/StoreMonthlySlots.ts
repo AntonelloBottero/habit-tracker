@@ -56,7 +56,7 @@ export class StoreMonthlySlots {
                 habitId: habit.id,
                 eventIds: [],
                 count: habit.granularityTimes,
-                completion: 0,
+                completion: habit.completion,
                 activeFrom,
                 activeTo,
                 // those are null, since they will be overwritten by gateway

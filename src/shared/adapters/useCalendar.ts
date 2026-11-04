@@ -34,7 +34,6 @@ export default function useCalendar() {
             new IndexHabits(habitGateway).execute(),
             new IndexInRangeEvents(eventGateway).execute({ from: fromDate, to: toDate })
         ])
-
         setSlots(slotsResult.map(slot => slotMapper.toRaw(slot)))
         setHabits(habitsResult.map(habit => habitMapper.toRaw(habit)))
         setEvents(eventsResult.map(event => eventMapper.toRaw(event)))

@@ -21,7 +21,7 @@ export class DexieBaseGateway<TRaw extends RawProps, TDomain extends DomainProps
     }
 
     public async index(): Promise<TDomain[]> {
-        const items = await this._table.where('deleted_at').equals('').toArray()
+        const items = await this._table.filter(item => !item.deleted_at).toArray()
         return items.map((item) => this._mapper.toDomain(item)) as TDomain[]
     }
 
