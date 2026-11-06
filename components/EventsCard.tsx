@@ -1,9 +1,10 @@
-import { DbResourceSchema, EventsSchema, HabitsSchema } from "@/db/DbClass"
+import { EventRawProps } from "@/src/events/mappers/EventMapper"
+import { HabitRawProps } from "@/src/habits/mappers/HabitMapper"
 import { DateTime } from "luxon"
 
 interface Props {
-  habit: DbResourceSchema<HabitsSchema>
-  event: DbResourceSchema<EventsSchema>
+  habit: HabitRawProps
+  event: EventRawProps
 }
 
 export default function EventsCard({ habit, event }: Props) {

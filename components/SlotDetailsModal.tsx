@@ -1,28 +1,28 @@
 import { useRef, useState, forwardRef, useImperativeHandle } from "react"
-import { DbResourceSchema, EventsSchema, HabitsSchema, SlotsSchema } from "@/db/DbClass"
 import Modal from "@/components/Modal"
 import HabitsCardHeader from "@/components/HabitsCardHeader"
 import SlotsCompletionChip from "@/components/SlotsCompletionChip"
 import { CalendarToday, CheckCircle, CalendarClock } from "@project-lary/react-material-symbols-700-rounded"
-import { ModalRef } from "@/app/types"
-import useDbCrud from "@/db/useDbCrud"
 import EventsCard from "./EventsCard"
-import { SlotDetailsModalRef } from "@/src/shared/infrastructure/contracts"
+import { ModalRef, SlotDetailsModalRef } from "@/src/shared/infrastructure/contracts"
 import { SlotRawProps } from "@/src/slots/mappers/SlotMapper"
 import { HabitRawProps } from "@/src/habits/mappers/HabitMapper"
+import { EventRawProps } from "@/src/events/mappers/EventMapper"
+import useCalendar from "@/src/shared/adapters/useCalendar"
 
 const SlotDetailsModal = forwardRef<SlotDetailsModalRef>(({}, ref) => {
+  const { indexHabitEvents } = useCalendar()
+
   const modalRef = useRef<ModalRef>(null)
   const [slot, setSlot] = useState<SlotRawProps | undefined>(undefined)
   const [habit, setHabit] = useState<HabitRawProps | undefined>(undefined)
 
   // --- Slot events ---
-  const eventsCrud = useDbCrud('events')
-  const [events, setEvents] = useState<DbResourceSchema<EventsSchema>[]>([])
+  const [events, setEvents] = useState<EventRawProps[]>([])
   async function fetchEvents() {
-    if(!slot) { return undefined }
+    if(!slot || !habit) { return undefined }
     try {
-      const e = await eventsCrud.index(item => slot.event_ids.includes(item.id))
+      const e = await indexHabitEvents(habit)
       setEvents(e)
     } catch(error) {
       console.error(error)

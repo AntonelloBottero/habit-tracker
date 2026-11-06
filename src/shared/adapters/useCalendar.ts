@@ -8,6 +8,7 @@ import { IndexInRangeSlots } from "@/src/slots/use-cases/IndexInRangeSlots"
 import { CalendarEvent } from "../contracts/formatters"
 import { IndexInRangeEvents } from "@/src/events/use-cases/IndexInRangeEvents"
 import { ShowEvent } from "@/src/events/use-cases/ShowEvent"
+import { IndexEventsByIds } from "@/src/events/use-cases/IndexEventsByIds"
 
 const eventMapper = new EventMapper()
 const habitMapper = new HabitMapper()
@@ -65,10 +66,21 @@ export default function useCalendar() {
         return eventMapper.toRaw(event)
     }
 
+    async function indexHabitEvents(habit: HabitRawProps): Promise<EventRawProps[]> {
+        try {
+            const events = await new IndexEventsByIds(eventGateway).execute({ ids: habit.event_ids })
+            return events.map(event => eventMapper.toRaw(event))
+        } catch(error) {
+            console.error(error)
+        }
+        return []
+    }
+
     return {
         indexEventables,
         events: calendarEvents,
         habits: habitsWithSlots,
-        showEvent
+        showEvent,
+        indexHabitEvents
     }
 }

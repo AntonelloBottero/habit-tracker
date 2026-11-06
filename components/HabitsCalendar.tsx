@@ -9,12 +9,11 @@ import ScheduleList from '@/components/ScheduleList'
 import EventsForm from '@/components/EventsForm'
 import { CalendarToday, RightPanelClose, RightPanelOpen, Settings } from "@project-lary/react-material-symbols-700-rounded"
 import "@/css/habits-calendar.css"
-import { ModalRef } from '@/app/types'
 import Modal from './Modal'
 import EventDetailsModal from './EventDetailsModal'
 import CalendarToolbar from './CalendarToolbar'
 import useCalendar from '@/src/shared/adapters/useCalendar'
-import { EventsFormRef } from '@/src/shared/infrastructure/contracts'
+import { EventsFormRef, ModalRef } from '@/src/shared/infrastructure/contracts'
 import { EventRawProps } from '@/src/events/mappers/EventMapper'
 
 export default function HabitsCalendar() {
@@ -70,7 +69,6 @@ export default function HabitsCalendar() {
   const [selectedEvent, setSelectedEvent] = useState<EventRawProps | null>(null) // TODO: should it hold habit?
   async function handleEventClick(eventInfo: EventClickArg) {
     try {
-      console.log('eventInfo', eventInfo)
       const event = await showEvent(eventInfo.event.id)
       setSelectedEvent(event)
       setTimeout(() => {
