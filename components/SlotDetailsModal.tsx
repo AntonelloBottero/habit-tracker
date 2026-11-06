@@ -7,14 +7,14 @@ import { CalendarToday, CheckCircle, CalendarClock } from "@project-lary/react-m
 import { ModalRef } from "@/app/types"
 import useDbCrud from "@/db/useDbCrud"
 import EventsCard from "./EventsCard"
+import { SlotDetailsModalRef } from "@/src/shared/infrastructure/contracts"
+import { SlotRawProps } from "@/src/slots/mappers/SlotMapper"
+import { HabitRawProps } from "@/src/habits/mappers/HabitMapper"
 
-interface Props {
-  slot: DbResourceSchema<SlotsSchema> | null
-  habit: DbResourceSchema<HabitsSchema>
-}
-
-const SlotDetailsModal = forwardRef<ModalRef, Props>(({ slot, habit }: Props, ref) => {
+const SlotDetailsModal = forwardRef<SlotDetailsModalRef>(({}, ref) => {
   const modalRef = useRef<ModalRef>(null)
+  const [slot, setSlot] = useState<SlotRawProps | undefined>(undefined)
+  const [habit, setHabit] = useState<HabitRawProps | undefined>(undefined)
 
   // --- Slot events ---
   const eventsCrud = useDbCrud('events')
@@ -31,8 +31,10 @@ const SlotDetailsModal = forwardRef<ModalRef, Props>(({ slot, habit }: Props, re
   }
 
   // --- forwardRef ---
-  function show() {
-    modalRef.current?.show()
+  function show(_slot: SlotRawProps, _habit: HabitRawProps) {
+    if(!_slot || !_habit) { return undefined }
+    setSlot(_slot)
+    setHabit(_habit)
     fetchEvents() // fetch events only when user requests them
   }
   useImperativeHandle(ref, () => ({

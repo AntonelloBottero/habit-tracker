@@ -1,14 +1,15 @@
 import { useRef } from "react"
 import { CalendarToday } from "@project-lary/react-material-symbols-700-rounded"
-import { DbResourceSchema, HabitsSchema, SlotsSchema } from "@/db/DbClass"
 import HabitsCardHeader from "@/components/HabitsCardHeader"
 import SlotsCompletionChip from "@/components/SlotsCompletionChip"
 import SlotDetailsModal from "@/components/SlotDetailsModal"
-import { ModalRef } from "@/app/types"
+import { SlotRawProps } from "@/src/slots/mappers/SlotMapper"
+import { HabitRawProps } from "@/src/habits/mappers/HabitMapper"
+import { ModalRef } from "@/src/shared/infrastructure/contracts"
 
 interface Props {
-  slot: DbResourceSchema<SlotsSchema>
-  habit: DbResourceSchema<HabitsSchema>
+  slot: SlotRawProps
+  habit: HabitRawProps
   className?: string
 }
 

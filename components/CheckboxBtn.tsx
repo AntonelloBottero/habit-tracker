@@ -6,7 +6,7 @@
  */
 import { ChangeEvent } from 'react'
 import { CheckCircleFilled } from "@project-lary/react-material-symbols-700-rounded"
-import type { FormFieldProps } from "@/app/types"
+import { FormFieldProps } from '@/src/shared/infrastructure/contracts'
 
 interface Props extends FormFieldProps {
   defaultChecked: boolean

@@ -7,10 +7,8 @@
 
 import { ChangeEvent } from "react"
 import { CircleFilled } from "@project-lary/react-material-symbols-700-rounded"
-import { FormFieldProps } from "@/app/types"
 import useOptions from "@/src/shared/adapters/useOptions"
-
-
+import { FormFieldProps } from "@/src/shared/infrastructure/contracts"
 
 export default function({value, onChange, ...inputProps }: FormFieldProps) {
 

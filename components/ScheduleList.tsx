@@ -1,9 +1,10 @@
-import { type HabitWithSlots } from '@/app/types'
 import CompressedSlotsCard from '@/components/CompressedSlotsCard'
 import SlotsCard from '@/components/SlotsCard'
+import { HabitRawProps } from '@/src/habits/mappers/HabitMapper'
+import { SlotRawProps } from '@/src/slots/mappers/SlotMapper'
 
 interface Props {
-  habits: HabitWithSlots[]
+  habits: (HabitRawProps & { slots: SlotRawProps[] })[]
 }
 
 export default function ScheduleList({ habits }: Props) {

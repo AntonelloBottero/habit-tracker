@@ -6,7 +6,6 @@ import { useState } from "react"
 import { useInfrastructure } from "../infrastructure/InfrastructureContext"
 import { IndexInRangeSlots } from "@/src/slots/use-cases/IndexInRangeSlots"
 import { CalendarEvent } from "../contracts/formatters"
-import { HabitWithSlots } from "@/app/types"
 import { IndexInRangeEvents } from "@/src/events/use-cases/IndexInRangeEvents"
 import { ShowEvent } from "@/src/events/use-cases/ShowEvent"
 
@@ -42,7 +41,7 @@ export default function useCalendar() {
     const habitsWithSlots = habits.map((habit) => ({
         ...habit,
         slots: slots.filter(slot => slot.habit_id === habit.id)
-    })).filter(habit => habit.slots.length) as unknown as HabitWithSlots[] // TODO fix types
+    })).filter(habit => habit.slots.length)
 
     const calendarEvents = events
         .map(event => {

@@ -1,31 +1,29 @@
 import { DateTime } from "luxon"
 import HabitsCardHeader from "@/components/HabitsCardHeader"
 import SlotsCompletionChip from "@/components/SlotsCompletionChip"
-import { HabitWithSlots, ModalRef } from "@/app/types"
 import { useState, useRef } from "react"
 import { CalendarToday, CheckCircle } from "@project-lary/react-material-symbols-700-rounded"
 import Modal from "@/components/Modal"
 import SlotDetailsModal from "@/components/SlotDetailsModal"
-import useHabits from "@/hooks/useHabits"
 import { DbResourceSchema, SlotsSchema } from "@/db/DbClass"
+import { HabitRawProps } from "@/src/habits/mappers/HabitMapper"
+import { SlotRawProps } from "@/src/slots/mappers/SlotMapper"
+import { ModalRef } from "@/src/shared/infrastructure/contracts"
 
 interface Props {
-  habit: HabitWithSlots
+  habit: HabitRawProps
+  slots: SlotRawProps[]
   className?: string
 }
 
-export default function CompressedSlotsCard({ habit, className = '' }: Props) {
-  const slots = habit?.slots ?? []
-
+export default function CompressedSlotsCard({ habit, slots, className = '' }: Props) {
   const count = slots.reduce((r, slot) => r += Number(slot.count), 0)
   const completion = slots.reduce((r, slot) => r += slot.completion, 0)
   const activeTo = slots[slots.length - 1]?.active_to
 
   const modalRef = useRef<ModalRef>(null)
-  const { calculateMonthlySlots } = useHabits()
   function handleCardClick() {
     modalRef.current?.show()
-    calculateMonthlySlots(habit, DateTime.now().toISO())
   }
 
   // --- Selected slot (SlotDetailModal)

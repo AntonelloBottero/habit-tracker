@@ -1,14 +1,13 @@
 import { useState, useRef, forwardRef, useImperativeHandle } from 'react'
 import Modal from "@/components/Modal"
-import { type ModalRef, type EventDetailsModalRef } from "@/app/types"
 import { DateTime } from 'luxon'
 import HabitsCard from '@/components/HabitsCard'
 import CheckboxBtn from "@/components/CheckboxBtn"
 import ConfirmModal from '@/components/ConfirmModal'
-import { ConfirmModalRef } from '@/app/types'
 import { EventRawProps } from '@/src/events/mappers/EventMapper'
 import { HabitRawProps } from '@/src/habits/mappers/HabitMapper'
 import useEventsCrud from '@/src/events/adapters/useEventsCrud'
+import { ConfirmModalRef, EventDetailsModalRef, ModalRef } from '@/src/shared/infrastructure/contracts'
 
 interface Props {
   onDelete?: () => never | void
