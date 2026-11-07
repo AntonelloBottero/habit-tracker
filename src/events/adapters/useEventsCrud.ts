@@ -10,7 +10,7 @@ import { ShowEvent } from "../use-cases/ShowEvent"
 import { HabitProps } from "@/src/habits/domain/Habit"
 import { StoreEvent, StoreEventInputDTO } from "../use-cases/StoreEvent"
 import { UpdateEvent, UpdateEventInputDTO } from "../use-cases/UpdateEvent"
-import { DeleteHabit } from "../use-cases/DeleteEvent"
+import { DeleteEvent } from "../use-cases/DeleteEvent"
 import { SlotMapper, SlotRawProps } from "@/src/slots/mappers/SlotMapper"
 import { SlotProps } from "@/src/slots/domain/Slot"
 
@@ -110,7 +110,7 @@ export default function useEventsCrud({ onSave, onDelete }: Params) {
 
         setLoadingDelete(true)
         try {
-            await new DeleteHabit(eventGateway).execute(storedEvent?.id || eventId as string | number) // storedEvent is prioritized to an external event's id
+            await new DeleteEvent(eventGateway).execute(storedEvent?.id || eventId as string | number) // storedEvent is prioritized to an external event's id
             if(onDelete) {
                 onDelete()
             }

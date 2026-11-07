@@ -2,7 +2,7 @@ import { EventGateway } from '../contracts/gateways'
 
 export type DeleteEventOutputDTO = void
 
-export class DeleteHabit {
+export class DeleteEvent {
     private _gateway: EventGateway
 
     constructor(gateway: EventGateway) {
