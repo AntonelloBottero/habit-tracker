@@ -1,6 +1,6 @@
 import { useInfrastructure } from "@/src/shared/infrastructure/InfrastructureContext"
 import { EventMapper, EventRawProps } from "../mappers/EventMapper"
-import useForm, { validators } from "@/hooks/useForm"
+import useForm, { validators } from "@/src/shared/infrastructure/useForm"
 import { HabitMapper, HabitRawProps } from "@/src/habits/mappers/HabitMapper"
 import { IndexEventableSlots } from "@/src/slots/use-cases/IndexEventableSlots"
 import { IndexHabitsByIds } from "@/src/habits/use-cases/IndexHabitsByIds"

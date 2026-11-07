@@ -1,6 +1,6 @@
 import { useInfrastructure } from "@/src/shared/infrastructure/InfrastructureContext"
 import { UserMapper, UserModelProps, UserRawProps } from "../mappers/UserMapper"
-import useForm, { validators } from "@/hooks/useForm"
+import useForm, { validators } from "@/src/shared/infrastructure/useForm"
 import { useEffect, useState } from "react"
 import { UserProps } from "../domain/User"
 

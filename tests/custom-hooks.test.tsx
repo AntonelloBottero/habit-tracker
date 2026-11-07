@@ -4,7 +4,7 @@ import { DbProvider } from '@/db/useDb'
 import DbClass, { SlotsSchema, type HabitsSchema, EventsSchema, DbResourceSchema } from '@/db/DbClass'
 
 // --- useForm ---
-import useForm, { validators } from '@/hooks/useForm'
+import useForm, { validators } from '@/src/shared/infrastructure/useForm'
 const defaultValues = {
   name: '',
   last_name: 'Rossi',
