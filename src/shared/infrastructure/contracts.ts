@@ -4,6 +4,13 @@ import { SlotRawProps } from "@/src/slots/mappers/SlotMapper"
 import { ChangeEvent } from "react"
 
 // Component Refs
+export interface FakeInputChangeEvent { // simulates a regular form input change event
+  target: {
+    value?: boolean
+    checked?: boolean
+  }
+}
+
 export interface ModalRef {
   show: () => void
   hide: () => void

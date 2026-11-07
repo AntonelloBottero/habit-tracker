@@ -2,7 +2,8 @@ import { EventRawProps } from "@/src/events/mappers/EventMapper"
 import { HabitRawProps } from "@/src/habits/mappers/HabitMapper"
 import { SlotRawProps } from "@/src/slots/mappers/SlotMapper"
 
-export type CalendarEvent = EventRawProps & {
+export type CalendarEvent = Omit<EventRawProps, 'id'> & {
+    id: string
     habit: HabitRawProps
     // fullcalendar compliant params
     title: string

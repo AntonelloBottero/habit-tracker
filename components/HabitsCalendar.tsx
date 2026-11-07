@@ -13,8 +13,7 @@ import Modal from './Modal'
 import EventDetailsModal from './EventDetailsModal'
 import CalendarToolbar from './CalendarToolbar'
 import useCalendar from '@/src/shared/adapters/useCalendar'
-import { EventsFormRef, ModalRef } from '@/src/shared/infrastructure/contracts'
-import { EventRawProps } from '@/src/events/mappers/EventMapper'
+import { EventDetailsModalRef, EventsFormRef, ModalRef } from '@/src/shared/infrastructure/contracts'
 
 export default function HabitsCalendar() {
   const {
@@ -65,14 +64,12 @@ export default function HabitsCalendar() {
   }
 
   // --- Manage existing event ---
-  const eventDetailsModal = useRef<ModalRef>(null)
-  const [selectedEvent, setSelectedEvent] = useState<EventRawProps | null>(null) // TODO: should it hold habit?
+  const eventDetailsModal = useRef<EventDetailsModalRef>(null)
   async function handleEventClick(eventInfo: EventClickArg) {
     try {
       const event = await showEvent(eventInfo.event.id)
-      setSelectedEvent(event)
       setTimeout(() => {
-        eventDetailsModal.current?.show()
+        eventDetailsModal.current?.show(event, event.habit)
       })
     } catch(error) {
       console.error(error)
@@ -150,7 +147,6 @@ export default function HabitsCalendar() {
 
       <EventDetailsModal
         ref={eventDetailsModal}
-        event={selectedEvent}
         onDelete={handleEventDelete}
       />
     </>

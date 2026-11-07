@@ -44,21 +44,21 @@ export default function useCalendar() {
         slots: slots.filter(slot => slot.habit_id === habit.id)
     })).filter(habit => habit.slots.length)
 
-    const calendarEvents = events
-        .map(event => {
+    const calendarEvents: CalendarEvent[] = events
+        .flatMap(event => {
         const habit = habits?.find(habit => habit.id === event.habit_id)
-        if(!habit) { return null }
-        return {
+        if(!habit) { return [] }
+        return [{
             ...event,
+            id: String(event.id),
             habit,
             // fullcalendar compliant params
             title: habit.name,
             start: event.date,
             end: event.date, // TODO: change if end must be greater than start
             color: habit.color
-        }
+        }]
         })
-        .filter(Boolean) as CalendarEvent[]
 
     // Utils
     async function showEvent(id: string | number): Promise<EventRawProps> { // we keep this in adapter since it deals with use cases

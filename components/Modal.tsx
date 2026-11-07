@@ -1,6 +1,6 @@
+import { ModalRef } from '@/src/shared/infrastructure/contracts'
 import { useState, forwardRef, useImperativeHandle, ReactNode } from 'react'
 import { createPortal } from 'react-dom' // we want the modal to be appended at the end of the document, in order to avoid relative and overflow hidden containers
-import { ModalRef } from '@/app/types'
 
 // Portal -> Container at the end of the document into which we will append the modal
 const modalRoot = typeof document !== 'undefined'

@@ -20,7 +20,7 @@ export default function ScheduleList({ habits }: Props) {
           </div>
           {goodHabits.map(habit => (
             <div key={habit.id}>
-              {habit.slots.length === 1 ? <SlotsCard habit={habit} slot={habit.slots[0]} /> : <CompressedSlotsCard habit={habit} key={habit.id} />}
+              {habit.slots.length === 1 ? <SlotsCard habit={habit} slot={habit.slots[0]} /> : <CompressedSlotsCard habit={habit} slots={habit.slots} key={habit.id} />}
             </div>
           ))}
         </>
@@ -33,7 +33,7 @@ export default function ScheduleList({ habits }: Props) {
           </div>
           {badHabits.map(habit => (
             <div key={habit.id}>
-              {habit.slots.length === 1 ? <SlotsCard habit={habit} slot={habit.slots[0]} /> : <CompressedSlotsCard habit={habit} key={habit.id} />}
+              {habit.slots.length === 1 ? <SlotsCard habit={habit} slot={habit.slots[0]} /> : <CompressedSlotsCard habit={habit} slots={habit.slots} key={habit.id} />}
             </div>
           ))}
         </>

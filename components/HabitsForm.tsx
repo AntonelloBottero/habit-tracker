@@ -4,11 +4,10 @@ import InputWrapper from '@/components/InputWrapper'
 import ColorPicker from '@/components/ColorPicker'
 import CheckboxBtn from '@/components/CheckboxBtn'
 import ConfirmModal from '@/components/ConfirmModal'
-import { ConfirmModalRef } from '@/app/types'
 import { CheckCircle, Info } from '@project-lary/react-material-symbols-700-rounded'
 import { HabitRawProps } from '@/src/habits/mappers/HabitMapper'
 import useHabitsCrud from '@/src/habits/adapters/useHabitsCrud'
-import { HabitsFormRef } from '@/src/shared/infrastructure/contracts'
+import { ConfirmModalRef, HabitsFormRef } from '@/src/shared/infrastructure/contracts'
 
 interface Props {
   onSave?: (values: HabitRawProps) => never | void

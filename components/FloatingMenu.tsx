@@ -2,7 +2,7 @@
 
 import React, { useState, ReactNode } from 'react'
 import { useFloating, offset, flip, shift, autoUpdate } from '@floating-ui/react'
-import { FakeInputChangeEvent } from '@/app/types'
+import { FakeInputChangeEvent } from '@/src/shared/infrastructure/contracts'
 
 interface Props {
   reference: ReactNode
