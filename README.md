@@ -1,36 +1,63 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Habit Tracker
 
-## Getting Started
+A Next.js habit tracker refactored around a pragmatic Domain-Driven Design structure.
 
-First, run the development server:
+## Architecture
+
+The project uses a layered structure inspired by DDD, without enforcing a rigid theoretical model.
+
+### Layers
+
+Each feature is organized by bounded context:
+
+- `src/habits`
+- `src/events`
+- `src/slots`
+- `src/users`
+
+Each context is split into:
+
+- `domain` — entities and business rules
+- `use-cases` — application orchestration
+- `infrastructure` — persistence and external services
+- `adapters` — UI/application coordination
+- `mappers` — persistence/domain conversion
+
+### Pragmatic DDD
+
+The goal is to keep business logic explicit and infrastructure isolated, while staying practical in a React frontend.
+
+This means:
+
+- domain logic stays in the domain layer
+- infrastructure remains behind gateways and adapters
+- UI state remains pragmatic and presentation-oriented
+- use cases orchestrate behavior without becoming over-abstracted
+
+## Architecture decisions
+
+### CRUD metadata in the domain
+
+A key decision was to keep CRUD metadata such as `created_at` and `updated_at` inside the domain model.
+
+Initially, these were treated as infrastructure concerns and excluded from the domain. In practice, that produced extra conversion layers and more complexity than value. The project now keeps those lifecycle fields as part of the model to avoid overengineering while preserving clarity.
+
+This is a pragmatic trade-off: the domain remains focused on business rules, but it does not become artificially fragmented by metadata concerns that are part of the entity lifecycle.
+
+## Run locally
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open http://localhost:3000
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Stack
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Next.js
+- React
+- TypeScript
+- Dexie
+- FullCalendar
+- Tailwind CSS
