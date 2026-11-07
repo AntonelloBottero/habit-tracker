@@ -7,9 +7,8 @@ import { CalendarToday } from "@project-lary/react-material-symbols-700-rounded"
 import InputWrapper from "@/components/InputWrapper"
 import CheckboxBtn from "@/components/CheckboxBtn"
 import ConfirmModal from '@/components/ConfirmModal'
-import { ConfirmModalRef } from '@/app/types'
 import { EventRawProps } from "@/src/events/mappers/EventMapper"
-import { EventsFormRef } from "@/src/shared/infrastructure/contracts"
+import { ConfirmModalRef, EventsFormRef } from "@/src/shared/infrastructure/contracts"
 import useEventsCrud from "@/src/events/adapters/useEventsCrud"
 
 interface Props {

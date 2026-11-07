@@ -5,7 +5,7 @@ import SlotsCompletionChip from "@/components/SlotsCompletionChip"
 import SlotDetailsModal from "@/components/SlotDetailsModal"
 import { SlotRawProps } from "@/src/slots/mappers/SlotMapper"
 import { HabitRawProps } from "@/src/habits/mappers/HabitMapper"
-import { ModalRef } from "@/src/shared/infrastructure/contracts"
+import { SlotDetailsModalRef } from "@/src/shared/infrastructure/contracts"
 
 interface Props {
   slot: SlotRawProps
@@ -14,9 +14,9 @@ interface Props {
 }
 
 export default function SlotsCard({ slot, habit, className = '' }: Props) {
-  const modalRef = useRef<ModalRef>(null)
+  const modalRef = useRef<SlotDetailsModalRef>(null)
   function showModal() {
-    modalRef.current?.show()
+    modalRef.current?.show(slot, habit)
   }
 
   return habit ? (
@@ -37,7 +37,7 @@ export default function SlotsCard({ slot, habit, className = '' }: Props) {
         </div>
       </div>
 
-      <SlotDetailsModal ref={modalRef} habit={habit} slot={slot} />
+      <SlotDetailsModal ref={modalRef} />
     </>
   ) : null
 }

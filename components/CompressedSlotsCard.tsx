@@ -1,14 +1,13 @@
 import { DateTime } from "luxon"
 import HabitsCardHeader from "@/components/HabitsCardHeader"
 import SlotsCompletionChip from "@/components/SlotsCompletionChip"
-import { useState, useRef } from "react"
+import { useRef } from "react"
 import { CalendarToday, CheckCircle } from "@project-lary/react-material-symbols-700-rounded"
 import Modal from "@/components/Modal"
 import SlotDetailsModal from "@/components/SlotDetailsModal"
-import { DbResourceSchema, SlotsSchema } from "@/db/DbClass"
 import { HabitRawProps } from "@/src/habits/mappers/HabitMapper"
 import { SlotRawProps } from "@/src/slots/mappers/SlotMapper"
-import { ModalRef } from "@/src/shared/infrastructure/contracts"
+import { ModalRef, SlotDetailsModalRef } from "@/src/shared/infrastructure/contracts"
 
 interface Props {
   habit: HabitRawProps
@@ -27,13 +26,11 @@ export default function CompressedSlotsCard({ habit, slots, className = '' }: Pr
   }
 
   // --- Selected slot (SlotDetailModal)
-  const selectedSlotModalRef = useRef<ModalRef>(null)
-  const [selectedSlot, setSelectedSlot] = useState<DbResourceSchema<SlotsSchema> | null>(null)
+  const selectedSlotModalRef = useRef<SlotDetailsModalRef>(null)
 
-  function showSlotDetail(slot: DbResourceSchema<SlotsSchema>) {
-    setSelectedSlot(slot)
+  function showSlotDetail(slot: SlotRawProps) {
     setTimeout(() => {
-      selectedSlotModalRef.current?.show()
+      selectedSlotModalRef.current?.show(slot, habit)
     })
   }
 
@@ -109,7 +106,7 @@ export default function CompressedSlotsCard({ habit, slots, className = '' }: Pr
         </div>
       </Modal>
 
-      <SlotDetailsModal ref={selectedSlotModalRef} habit={habit} slot={selectedSlot} />
+      <SlotDetailsModal ref={selectedSlotModalRef} />
     </>
   ) : null
 }

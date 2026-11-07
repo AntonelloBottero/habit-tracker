@@ -1,6 +1,6 @@
-import { ConfirmModalRef, ModalRef } from "@/app/types"
 import { forwardRef, useImperativeHandle, useRef } from "react"
 import Modal from "@/components/Modal"
+import { ConfirmModalRef, ModalRef } from "@/src/shared/infrastructure/contracts"
 
 interface Props {
   title?: string
